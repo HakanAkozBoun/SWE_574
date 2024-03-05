@@ -17,8 +17,22 @@ class Home extends StatelessWidget {
 
             //Search Bar
             const SearchBarWidget(),
+
+            //Category
+            buildSectionTitle('Category'),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        textAlign: TextAlign.left,
       ),
     );
   }
