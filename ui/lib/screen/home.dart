@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:recipe/consent/appbar.dart';
-import 'package:recipe/consent/colors.dart';
+import 'package:recipe/widgets/home/appbar2.dart';
+import 'package:recipe/widgets/home/search_bar.dart';
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
-
-  @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
-  int indexx = 0;
+class Home extends StatelessWidget {
+  const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: background,
-      appBar: appbar(),
-      body: CustomScrollView(),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment
+              .start, // Add this line to left-align the children
+          children: [
+            AppBar2(),
+
+            //Search Bar
+            const SearchBarWidget(),
+          ],
+        ),
+      ),
     );
   }
 }

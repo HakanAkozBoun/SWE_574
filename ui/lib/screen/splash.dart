@@ -1,6 +1,7 @@
 import 'package:easy_splash_screen/easy_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:recipe/consent/colors.dart';
+import 'package:recipe/screen/home.dart';
 import 'package:recipe/screen/login.dart';
 
 class SplashPage extends StatefulWidget {
@@ -27,7 +28,7 @@ class _SplashPageState extends State<SplashPage> {
       backgroundColor: background,
       showLoader: true,
       loaderColor: Colors.pink,
-      navigator: Login(),
+      navigator: Home(),
       durationInSeconds: 3,
     );
   }
