@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/widgets/home/appbar2.dart';
 import 'package:recipe/widgets/home/categories.dart';
+import 'package:recipe/widgets/home/recipe_list.dart';
 import 'package:recipe/widgets/home/recommendation.dart';
 import 'package:recipe/widgets/home/search_bar.dart';
 
@@ -27,6 +28,10 @@ class Home extends StatelessWidget {
             //Recommendations
             buildSectionTitle('Recommendations'),
             RecommendationWidget(),
+
+            //Recipes List
+            buildSectionTitle('Recipes List'),
+            RecipeListWidget(),
           ],
         ),
       ),
