@@ -6,3 +6,10 @@ venv/
 ENV/ 
 env.bak/ 
 venv.bak/ 
+
+# Visual Studio Code related
+.classpath
+.project
+.settings/
+.vscode/
+.vs/
