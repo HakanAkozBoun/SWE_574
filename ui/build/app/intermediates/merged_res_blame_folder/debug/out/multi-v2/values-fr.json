@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\FA5685\\Desktop\\BOUN_SWE\\Semester 3\\SWE-574 SoftwareDevelopmentProcess\\CookPad\\build\\app\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-fr\\values-fr.xml",
+            "outputFile": "C:\\Users\\FA5685\\Desktop\\BOUN_SWE\\Semester 3\\SWE-574 SoftwareDevelopmentProcess\\CookPad\\SWE_574\\ui\\build\\app\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-fr\\values-fr.xml",
             "map": [
                 {
                     "source": "C:\\Users\\FA5685\\.gradle\\caches\\transforms-3\\acbce933e4b464a5224ed377a62db1f5\\transformed\\core-1.6.0\\res\\values-fr\\values-fr.xml",
