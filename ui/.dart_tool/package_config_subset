@@ -103,9 +103,15 @@ vm_service
 file:///C:/Users/Admin/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-13.0.0/
 file:///C:/Users/Admin/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-13.0.0/lib/
 recipe
+<<<<<<< HEAD
+2.18
+file:///C:/Users/FA5685/Desktop/BOUN_SWE/Semester%203/SWE-574%20SoftwareDevelopmentProcess/CookPad/SWE_574/ui/
+file:///C:/Users/FA5685/Desktop/BOUN_SWE/Semester%203/SWE-574%20SoftwareDevelopmentProcess/CookPad/SWE_574/ui/lib/
+=======
 3.3
 file:///D:/Boun/SWE%20574/main/SWE_574/ui/
 file:///D:/Boun/SWE%20574/main/SWE_574/ui/lib/
+>>>>>>> main
 sky_engine
 3.2
 file:///D:/Program%20Files/Flutter/flutter/bin/cache/pkg/sky_engine/
