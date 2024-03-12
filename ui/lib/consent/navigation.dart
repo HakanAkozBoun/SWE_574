@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/consent/colors.dart';
 import 'package:recipe/screen/home.dart';
-
+import 'package:recipe/screen/addPost.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -12,7 +12,7 @@ class Navigation extends StatefulWidget {
 
 class _NavigationState extends State<Navigation> {
   int index = 0;
-  List screen = [Home()];
+  List screen = [Home(), AddItemPage()];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +37,19 @@ class _NavigationState extends State<Navigation> {
                   size: 27,
                   color: index == 0 ? maincolor : Colors.grey,
                 ),
-              )
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    index = 1;
+                  });
+                },
+                child: Icon(
+                  Icons.add,
+                  size: 27,
+                  color: index == 1 ? maincolor : Colors.grey,
+                ),
+              ),
             ],
           ),
         ),
