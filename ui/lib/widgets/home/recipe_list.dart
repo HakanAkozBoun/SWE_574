@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../models/recipe.dart'; // assuming the Recipe class is defined in a separate file
+import '../../models/recipe.dart';
 
 class RecipeListWidget extends StatefulWidget {
   const RecipeListWidget({Key? key}) : super(key: key);
@@ -9,7 +9,7 @@ class RecipeListWidget extends StatefulWidget {
 }
 
 class _RecipeListWidgetState extends State<RecipeListWidget> {
-  late List<Recipe> recipes = []; // Initialize with an empty list
+  late List<Recipe> recipes = [];
 
   @override
   void initState() {
