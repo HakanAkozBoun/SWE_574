@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:recipe/models/category.dart';
+
 class CategoriesWidget extends StatefulWidget {
   const CategoriesWidget({super.key});
 
@@ -8,29 +10,46 @@ class CategoriesWidget extends StatefulWidget {
 }
 
 class _CategoriesWidgetState extends State<CategoriesWidget> {
-  final width = 70.0;
-  final height = 70.0;
+  late List<Category> categories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadCategories();
+  }
+
+  Future<void> loadCategories() async {
+    try {
+      final fetchedCategories = await Category.fetchCategories();
+      setState(() {
+        categories = fetchedCategories;
+      });
+    } catch (e) {
+      print('Error loading categories: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-        children: [
-          buildCategory('images/home/pizza.png', 'Category 1'),
-          buildCategory('images/home/burger.png', 'Category 2'),
-          buildCategory('images/home/drink.png', 'Category 3'),
-          buildCategory('images/home/salan.png', 'Category 4'),
-          buildCategory(
-            'images/home/biryani.png',
-            'Category 5',
-          ),
-        ],
+        children: categories.map((category) {
+          return buildCategory(
+            '../../images/1c.jpg',
+            category.name,
+            onTap: () {
+              print(category.name);
+            },
+          );
+        }).toList(),
       ),
     );
   }
 
   Widget buildCategory(String imagePath, String label, {VoidCallback? onTap}) {
+    final width = 70.0;
+    final height = 70.0;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
