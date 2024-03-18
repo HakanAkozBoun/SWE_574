@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../models/recipe.dart';
+import 'package:recipe/models/recipe.dart';
 
 class RecipeListWidget extends StatefulWidget {
   const RecipeListWidget({Key? key}) : super(key: key);
