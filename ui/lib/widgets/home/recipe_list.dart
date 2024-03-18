@@ -1,45 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:recipe/models/recipe.dart';
 
 class RecipeListWidget extends StatefulWidget {
-  const RecipeListWidget({super.key});
+  const RecipeListWidget({Key? key}) : super(key: key);
 
   @override
   _RecipeListWidgetState createState() => _RecipeListWidgetState();
 }
 
 class _RecipeListWidgetState extends State<RecipeListWidget> {
+  late List<Recipe> recipes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadRecipes();
+  }
+
+  Future<void> loadRecipes() async {
+    try {
+      final fetchedRecipes = await Recipe.fetchRecipes();
+      setState(() {
+        recipes = fetchedRecipes;
+      });
+    } catch (e) {
+      print('Error loading recipes: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         child: Column(
-          children: [
-            buildRecipeCard(
-              'Hot Burger',
-              'This is a description of the recipe',
-              '15 min',
-              'images/home/burger.png',
-            ),
-            buildRecipeCard(
-              'Pepperoni Pizza',
-              'This is a description of the recipe',
-              '30 min',
-              'images/home/pizza.png',
-            ),
-            buildRecipeCard(
-              'Biryani',
-              'This is a description of the recipe',
-              '45 min',
-              'images/home/biryani.png',
-            ),
-            buildRecipeCard(
-              'Salan',
-              'This is a description of the recipe',
-              '20 min',
-              'images/home/salan.png',
-            ),
-          ],
+          children: recipes.map((recipe) {
+            return buildRecipeCard(recipe.title, recipe.excerpt, '15 min',
+                '../../images/dinner1.jpg');
+          }).toList(),
         ),
       ),
     );
@@ -54,7 +52,7 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Container(
-        width: 380,
+        width: double.infinity,
         height: 150,
         decoration: BoxDecoration(
           color: Colors.white,
@@ -69,22 +67,27 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
           ],
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            InkWell(
-              onTap: () {
-                print('clicked');
-              },
-              child: Container(
-                alignment: Alignment.center,
-                child: Image.asset(
-                  imagePath,
-                  height: 120,
-                  width: 150,
+            SizedBox(
+              width: 120,
+              child: InkWell(
+                onTap: () {
+                  print('clicked');
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Image.asset(
+                    imagePath,
+                    height: 100,
+                    width: 100,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
-            SizedBox(
-              width: 190,
+            SizedBox(width: 10),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -92,14 +95,16 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 22,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     description,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
                     ),
                   ),
                   Row(
@@ -108,7 +113,7 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                       Text(
                         duration,
                         style: const TextStyle(
-                          fontSize: 20,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.orange,
                         ),
@@ -121,7 +126,7 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
