@@ -12,6 +12,11 @@ from django.forms.models import model_to_dict
 from django.core.files.storage import default_storage
 
 import base64
+
+# NEW IMPORTS
+from django.shortcuts import get_object_or_404
+from .models import UserBookmark
+
 # Create your views here.
 
 class blogApiView(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
@@ -252,3 +257,35 @@ def Login(request):
     return JsonResponse("Wrong User or Password", safe=False)
 
 
+# NEW VIEWS
+#---------------------------------------------------------------------------------------
+
+@api_view(['POST'])
+def bookmark_toggle(request):
+    try:
+        # user = request.user
+        user = get_object_or_404(User, pk=1)
+        blog_id = request.data.get('id')
+        blog_ = get_object_or_404(blog, pk=blog_id)
+        print(blog_)
+
+        user_bookmark = UserBookmark.objects.filter(user=user, blog=blog_)
+
+        if user_bookmark.exists():
+            user_bookmark.delete()
+            is_bookmarked = False
+            message = "Bookmark deleted successfully"
+        else:
+            UserBookmark.objects.create(user=user, blog=blog_)
+            is_bookmarked = True
+            message = "Bookmark created successfully"
+
+        bookmark_data = {
+            "success": True,
+            "is_bookmarked": is_bookmarked,
+            "message": message
+        }
+        return Response(bookmark_data)
+    except Exception as e:
+        error_message = f"Error toggling bookmark: {str(e)}"
+        return Response({"success": False, "error": error_message})
