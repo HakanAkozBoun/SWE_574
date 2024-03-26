@@ -1,183 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/consent/colors.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:recipe/widgets/home/faqs.dart';
+import 'package:recipe/widgets/home/logout.dart';
+import 'package:recipe/widgets/home/personal.dart';
+import 'package:recipe/widgets/home/nutritionalProfile.dart';
+import 'package:recipe/widgets/home/myRecipes.dart';
+import 'package:recipe/widgets/home/following.dart';
+import 'package:recipe/widgets/home/liked.dart';
+import 'package:recipe/widgets/home/settings.dart';
 
-String name = "Enes Engel";
-String mail = "enesengel@gmail.com";
-String description = "Hiç yemek yapmadım";
-String photoPath = "images/Enes.jpg";
+String photoPath = "images/dinner1.jpg";
 
 //fotograf secme ozellıgı eklenebilir
-class FAQs extends StatelessWidget {
-  final Uri _url = Uri.parse('https://www.cookpad.com/faq');
-  Future<void> _launchUrl() async {
-    if (!await launchUrl(_url)) {
-      throw Exception('Could not launch $_url');
-    }
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height *
-          0.5, // ekranın tamamını kaplamasın diye
-      child: Center(
-        child: ElevatedButton(
-          onPressed: _launchUrl,
-          child: Text('FREQUENTLY ASKED QUESTIONS'),
-        ),
-      ),
-    );
-  }
-}
-
-class Personal extends StatelessWidget {
-  List personalTileInfo = [name, mail, description];
-  List personalTileNames = ['Name', 'E-mail', 'Description'];
-
-  void EditPersonalInfo(BuildContext context, int index) {
-    TextEditingController chosenTextEditingController;
-    switch (index) {
-      case 0:
-        chosenTextEditingController = TextEditingController(text: name);
-        break;
-      case 1:
-        chosenTextEditingController = TextEditingController(text: mail);
-        break;
-      case 2:
-        chosenTextEditingController = TextEditingController(text: description);
-        break;
-      default: //burası degisebilir
-        chosenTextEditingController = TextEditingController(text: name);
-    }
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext bc) {
-        return Container(
-          height: MediaQuery.of(context).size.height *
-              0.5, // ekranın tamamını kaplamasın diye
-          child: Column(
-            children: [
-              SizedBox(height: 50),
-              Center(
-                child: TextField(
-                  controller: chosenTextEditingController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: personalTileNames[index],
-                  ),
-                  autofocus: true,
-                ),
-              ),
-              SizedBox(height: 70),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(width: 50),
-                  IconButton(
-                    iconSize: 100,
-                    icon: Icon(Icons.close, color: Colors.red),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  SizedBox(width: 50),
-                  IconButton(
-                    iconSize: 100,
-                    icon: Icon(Icons.check, color: Colors.green),
-                    onPressed: () {
-                      //bunlar eklenmeli
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: 3,
-      itemBuilder: (BuildContext context, int index) {
-        return ListTile(
-          leading: Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(100),
-            ),
-            child: Text(
-              personalTileNames[index],
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: font),
-            ),
-          ),
-          title: Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Text(
-              personalTileInfo[index],
-              style: TextStyle(fontSize: 17, color: font),
-            ),
-          ),
-          trailing: IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () => EditPersonalInfo(context, index),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class Logout extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height *
-          0.5, // ekranın tamamını kaplamasın diye
-      child: Column(
-        children: [
-          SizedBox(height: 50),
-          Center(
-            child: Text(
-              "Are you sure you want to log out?",
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: font, fontFamily: 'ro'),
-            ),
-          ),
-          SizedBox(height: 70),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(width: 50),
-              IconButton(
-                iconSize: 100,
-                icon: Icon(Icons.close, color: Colors.red),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              SizedBox(width: 50),
-              IconButton(
-                iconSize: 100,
-                icon: Icon(Icons.check, color: Colors.green),
-                onPressed: () {
-                  //bunlar eklenmeli
-                },
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
+// ignore: must_be_immutable
 class Profile extends StatelessWidget {
   Profile({super.key});
 
@@ -189,6 +25,10 @@ class Profile extends StatelessWidget {
   ];
   List<Icon> constIcons = [
     Icon(Icons.person, color: maincolor),
+    Icon(Icons.group, color: maincolor),
+    Icon(Icons.thumb_up, color: maincolor),
+    Icon(Icons.fitness_center, color: maincolor),
+    Icon(Icons.edit_document, color: maincolor),
     Icon(Icons.settings, color: maincolor),
     Icon(Icons.chat, color: maincolor),
     Icon(Icons.login, color: maincolor),
@@ -198,56 +38,105 @@ class Profile extends StatelessWidget {
     'Cuisines of expertise: ',
     'Graduated from: ',
   ];
-  List constTileNames = ['Personal', 'Settings', 'FAQs', 'Logout'];
+  List tileNamesInfo = [
+    'Özkardeşler kebap salonu',
+    'kebap',
+    'Bahçeşehir Üniversitesi Gastronomi bölümü',
+  ];
+  List constTileNames = [
+    'Personal',
+    'Following',
+    'Liked',
+    'Nutritional Profile',
+    'My Recipes',
+    'Settings',
+    'FAQs',
+    'Logout'
+  ];
+
   void _showStableSubPage(BuildContext context, int index) {
     Widget toBeOpened = FAQs();
+    Widget personal = Personal();
+    Widget following = Following();
+    Widget liked = Liked();
+    Widget nutritionalProfile = NutritionalProfile();
+    Widget myRecipes = MyRecipes();
+    Widget settings = Settings();
+    Widget faqs = FAQs();
+    Widget logout = Logout();
+    bool isFullPage = false;
     switch (index) {
-      case 0: //Personal
-        toBeOpened = Personal();
+      case 0:
+        toBeOpened = personal;
+        isFullPage = false;
         break;
-      case 1: //Settings
+      case 1:
+        toBeOpened = following;
+        isFullPage = true;
         break;
-      case 2: //FAQs
-        toBeOpened = FAQs();
-
+      case 2:
+        toBeOpened = liked;
+        isFullPage = false;
         break;
-      case 3: //Logout
-        toBeOpened = Logout();
+      case 3:
+        toBeOpened = nutritionalProfile;
+        isFullPage = true;
         break;
-      default: //belki throw exception yapılabilir
+      case 4:
+        toBeOpened = myRecipes;
+        isFullPage = true;
+        break;
+      case 5:
+        toBeOpened = settings;
+        isFullPage = true;
+        break;
+      case 6:
+        toBeOpened = faqs;
+        isFullPage = false;
+        break;
+      case 7:
+        toBeOpened = logout;
+        isFullPage = false;
+        break;
+      default:
+        isFullPage = false; //belki throw exception yapılabilir
     }
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return toBeOpened;
-        });
-    TextEditingController textEditingController =
-        TextEditingController(text: index.toString());
-    /* showModalBottomSheet(
-      context: context,
-      builder: (BuildContext bc) {
-        return Container(
-          height: MediaQuery.of(context).size.height *
-              0.5, // ekranın tamamını kaplamasın diye
-          child: Center(
-            child: TextField(
-              controller: textEditingController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: constTileNames[index],
-              ),
-              autofocus: true,
-              //child: Text( tileName),
-            ),
-          ),
-        );
-      },
-    );*/
+    if (isFullPage) {
+      Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => toBeOpened,
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              var begin = Offset(0.0, 1.0);
+              var end = Offset.zero;
+              var curve = Curves.ease;
+
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              var offsetAnimation = animation.drive(tween);
+
+              return SlideTransition(
+                position: offsetAnimation,
+                child: child,
+              );
+            },
+          ));
+    } else {
+      showModalBottomSheet(
+          context: context,
+          builder: (BuildContext bc) {
+            return toBeOpened;
+          });
+    }
+
+    //TextEditingController textEditingController =
+    //  TextEditingController(text: index.toString());
   }
 
   void _showSubPage(BuildContext context, int index) {
     TextEditingController textEditingController =
-        TextEditingController(text: tileNames[index]);
+        TextEditingController(text: tileNamesInfo[index]);
     showModalBottomSheet(
       context: context,
       builder: (BuildContext bc) {
@@ -302,7 +191,7 @@ class Profile extends StatelessWidget {
             style: TextStyle(fontSize: 18, color: font, fontFamily: 'ro'),
           ),
           Text(
-            'hiç yemek yapmadım',
+            "20 yıldır ocakbaşındayım, Adana ve İstanbul'da çalıştım",
             style: TextStyle(fontSize: 18, color: font, fontFamily: 'ro'),
           ),
           Padding(
@@ -312,63 +201,67 @@ class Profile extends StatelessWidget {
               thickness: 2,
             ),
           ),
-          ListView.builder(
-            // degisken ilk 3
-            shrinkWrap: true,
-            itemCount: 3,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                leading: Container(
-                  width: 37,
-                  height: 37,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+          Flexible(
+            child: ListView.builder(
+              // degisken ilk 3
+              shrinkWrap: true,
+              itemCount: 3,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  leading: Container(
+                    width: 37,
+                    height: 37,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: icons[index],
                   ),
-                  child: icons[index],
-                ),
-                title: Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    tileNames[index],
-                    style: TextStyle(fontSize: 17, color: font),
+                  title: Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      tileNames[index] + tileNamesInfo[index],
+                      style: TextStyle(fontSize: 17, color: font),
+                    ),
                   ),
-                ),
-                trailing: IconButton(
-                  icon: Icon(Icons.navigate_next),
-                  onPressed: () => _showSubPage(context, index),
-                ),
-              );
-            },
+                  trailing: IconButton(
+                    icon: Icon(Icons.navigate_next),
+                    onPressed: () => _showSubPage(context, index),
+                  ),
+                );
+              },
+            ),
           ),
-          ListView.builder(
-            // sabit kalacak son 4
-            shrinkWrap: true,
-            itemCount: 4,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                leading: Container(
-                  width: 37,
-                  height: 37,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+          Flexible(
+            child: ListView.builder(
+              // sabit kalacak son 8
+              shrinkWrap: true,
+              itemCount: 8,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  leading: Container(
+                    width: 37,
+                    height: 37,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: constIcons[index],
                   ),
-                  child: constIcons[index],
-                ),
-                title: Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    constTileNames[index],
-                    style: TextStyle(fontSize: 17, color: font),
+                  title: Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      constTileNames[index],
+                      style: TextStyle(fontSize: 17, color: font),
+                    ),
                   ),
-                ),
-                trailing: IconButton(
-                  icon: Icon(Icons.navigate_next),
-                  onPressed: () => _showStableSubPage(context, index),
-                ),
-              );
-            },
+                  trailing: IconButton(
+                    icon: Icon(Icons.navigate_next),
+                    onPressed: () => _showStableSubPage(context, index),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       )),
