@@ -186,13 +186,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'cookPad',
+        'NAME': '574',
         'USER': 'postgres',
-        'PASSWORD': '1',
+        'PASSWORD': 'postgres',
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
+
 
 # DATABASES = {
 #     'default': {

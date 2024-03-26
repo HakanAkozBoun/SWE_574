@@ -95,6 +95,36 @@ class blog(models.Model):
     def __str__(self):
         return self.title
 
+class FoodTable(models.Model):
+
+    fdc_id = models.IntegerField()
+    data_type = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+    food_category_id = models.CharField(null=True, blank=True, max_length=255)
+    publication_date = models.DateField()
+    
+    def __str__(self):
+        return self.description
+    
+class FoodNutrient(models.Model):
+
+    name = models.CharField(max_length=255, null=True, blank=True)
+    unit_name = models.CharField(max_length=255, null=True, blank=True)
+    nutrient_nbr = models.CharField(null=True, blank=True)
+    rank = models.IntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+    
+class FoundationFood(models.Model):
+
+    fdc_id = models.IntegerField()
+    NDB_number = models.IntegerField()
+    footnote = models.CharField(max_length=255) 
+
+class SampleFood(models.Model):
+
+    fdc_id = models.IntegerField()
 # NEW MODELS
 # -------------------------------------------------------------------------------------------
 class UserBookmark(models.Model):
