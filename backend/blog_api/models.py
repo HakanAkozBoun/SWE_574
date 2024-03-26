@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class food(models.Model):
     name = models.CharField(max_length=255)
@@ -124,3 +125,9 @@ class FoundationFood(models.Model):
 class SampleFood(models.Model):
 
     fdc_id = models.IntegerField()
+# NEW MODELS
+# -------------------------------------------------------------------------------------------
+class UserBookmark(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    blog = models.ForeignKey(blog, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
