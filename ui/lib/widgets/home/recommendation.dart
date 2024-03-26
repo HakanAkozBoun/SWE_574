@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipe/models/recipe.dart';
 
 class RecommendationWidget extends StatefulWidget {
   const RecommendationWidget({super.key});
@@ -8,8 +9,24 @@ class RecommendationWidget extends StatefulWidget {
 }
 
 class _RecommendationWidgetState extends State<RecommendationWidget> {
-  final width = 170.0;
-  final height = 250.0;
+  late List<Recommendation> recommendations = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadRecommendations();
+  }
+
+  Future<void> loadRecommendations() async {
+    try {
+      final fetchedRecommendations = await Recommendation.fetchRecommendation();
+      setState(() {
+        recommendations = fetchedRecommendations;
+      });
+    } catch (e) {
+      print('Error loading recommendations: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,30 +35,21 @@ class _RecommendationWidgetState extends State<RecommendationWidget> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
         child: Row(
-          children: [
-            buildRecommendation(
-              'images/home/burger.png',
-              'Hot Burger',
-              'This is a description of the recipe',
-              '30 min',
-            ),
-            buildRecommendation(
-              'images/home/pizza.png',
-              'Pepperoni Pizza',
-              'This is a description of the recipe',
-              '45 min',
-            ),
-            buildRecommendation(
-              'images/home/biryani.png',
-              'Biryani',
-              'This is a description of the recipe',
-              '15 min',
-            ),
-          ],
+          children: recommendations.map((recommendation) {
+            return buildRecommendation(
+              'recommendation.imagePath',
+              recommendation.title,
+              recommendation.description,
+              '10 min',
+            );
+          }).toList(),
         ),
       ),
     );
   }
+
+  final double width = 170.0;
+  final double height = 250.0;
 
   Widget buildRecommendation(
       String imagePath, String title, String description, String duration) {
@@ -65,47 +73,68 @@ class _RecommendationWidgetState extends State<RecommendationWidget> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                alignment: Alignment.center,
+              SizedBox(
+                height: 130,
                 child: Image.asset(
                   imagePath,
-                  height: 130,
+                  fit: BoxFit.contain,
                 ),
               ),
-              const SizedBox(height: 10), // Add this SizedBox for distance
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                description,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-              const SizedBox(height: 10), // Add this SizedBox for distance
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    duration,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange,
-                    ),
+              const SizedBox(height: 5),
+              SizedBox(
+                width: width - 20,
+                height: 20,
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
-                  const Icon(
-                    Icons.star,
-                    color: Color.fromRGBO(255, 152, 0, 1),
-                  )
-                ],
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(height: 5),
+              SizedBox(
+                width: width - 20,
+                height: 40,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    description,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: width - 20, // subtracting padding
+                height: 20,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      duration,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange,
+                      ),
+                    ),
+                    const Icon(
+                      Icons.star,
+                      color: Color.fromRGBO(255, 152, 0, 1),
+                    )
+                  ],
+                ),
               ),
             ],
           ),
