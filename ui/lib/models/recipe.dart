@@ -60,3 +60,43 @@ class Recipe {
     }
   }
 }
+
+class Recommendation {
+
+  static const String recipeUrl = BackendUrl.apiUrl + 'recommend/';
+
+  final String imagePath;
+  final String title;
+  final String description;
+  final String duration;
+
+  Recommendation({
+    required this.imagePath,
+    required this.title,
+    required this.description,
+    required this.duration,
+  });
+
+  factory Recommendation.fromJson(Map<String, dynamic> json) {
+    return Recommendation(
+      imagePath: json['imagePath'] ?? '',
+      title: json['title'] ?? '',
+      description: json['excerpt'] ?? '',
+      duration: json['duration'] ?? '',
+    );
+  }
+
+  static Future<List<Recommendation>> fetchRecommendation() async {
+    try {
+      final response = await http.get(Uri.parse(recipeUrl));
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        return data.map((json) => Recommendation.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load recommendations');
+      }
+    } catch (e) {
+      throw Exception('Failed to load recommendations');
+    }
+  }
+}
