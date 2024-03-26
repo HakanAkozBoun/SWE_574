@@ -17,6 +17,8 @@ import base64
 from django.shortcuts import get_object_or_404
 from .models import UserBookmark
 
+from .utils.recommendation import get_recommendations
+
 # Create your views here.
 
 class blogApiView(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
@@ -264,7 +266,7 @@ def Login(request):
 def bookmark_toggle(request):
     try:
         # user = request.user
-        user = get_object_or_404(User, pk=1)
+        user = get_object_or_404(User, pk=3)
         blog_id = request.data.get('id')
         blog_ = get_object_or_404(blog, pk=blog_id)
         print(blog_)
@@ -289,3 +291,10 @@ def bookmark_toggle(request):
     except Exception as e:
         error_message = f"Error toggling bookmark: {str(e)}"
         return Response({"success": False, "error": error_message})
+    
+@api_view(['GET'])
+def recommend_items(request):
+    request.user = User.objects.get(id=3)
+    recommendations = get_recommendations(request.user)
+    recommendationSerializer = blogSerializer(recommendations, many=True)
+    return Response(recommendationSerializer.data)
