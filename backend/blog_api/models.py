@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class food(models.Model):
     name = models.CharField(max_length=255)
@@ -137,13 +138,10 @@ class InputFood(models.Model):
     retention_code = models.CharField(null=True, blank=True, max_length=255)
     survey_flag = models.CharField(null=True, blank=True, max_length=255)
 
-class UserProfile(models.Model):
 
-    user = models.IntegerField()
-    age = models.IntegerField
-    weight = models.FloatField()
-    height = models.FloatField()
-    description = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='image', null=True, blank=True)
-    experience = models.IntegerField()
-    story = models.TextField(null=True, blank=True)
+# NEW MODELS
+# -------------------------------------------------------------------------------------------
+class UserBookmark(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    blog = models.ForeignKey(blog, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
