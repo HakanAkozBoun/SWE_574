@@ -109,7 +109,7 @@ class FoodNutrient(models.Model):
 
     name = models.CharField(max_length=255, null=True, blank=True)
     unit_name = models.CharField(max_length=255, null=True, blank=True)
-    nutrient_nbr = models.CharField(null=True, blank=True)
+    nutrient_nbr = models.CharField(null=True, blank=True, max_length=255)
     rank = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
@@ -124,3 +124,26 @@ class FoundationFood(models.Model):
 class SampleFood(models.Model):
 
     fdc_id = models.IntegerField()
+
+class InputFood(models.Model):
+
+    fdc_id = models.IntegerField(null=True, blank=True)
+    seq_num = models.IntegerField(null=True, blank=True)
+    amount = models.FloatField(null=True, blank=True)
+    sr_description = models.CharField(null=True, blank=True, max_length=255)
+    unit = models.CharField(null=True, blank=True, max_length=255)
+    portion_description = models.CharField(null=True, blank=True, max_length=255)
+    gram_weight = models.FloatField(null=True, blank=True)
+    retention_code = models.CharField(null=True, blank=True, max_length=255)
+    survey_flag = models.CharField(null=True, blank=True, max_length=255)
+
+class UserProfile(models.Model):
+
+    user = models.IntegerField()
+    age = models.IntegerField
+    weight = models.FloatField()
+    height = models.FloatField()
+    description = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='image', null=True, blank=True)
+    experience = models.IntegerField()
+    story = models.TextField(null=True, blank=True)
