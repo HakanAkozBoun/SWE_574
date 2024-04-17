@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/screen/splash.dart';
+import 'package:recipe/screen/tracking_diet_goals.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: SplashPage(),
+      home: TrackingDietGoals(),
       debugShowCheckedModeBanner: false,
     );
   }

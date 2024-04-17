@@ -1,0 +1,148 @@
+[
+    {
+      "nutritionName": "Protein",
+      "goal": 50,
+      "currentIntake": 60
+    },
+    {
+      "nutritionName": "Carbohydrates",
+      "goal": 200,
+      "currentIntake": 350
+    },
+    {
+      "nutritionName": "Fat",
+      "goal": 70,
+      "currentIntake": 40
+    },
+    {
+      "nutritionName": "Calories",
+      "goal": 2000,
+      "currentIntake": 1800
+    },
+    {
+      "nutritionName": "Fiber",
+      "goal": 25,
+      "currentIntake": 20
+    },
+    {
+      "nutritionName": "Sugar",
+      "goal": 50,
+      "currentIntake": 30
+    },
+    {
+      "nutritionName": "Sodium",
+      "goal": 2300,
+      "currentIntake": 2000
+    },
+    {
+      "nutritionName": "Cholesterol",
+      "goal": 300,
+      "currentIntake": 200
+    },
+    {
+      "nutritionName": "Vitamin A",
+      "goal": 900,
+      "currentIntake": 800
+    },
+    {
+      "nutritionName": "Vitamin C",
+      "goal": 90,
+      "currentIntake": 80
+    },
+    {
+      "nutritionName": "Calcium",
+      "goal": 1300,
+      "currentIntake": 1200
+    },
+    {
+      "nutritionName": "Iron",
+      "goal": 18,
+      "currentIntake": 15
+    },
+    {
+      "nutritionName": "Potassium",
+      "goal": 4700,
+      "currentIntake": 4500
+    },
+    {
+      "nutritionName": "Vitamin D",
+      "goal": 20,
+      "currentIntake": 15
+    },
+    {
+      "nutritionName": "Vitamin E",
+      "goal": 15,
+      "currentIntake": 10
+    },
+    {
+      "nutritionName": "Vitamin K",
+      "goal": 120,
+      "currentIntake": 110
+    },
+    {
+      "nutritionName": "Thiamin",
+      "goal": 1.2,
+      "currentIntake": 1
+    },
+    {
+      "nutritionName": "Riboflavin",
+      "goal": 1.3,
+      "currentIntake": 1.1
+    },
+    {
+      "nutritionName": "Niacin",
+      "goal": 16,
+      "currentIntake": 14
+    },
+    {
+      "nutritionName": "Vitamin B6",
+      "goal": 1.7,
+      "currentIntake": 1.5
+    },
+    {
+      "nutritionName": "Folate",
+      "goal": 400,
+      "currentIntake": 350
+    },
+    {
+      "nutritionName": "Vitamin B12",
+      "goal": 2.4,
+      "currentIntake": 2.2
+    },
+    {
+      "nutritionName": "Biotin",
+      "goal": 30,
+      "currentIntake": 25
+    },
+    {
+      "nutritionName": "Pantothenic Acid",
+      "goal": 5,
+      "currentIntake": 4
+    },
+    {
+      "nutritionName": "Phosphorus",
+      "goal": 1250,
+      "currentIntake": 1200
+    },
+    {
+      "nutritionName": "Iodine",
+      "goal": 150,
+      "currentIntake": 140
+    },
+    {
+      "nutritionName": "Magnesium",
+      "goal": 420,
+      "currentIntake": 400
+    },
+    {
+      "nutritionName": "Zinc",
+      "goal": 11,
+      "currentIntake": 10
+    },
+    {
+      "nutritionName": "Selenium",
+      "goal": 55,
+      "currentIntake": 50
+    }
+  ]
+  
