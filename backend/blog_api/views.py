@@ -105,7 +105,7 @@ def File(request):
 def CreateBlog(request):
     _id=request.data.get('id')
     if _id is None:
-        _blog = blog.objects.create(category_id=request.data.get('category'), title=request.data.get('title'),slug=request.data.get('slug'),excerpt=request.data.get('excerpt'),content=request.data.get('content'),contentTwo=request.data.get('contentTwo'),image=request.data.get('image'),ingredients=request.data.get('ingredients'),postlabel=request.data.get('postlabel'))
+        _blog = blog.objects.create(category_id=request.data.get('category'), title=request.data.get('title'),slug=request.data.get('slug'),excerpt=request.data.get('excerpt'),content=request.data.get('content'),contentTwo=request.data.get('contentTwo'),preparationtime=request.data.get('preparationtime'),cookingtime=request.data.get('cookingtime'),rate=request.data.get('rate'),image=request.data.get('image'),ingredients=request.data.get('ingredients'),postlabel=request.data.get('postlabel'))
     else:
         _blog = blog.objects.filter(id=_id).first()
         if _blog is None:
@@ -116,6 +116,10 @@ def CreateBlog(request):
         _blog.excerpt=request.data.get('excerpt')
         _blog.content=request.data.get('content')
         _blog.contentTwo=request.data.get('contentTwo')
+        _blog.preparationtime=request.data.get('preparationtime')
+        _blog.cookingtime=request.data.get('cookingtime')
+        _blog.rate=request.data.get('rate')
+        _blog.bookmark=request.data.get('bookmark')
         _blog.image=request.data.get('image')
         _blog.ingredients=request.data.get('ingredients')
         _blog.postlabel=request.data.get('postlabel')
