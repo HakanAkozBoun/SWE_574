@@ -98,6 +98,9 @@ class blog(models.Model):
     excerpt = models.CharField(max_length=255, default='')
     content = models.TextField(null=True, blank=True)
     contentTwo = models.TextField(null=True, blank=True)
+    preparationtime = models.TextField(null=True, blank=True)
+    cookingtime = models.TextField(null=True, blank=True)
+    rate = models.TextField(null=True, blank=True)
     image = models.ImageField(upload_to='image', null=True, blank=True)
     ingredients = models.TextField(null=True, blank=True)
     postlabel = models.CharField(
@@ -105,6 +108,7 @@ class blog(models.Model):
 
     def __str__(self):
         return self.title
+
 
 
 class Follower(models.Model):
@@ -129,3 +133,55 @@ class Bookmark(models.Model):
         recipe, on_delete=models.CASCADE, related_name='bookmarked_by')
 
 '''
+=======
+class FoodTable(models.Model):
+
+    fdc_id = models.IntegerField()
+    data_type = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+    food_category_id = models.CharField(null=True, blank=True, max_length=255)
+    publication_date = models.DateField()
+    
+    def __str__(self):
+        return self.description
+    
+class FoodNutrient(models.Model):
+
+    name = models.CharField(max_length=255, null=True, blank=True)
+    unit_name = models.CharField(max_length=255, null=True, blank=True)
+    nutrient_nbr = models.CharField(null=True, blank=True, max_length=255)
+    rank = models.IntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+    
+class FoundationFood(models.Model):
+
+    fdc_id = models.IntegerField()
+    NDB_number = models.IntegerField()
+    footnote = models.CharField(max_length=255) 
+
+class SampleFood(models.Model):
+
+    fdc_id = models.IntegerField()
+
+class InputFood(models.Model):
+
+    fdc_id = models.IntegerField(null=True, blank=True)
+    seq_num = models.IntegerField(null=True, blank=True)
+    amount = models.FloatField(null=True, blank=True)
+    sr_description = models.CharField(null=True, blank=True, max_length=255)
+    unit = models.CharField(null=True, blank=True, max_length=255)
+    portion_description = models.CharField(null=True, blank=True, max_length=255)
+    gram_weight = models.FloatField(null=True, blank=True)
+    retention_code = models.CharField(null=True, blank=True, max_length=255)
+    survey_flag = models.CharField(null=True, blank=True, max_length=255)
+
+
+# NEW MODELS
+# -------------------------------------------------------------------------------------------
+class UserBookmark(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    blog = models.ForeignKey(blog, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+

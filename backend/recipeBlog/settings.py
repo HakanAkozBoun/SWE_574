@@ -25,8 +25,10 @@ BACKEND_ALLOWED_HOSTS = env("BACKEND_ALLOWED_HOSTS", default="localhost,157.230.
 BACKEND_CORS_ALLOWED_ORIGINS = env("BACKEND_CORS_ALLOWED_ORIGINS", default="http://localhost:3000,http://157.230.125.5:3000").strip()
 
 ALLOWED_HOSTS = ['*']
+CORS_ORIGIN_ALLOW_ALL = True
+
 #ALLOWED_HOSTS = BACKEND_ALLOWED_HOSTS.split(",")
-CORS_ALLOWED_ORIGINS = BACKEND_CORS_ALLOWED_ORIGINS.split(",")
+# CORS_ALLOWED_ORIGINS = BACKEND_CORS_ALLOWED_ORIGINS.split(",")
 
 
 # Application definition
@@ -181,21 +183,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #     },
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'cookPad',
-#         'USER': 'postgres',
-#         'PASSWORD': '1',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
-
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': '574',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }

@@ -12,6 +12,13 @@ from django.forms.models import model_to_dict
 from django.core.files.storage import default_storage
 
 import base64
+
+# NEW IMPORTS
+from django.shortcuts import get_object_or_404
+from .models import UserBookmark
+
+from .utils.recommendation import get_recommendations
+
 # Create your views here.
 
 
@@ -171,32 +178,36 @@ def File(request):
     return JsonResponse(file_name, safe=False)
 
 
+
 @api_view(['POST'])
 def CreateBlog(request):
-    _id = request.data.get('id')
+    _id=request.data.get('id')
     if _id is None:
-        _blog = blog.objects.create(category_id=request.data.get('category'), title=request.data.get('title'), slug=request.data.get('slug'), excerpt=request.data.get('excerpt'), content=request.data.get(
-            'content'), contentTwo=request.data.get('contentTwo'), image=request.data.get('image'), ingredients=request.data.get('ingredients'), postlabel=request.data.get('postlabel'))
+        _blog = blog.objects.create(category_id=request.data.get('category'), title=request.data.get('title'),slug=request.data.get('slug'),excerpt=request.data.get('excerpt'),content=request.data.get('content'),contentTwo=request.data.get('contentTwo'),preparationtime=request.data.get('preparationtime'),cookingtime=request.data.get('cookingtime'),rate=request.data.get('rate'),image=request.data.get('image'),ingredients=request.data.get('ingredients'),postlabel=request.data.get('postlabel'))
     else:
         _blog = blog.objects.filter(id=_id).first()
         if _blog is None:
-            return JsonResponse("id not found", safe=False)
-        _blog.category_id = request.data.get('category')
-        _blog.title = request.data.get('title')
-        _blog.slug = request.data.get('slug')
-        _blog.excerpt = request.data.get('excerpt')
-        _blog.content = request.data.get('content')
-        _blog.contentTwo = request.data.get('contentTwo')
-        _blog.image = request.data.get('image')
-        _blog.ingredients = request.data.get('ingredients')
-        _blog.postlabel = request.data.get('postlabel')
+             return JsonResponse("id not found", safe=False)
+        _blog.category_id=request.data.get('category')
+        _blog.title=request.data.get('title')
+        _blog.slug=request.data.get('slug')
+        _blog.excerpt=request.data.get('excerpt')
+        _blog.content=request.data.get('content')
+        _blog.contentTwo=request.data.get('contentTwo')
+        _blog.preparationtime=request.data.get('preparationtime')
+        _blog.cookingtime=request.data.get('cookingtime')
+        _blog.rate=request.data.get('rate')
+        _blog.bookmark=request.data.get('bookmark')
+        _blog.image=request.data.get('image')
+        _blog.ingredients=request.data.get('ingredients')
+        _blog.postlabel=request.data.get('postlabel')
         _blog.save()
 
         list = recipe.objects.filter(blog=_id)
         for item in list:
             item.delete()
 
-    list = request.data.get('list')
+    list=request.data.get('list')
     conversion = unitconversion.objects.all()
     for item in list:
         metricamount = item.get('amount')
@@ -205,9 +216,9 @@ def CreateBlog(request):
         if _conversion:
             metricamount /= _conversion.first().ivalue
             metricunit = _conversion.first().metric
-        recipe.objects.create(food=item.get('food'), unit=item.get('unit'), amount=item.get(
-            'amount'), blog=_blog.id, metricamount=metricamount, metricunit=metricunit)
+        recipe.objects.create(food=item.get('food'), unit=item.get('unit'), amount=item.get('amount'), blog=_blog.id, metricamount=metricamount, metricunit=metricunit)
     return JsonResponse(_blog.id, safe=False)
+
 
 
 @api_view(['GET'])
@@ -348,3 +359,46 @@ def Login(request):
     if user is not None:
         return JsonResponse(json.loads('{"token":"' + base64.b64encode(bytes(username + ":" + password, 'utf-8')).decode('utf-8') + '", "id":' + str(user.id) + ',"name":"' + user.username + '"}'), safe=False)
     return JsonResponse("Wrong User or Password", safe=False)
+
+
+
+# NEW VIEWS
+#---------------------------------------------------------------------------------------
+
+@api_view(['POST'])
+def bookmark_toggle(request):
+    try:
+        # user = request.user
+        user = get_object_or_404(User, pk=3)
+        blog_id = request.data.get('id')
+        blog_ = get_object_or_404(blog, pk=blog_id)
+        print(blog_)
+
+        user_bookmark = UserBookmark.objects.filter(user=user, blog=blog_)
+
+        if user_bookmark.exists():
+            user_bookmark.delete()
+            is_bookmarked = False
+            message = "Bookmark deleted successfully"
+        else:
+            UserBookmark.objects.create(user=user, blog=blog_)
+            is_bookmarked = True
+            message = "Bookmark created successfully"
+
+        bookmark_data = {
+            "success": True,
+            "is_bookmarked": is_bookmarked,
+            "message": message
+        }
+        return Response(bookmark_data)
+    except Exception as e:
+        error_message = f"Error toggling bookmark: {str(e)}"
+        return Response({"success": False, "error": error_message})
+    
+@api_view(['GET'])
+def recommend_items(request):
+    request.user = User.objects.get(id=3)
+    recommendations = get_recommendations(request.user)
+    recommendationSerializer = blogSerializer(recommendations, many=True)
+    return Response(recommendationSerializer.data)
+
