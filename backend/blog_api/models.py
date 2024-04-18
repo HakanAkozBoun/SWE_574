@@ -110,7 +110,6 @@ class blog(models.Model):
         return self.title
 
 
-
 class Follower(models.Model):
     follower_user = models.ForeignKey(
         User,
@@ -133,7 +132,8 @@ class Bookmark(models.Model):
         recipe, on_delete=models.CASCADE, related_name='bookmarked_by')
 
 '''
-=======
+
+
 class FoodTable(models.Model):
 
     fdc_id = models.IntegerField()
@@ -141,10 +141,11 @@ class FoodTable(models.Model):
     description = models.CharField(max_length=255)
     food_category_id = models.CharField(null=True, blank=True, max_length=255)
     publication_date = models.DateField()
-    
+
     def __str__(self):
         return self.description
-    
+
+
 class FoodNutrient(models.Model):
 
     name = models.CharField(max_length=255, null=True, blank=True)
@@ -154,16 +155,19 @@ class FoodNutrient(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+
 class FoundationFood(models.Model):
 
     fdc_id = models.IntegerField()
     NDB_number = models.IntegerField()
-    footnote = models.CharField(max_length=255) 
+    footnote = models.CharField(max_length=255)
+
 
 class SampleFood(models.Model):
 
     fdc_id = models.IntegerField()
+
 
 class InputFood(models.Model):
 
@@ -172,7 +176,8 @@ class InputFood(models.Model):
     amount = models.FloatField(null=True, blank=True)
     sr_description = models.CharField(null=True, blank=True, max_length=255)
     unit = models.CharField(null=True, blank=True, max_length=255)
-    portion_description = models.CharField(null=True, blank=True, max_length=255)
+    portion_description = models.CharField(
+        null=True, blank=True, max_length=255)
     gram_weight = models.FloatField(null=True, blank=True)
     retention_code = models.CharField(null=True, blank=True, max_length=255)
     survey_flag = models.CharField(null=True, blank=True, max_length=255)
@@ -184,4 +189,3 @@ class UserBookmark(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     blog = models.ForeignKey(blog, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-
