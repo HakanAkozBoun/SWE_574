@@ -10,6 +10,8 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate
 from django.forms.models import model_to_dict
 from django.core.files.storage import default_storage
+from django.shortcuts import render, redirect
+from .forms import SignUpForm
 
 import base64
 
@@ -298,3 +300,14 @@ def recommend_items(request):
     recommendations = get_recommendations(request.user)
     recommendationSerializer = blogSerializer(recommendations, many=True)
     return Response(recommendationSerializer.data)
+
+
+def register(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = SignUpForm()
+    return render(request, 'register.html', {'form': form})  #doğru yere yönlendirme yapılacak

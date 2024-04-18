@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('fdc_id', models.IntegerField()),
                 ('data_type', models.CharField(max_length=255)),
                 ('description', models.CharField(max_length=255)),
-                ('food_category_id', models.CharField(blank=True, null=True)),
+                ('food_category_id', models.CharField(blank=True, null=True, max_length=255)),
                 ('publication_date', models.DateField()),
             ],
         ),

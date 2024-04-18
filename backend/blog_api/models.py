@@ -110,7 +110,7 @@ class FoodNutrient(models.Model):
 
     name = models.CharField(max_length=255, null=True, blank=True)
     unit_name = models.CharField(max_length=255, null=True, blank=True)
-    nutrient_nbr = models.CharField(null=True, blank=True)
+    nutrient_nbr = models.CharField(null=True, blank=True, max_length=255)
     rank = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
@@ -131,3 +131,14 @@ class UserBookmark(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     blog = models.ForeignKey(blog, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    age = models.IntegerField()
+    weight = models.FloatField()
+    height = models.FloatField()
+    description = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='image', null=True, blank=True)
+    experience = models.IntegerField()
+    story = models.TextField(null=True, blank=True)
