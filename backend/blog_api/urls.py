@@ -1,5 +1,6 @@
 from django.urls import path, include
 from .views import recommend_items, blogApiView, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateUser, CreateCategory, GetCategoryList, Login,CreateBlog,GetBlog,UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, RegisterAPIView
+from .views import recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateUser, CreateCategory, GetCategoryList, Login,CreateBlog,GetBlog,UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle
 from rest_framework import routers
 from django.contrib.auth import views as auth_views
 from two_factor.urls import urlpatterns as tf_urls
@@ -34,6 +35,7 @@ urlpatterns = [
     path('UpdateUser/', UpdateUser, name='UpdateUser'),
     path('GetUser/', GetUser, name='GetUser'),
     path('File/', File, name='File'),
+    path('BlogList/', GetBlogList, name='BlogList'),
 
     # NEW URLS
     path('bookmark/', bookmark_toggle, name='bookmark_toggle'),

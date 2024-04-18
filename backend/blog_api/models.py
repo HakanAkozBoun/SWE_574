@@ -88,6 +88,9 @@ class blog(models.Model):
     excerpt = models.CharField(max_length=255, default='')
     content = models.TextField(null=True, blank=True)
     contentTwo = models.TextField(null=True, blank=True)
+    preparationtime = models.TextField(null=True, blank=True)
+    cookingtime = models.TextField(null=True, blank=True)
+    rate = models.TextField(null=True, blank=True)
     image = models.ImageField(upload_to='image', null=True, blank=True)
     ingredients = models.TextField(null=True, blank=True)
     postlabel = models.CharField(max_length=100, choices=POST_CHOICES,null=True, blank=True)
@@ -125,6 +128,20 @@ class FoundationFood(models.Model):
 class SampleFood(models.Model):
 
     fdc_id = models.IntegerField()
+
+class InputFood(models.Model):
+
+    fdc_id = models.IntegerField(null=True, blank=True)
+    seq_num = models.IntegerField(null=True, blank=True)
+    amount = models.FloatField(null=True, blank=True)
+    sr_description = models.CharField(null=True, blank=True, max_length=255)
+    unit = models.CharField(null=True, blank=True, max_length=255)
+    portion_description = models.CharField(null=True, blank=True, max_length=255)
+    gram_weight = models.FloatField(null=True, blank=True)
+    retention_code = models.CharField(null=True, blank=True, max_length=255)
+    survey_flag = models.CharField(null=True, blank=True, max_length=255)
+
+
 # NEW MODELS
 # -------------------------------------------------------------------------------------------
 class UserBookmark(models.Model):
