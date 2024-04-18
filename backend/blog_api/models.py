@@ -98,9 +98,9 @@ class blog(models.Model):
 class FoodTable(models.Model):
 
     fdc_id = models.IntegerField()
-    data_type = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
-    food_category_id = models.CharField(null=True, blank=True, max_length=255)
+    data_type = models.CharField(max_length=1000)
+    description = models.CharField(max_length=1000)
+    food_category_id = models.CharField(null=True, blank=True, max_length=1000)
     publication_date = models.DateField()
     
     def __str__(self):
