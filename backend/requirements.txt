@@ -26,3 +26,5 @@ python-gettext==4.0
 django-environ==0.9.0
 psycopg2-binary==2.9.9
 pillow
+django-two-factor-auth
+phonenumbers

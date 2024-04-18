@@ -1,6 +1,6 @@
 import json
 from .models import blog, category, unittype, unititem, food, recipe, unitconversion, unit, nutrition, comment
-from .serializers import blogSerializer, categorySerializer
+from .serializers import blogSerializer, categorySerializer, UserSerializer
 from rest_framework import viewsets
 from rest_framework import mixins
 from rest_framework.response import Response
@@ -11,9 +11,11 @@ from django.contrib.auth import authenticate
 from django.forms.models import model_to_dict
 from django.core.files.storage import default_storage
 from django.shortcuts import render, redirect
-from .forms import SignUpForm
-
 import base64
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from rest_framework.views import APIView
+
 
 # NEW IMPORTS
 from django.shortcuts import get_object_or_404
@@ -302,12 +304,15 @@ def recommend_items(request):
     return Response(recommendationSerializer.data)
 
 
-def register(request):
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('login')
-    else:
-        form = SignUpForm()
-    return render(request, 'register.html', {'form': form})  #doğru yere yönlendirme yapılacak
+class RegisterAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, format=None):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            if user:
+                return Response({"message": "Kullanıcı oluşturuldu", "user_id": user.id}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"message": "Kullanıcı oluşturulamadı"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

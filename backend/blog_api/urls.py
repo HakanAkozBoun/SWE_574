@@ -1,8 +1,8 @@
 from django.urls import path, include
-from .views import recommend_items, blogApiView, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateUser, CreateCategory, GetCategoryList, Login,CreateBlog,GetBlog,UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle
+from .views import recommend_items, blogApiView, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateUser, CreateCategory, GetCategoryList, Login,CreateBlog,GetBlog,UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, RegisterAPIView
 from rest_framework import routers
-from .views import register
 from django.contrib.auth import views as auth_views
+from two_factor.urls import urlpatterns as tf_urls
 
 router = routers.SimpleRouter()
 router.register('blogs', blogApiView, basename='blogs')
@@ -39,10 +39,10 @@ urlpatterns = [
     path('bookmark/', bookmark_toggle, name='bookmark_toggle'),
     path('recommend/', recommend_items, name='recommend_items'),
     
-    #sign in register
-    path('register/', register, name='register'),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/', include('two_factor.urls')),
-    path('login/', auth_views.LoginView.as_view(), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    # sign in/register
+    path('api/register/', RegisterAPIView.as_view(), name='api_register'),
+    path('login/', auth_views.LoginView.as_view(), name='login'),  # Giriş sayfası
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),  # Çıkış işlemi
+    path('accounts/', include('django.contrib.auth.urls')),  # Django auth için URL
+    path('accounts/two_factor/', include(tf_urls)),  # İki faktörlü auth için URL
 ]

@@ -142,3 +142,6 @@ class UserProfile(models.Model):
     image = models.ImageField(upload_to='image', null=True, blank=True)
     experience = models.IntegerField()
     story = models.TextField(null=True, blank=True)
+    diet_goals = models.CharField(max_length=255, null=True, blank=True)
+    food_allergies = models.CharField(max_length=255, null=True, blank=True)
+    gender = models.CharField(max_length=255, null=True, blank=True)
