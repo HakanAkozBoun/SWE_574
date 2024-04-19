@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import Avg
+
 class food(models.Model):
     name = models.CharField(max_length=255)
     unit = models.IntegerField()
@@ -90,13 +93,24 @@ class blog(models.Model):
     contentTwo = models.TextField(null=True, blank=True)
     preparationtime = models.TextField(null=True, blank=True)
     cookingtime = models.TextField(null=True, blank=True)
-    rate = models.TextField(null=True, blank=True)
+    avg_rating = models.FloatField(default=0)
     image = models.ImageField(upload_to='image', null=True, blank=True)
     ingredients = models.TextField(null=True, blank=True)
     postlabel = models.CharField(max_length=100, choices=POST_CHOICES,null=True, blank=True)
 
     def __str__(self):
         return self.title
+    
+    def calculate_avg_rating(self):
+        ratings = UserRating.objects.filter(recipe=self)
+        avg_rating = ratings.aggregate(Avg('value'))['value__avg']
+
+        if avg_rating is not None:
+            self.avg_rating = avg_rating
+        else:
+            self.avg_rating = 0
+
+        self.save()
 
 class FoodTable(models.Model):
 
@@ -147,4 +161,10 @@ class InputFood(models.Model):
 class UserBookmark(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     blog = models.ForeignKey(blog, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class UserRating(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(blog, on_delete=models.CASCADE)
+    value = models.PositiveIntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(5)])
     created_at = models.DateTimeField(auto_now_add=True)

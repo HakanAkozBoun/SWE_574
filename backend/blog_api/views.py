@@ -1,5 +1,5 @@
 import json
-from .models import blog, category, unittype, unititem, food, recipe, unitconversion, unit, nutrition, comment
+from .models import UserRating, blog, category, unittype, unititem, food, recipe, unitconversion, unit, nutrition, comment
 from .serializers import blogSerializer, categorySerializer
 from rest_framework import viewsets
 from rest_framework import mixins
@@ -302,3 +302,34 @@ def recommend_items(request):
     recommendations = get_recommendations(request.user)
     recommendationSerializer = blogSerializer(recommendations, many=True)
     return Response(recommendationSerializer.data)
+
+@api_view(['POST'])
+def add_rating(request):
+    try:
+        # Load JSON data from the request body
+        data = json.loads(request.body.decode('utf-8'))
+        print("data",data)
+        user_id = request.user.id
+        user = get_object_or_404(User, pk=3)
+        recipe_id = data.get('recipe_id')
+        recipe = get_object_or_404(blog, pk=2)
+        value = data.get('value')
+
+        # Check if the user has already rated the recipe
+        existing_rating = UserRating.objects.filter(user=user, recipe=recipe).first()
+
+        if existing_rating:
+            # Update the existing rating
+            existing_rating.value = value
+            existing_rating.save()
+        else:
+            # Create a new rating
+            UserRating.objects.create(user=user, recipe=recipe, value=value)
+
+        # Recalculate the average rating
+        recipe.calculate_avg_rating()
+
+        return Response({'avg_rating': recipe.avg_rating, 'success': True})
+    except Exception as e:
+        print(f"Error submitting rating: {e}")
+        return Response({"success": False, "error": str(e)})

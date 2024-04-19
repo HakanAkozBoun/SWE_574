@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateUser, CreateCategory, GetCategoryList, Login,CreateBlog,GetBlog,UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle
+from .views import add_rating, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateUser, CreateCategory, GetCategoryList, Login,CreateBlog,GetBlog,UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle
 from rest_framework import routers
 
 router = routers.SimpleRouter()
@@ -37,4 +37,6 @@ urlpatterns = [
     # NEW URLS
     path('bookmark/', bookmark_toggle, name='bookmark_toggle'),
     path('recommend/', recommend_items, name='recommend_items'),
+    path('add_rating/', add_rating, name='add_rating'),
+
 ]
