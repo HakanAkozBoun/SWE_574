@@ -12,7 +12,7 @@ class Navigation extends StatefulWidget {
 
 class _NavigationState extends State<Navigation> {
   int index = 0;
-  List screen = [Home(),AddItemPage(edit: 0,item:{},id: 0)];
+  List screen = [Home(), AddItemPage(edit: 0, item: {}, id: 0)];
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -221,7 +221,7 @@ class _AddItemPageState extends State<AddItemPage> {
       // _inputController6.text = widget.item["ingredients"];
       _inputController7.text = widget.item["preparationtime"];
       _inputController8.text = widget.item["cookingtime"];
-      _inputController9.text = widget.item["rate"];
+      // _inputController9.text = widget.item["rate"];
 
       print(widget.item["id"]);
 
@@ -235,7 +235,8 @@ class _AddItemPageState extends State<AddItemPage> {
 
       fetchData4(widget.item["id"]).then((data) {
         for (int i = 0; i < data.length; i++) {
-          var a = foodList!.where((element) => element["name"] == data[i]["food"].toString())
+          var a = foodList!
+              .where((element) => element["name"] == data[i]["food"].toString())
               .first["unitid"];
           final newItem = FoodItemList(
               food: data[i]["food"].toString(),
@@ -342,10 +343,10 @@ class _AddItemPageState extends State<AddItemPage> {
               controller: _inputController8,
               decoration: InputDecoration(labelText: 'Cooking Time'),
             ),
-            TextFormField(
-              controller: _inputController9,
-              decoration: InputDecoration(labelText: 'Rate'),
-            ),
+            // TextFormField(
+            //   controller: _inputController9,
+            //   decoration: InputDecoration(labelText: 'Rate'),
+            // ),
             // TextFormField(
             //   controller: _inputController10,
             //   decoration: InputDecoration(labelText: 'Bookmark'),
@@ -499,7 +500,7 @@ class _AddItemPageState extends State<AddItemPage> {
                       "contentTwo": _inputController5.text,
                       "preparationtime": _inputController7.text,
                       "cookingtime": _inputController8.text,
-                      "rate": _inputController9.text,
+                      "rate": 5,
                       // "bookmark": _inputController10.text,
                       "image": "image/" +
                           image2.toString().split("/")[7].split("'")[0],
@@ -531,7 +532,7 @@ class _AddItemPageState extends State<AddItemPage> {
                         "contentTwo": _inputController5.text,
                         "preparationtime": _inputController7.text,
                         "cookingtime": _inputController8.text,
-                        "rate": _inputController9.text,
+                        "rate": 5,
                         // "bookmark": _inputController10.text,
                         "image": image2 != null
                             ? "image/" +
@@ -561,7 +562,7 @@ class _AddItemPageState extends State<AddItemPage> {
                         "contentTwo": _inputController5.text,
                         "preparationtime": _inputController7.text,
                         "cookingtime": _inputController8.text,
-                        "rate": _inputController9.text,
+                        "rate": 5,
                         // "bookmark": _inputController10.text,
                         "image": "image/" +
                             image2.toString().split("/")[7].split("'")[0],
