@@ -1,6 +1,6 @@
 import json
-from .models import UserRating, blog, category, unittype, unititem, food, recipe, unitconversion, unit, nutrition, comment
-from .serializers import blogSerializer, categorySerializer
+from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, comment, UserBookmark, UserRating, UserProfile, InputFood
+from .serializers import blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer
 from rest_framework import viewsets
 from rest_framework import mixins
 from rest_framework.response import Response
@@ -10,16 +10,11 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate
 from django.forms.models import model_to_dict
 from django.core.files.storage import default_storage
-
 import base64
-
-# NEW IMPORTS
 from django.shortcuts import get_object_or_404
 from .models import UserBookmark
-
 from .utils.recommendation import get_recommendations
 
-# Create your views here.
 
 class blogApiView(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     queryset = blog.objects.all()
@@ -333,3 +328,11 @@ def add_rating(request):
     except Exception as e:
         print(f"Error submitting rating: {e}")
         return Response({"success": False, "error": str(e)})
+    
+class UserProfileViewSet(viewsets.ModelViewSet):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+
+class InputFoodViewSet(viewsets.ModelViewSet):
+    queryset = InputFood.objects.all()
+    serializer_class = InputFoodSerializer
