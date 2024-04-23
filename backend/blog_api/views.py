@@ -80,17 +80,18 @@ def GetFollowingUserList(request):
 @api_view(['GET'])
 def GetBookmarkedRecipes(request):
 
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': 'Authentication required'}, status=401)
-
-    bookmarks = UserBookmark.objects.filter(
-        user=request.user).select_related('blog')
+   # if not request.user.is_authenticated:
+    #    return JsonResponse({'error': 'Authentication required'}, status=401)
+    user = get_object_or_404(User, pk=1)
+   # bookmarks = UserBookmark.objects.filter(
+    #    user=request.user).select_related('blog')
+    bookmarks = UserBookmark.objects.filter(user=user).select_related('blog')
 
     bookmarked_recipes_list = [{
         'id': bookmark.blog.id,
         'title': bookmark.blog.title,
         # recipelere desc ekleyebiliriz istersek
-        #'description': bookmark.bookmarked_recipe.description,
+        # 'description': bookmark.bookmarked_recipe.description,
     } for bookmark in bookmarks]
 
     return JsonResponse(bookmarked_recipes_list, safe=False)
@@ -99,7 +100,7 @@ def GetBookmarkedRecipes(request):
 @api_view(['GET'])
 def GetSelfRecipes(request):
 
-    #çalışması için user id olması lazım recipe modelinde
+    # çalışması için user id olması lazım recipe modelinde
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Authentication required'}, status=401)
 
@@ -178,36 +179,36 @@ def File(request):
     return JsonResponse(file_name, safe=False)
 
 
-
 @api_view(['POST'])
 def CreateBlog(request):
-    _id=request.data.get('id')
+    _id = request.data.get('id')
     if _id is None:
-        _blog = blog.objects.create(category_id=request.data.get('category'), title=request.data.get('title'),slug=request.data.get('slug'),excerpt=request.data.get('excerpt'),content=request.data.get('content'),contentTwo=request.data.get('contentTwo'),preparationtime=request.data.get('preparationtime'),cookingtime=request.data.get('cookingtime'),rate=request.data.get('rate'),image=request.data.get('image'),ingredients=request.data.get('ingredients'),postlabel=request.data.get('postlabel'))
+        _blog = blog.objects.create(category_id=request.data.get('category'), title=request.data.get('title'), slug=request.data.get('slug'), excerpt=request.data.get('excerpt'), content=request.data.get('content'), contentTwo=request.data.get(
+            'contentTwo'), preparationtime=request.data.get('preparationtime'), cookingtime=request.data.get('cookingtime'), rate=request.data.get('rate'), image=request.data.get('image'), ingredients=request.data.get('ingredients'), postlabel=request.data.get('postlabel'))
     else:
         _blog = blog.objects.filter(id=_id).first()
         if _blog is None:
-             return JsonResponse("id not found", safe=False)
-        _blog.category_id=request.data.get('category')
-        _blog.title=request.data.get('title')
-        _blog.slug=request.data.get('slug')
-        _blog.excerpt=request.data.get('excerpt')
-        _blog.content=request.data.get('content')
-        _blog.contentTwo=request.data.get('contentTwo')
-        _blog.preparationtime=request.data.get('preparationtime')
-        _blog.cookingtime=request.data.get('cookingtime')
-        _blog.rate=request.data.get('rate')
-        _blog.bookmark=request.data.get('bookmark')
-        _blog.image=request.data.get('image')
-        _blog.ingredients=request.data.get('ingredients')
-        _blog.postlabel=request.data.get('postlabel')
+            return JsonResponse("id not found", safe=False)
+        _blog.category_id = request.data.get('category')
+        _blog.title = request.data.get('title')
+        _blog.slug = request.data.get('slug')
+        _blog.excerpt = request.data.get('excerpt')
+        _blog.content = request.data.get('content')
+        _blog.contentTwo = request.data.get('contentTwo')
+        _blog.preparationtime = request.data.get('preparationtime')
+        _blog.cookingtime = request.data.get('cookingtime')
+        _blog.rate = request.data.get('rate')
+        _blog.bookmark = request.data.get('bookmark')
+        _blog.image = request.data.get('image')
+        _blog.ingredients = request.data.get('ingredients')
+        _blog.postlabel = request.data.get('postlabel')
         _blog.save()
 
         list = recipe.objects.filter(blog=_id)
         for item in list:
             item.delete()
 
-    list=request.data.get('list')
+    list = request.data.get('list')
     conversion = unitconversion.objects.all()
     for item in list:
         metricamount = item.get('amount')
@@ -216,9 +217,9 @@ def CreateBlog(request):
         if _conversion:
             metricamount /= _conversion.first().ivalue
             metricunit = _conversion.first().metric
-        recipe.objects.create(food=item.get('food'), unit=item.get('unit'), amount=item.get('amount'), blog=_blog.id, metricamount=metricamount, metricunit=metricunit)
+        recipe.objects.create(food=item.get('food'), unit=item.get('unit'), amount=item.get(
+            'amount'), blog=_blog.id, metricamount=metricamount, metricunit=metricunit)
     return JsonResponse(_blog.id, safe=False)
-
 
 
 @api_view(['GET'])
@@ -361,9 +362,8 @@ def Login(request):
     return JsonResponse("Wrong User or Password", safe=False)
 
 
-
 # NEW VIEWS
-#---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 
 @api_view(['POST'])
 def bookmark_toggle(request):
@@ -394,11 +394,11 @@ def bookmark_toggle(request):
     except Exception as e:
         error_message = f"Error toggling bookmark: {str(e)}"
         return Response({"success": False, "error": error_message})
-    
+
+
 @api_view(['GET'])
 def recommend_items(request):
     request.user = User.objects.get(id=3)
     recommendations = get_recommendations(request.user)
     recommendationSerializer = blogSerializer(recommendations, many=True)
     return Response(recommendationSerializer.data)
-

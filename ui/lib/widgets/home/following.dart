@@ -1,15 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:recipe/models/userProfile.dart';
 import 'otherProfiles.dart';
 import 'testUser.dart';
 
-class Following extends StatelessWidget {
-  final List<TestUser> followedUsers = [
-    TestUser(
-        id: '1',
-        username: 'User1',
-        profileImageUrl: "./images/dinner0.jpg",
-        description: 'User1Description'),
-  ];
+class Following extends StatefulWidget {
+  late UserProfile currentUser;
+  Following(this.currentUser, {Key? key}) : super(key: key);
+
+  @override
+  State<Following> createState() => _FollowingState();
+}
+
+class _FollowingState extends State<Following> {
+  late List<UserProfile> followingUsers = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadFollowingUsers();
+  }
+
+  Future<void> loadFollowingUsers() async {
+    try {
+      final fetchedFollowingUsers = await UserProfile.fetchFollowingUsers();
+      setState(() {
+        followingUsers = fetchedFollowingUsers;
+      });
+    } catch (e) {
+      print('Error loading following users: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,29 +38,28 @@ class Following extends StatelessWidget {
         title: Text('Followed Accounts'),
       ),
       body: ListView.builder(
-        itemCount: followedUsers.length,
+        itemCount: followingUsers.length,
         itemBuilder: (context, index) {
-          TestUser user = followedUsers[index];
+          UserProfile user = followingUsers[index];
           return Card(
             child: ListTile(
               leading: CircleAvatar(
-                backgroundImage: AssetImage(user.profileImageUrl),
+                backgroundImage: AssetImage(user.image),
               ),
               title: RichText(
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text:
-                          '${user.username} ', // Add a space at the end for separation
+                      text: '${user.user.username} ',
                       style: TextStyle(
-                        color: Colors.black, // Your username text color
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
-                      text:':     ${user.description} ',
+                      text: ':     ${user.description} ',
                       style: TextStyle(
-                        color: Colors.grey, // Your additional info text color
+                        color: Colors.grey,
                       ),
                     ),
                   ],

@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/consent/colors.dart';
-
-
-String name = "Enes Engel";
-String mail = "en esengel@gmail.com";
-String description = "Hiç yemek yapmadım";
+import 'package:recipe/models/userProfile.dart';
 
 // ignore: must_be_immutable
 class Personal extends StatelessWidget {
-  List personalTileInfo = [name, mail, description];
+  
+  late UserProfile currentUser;
+  Personal(this.currentUser, {Key? key}) : super(key: key);
+  late String name=currentUser.user.name;
+  late String mail=currentUser.user.email;
+  late String description =currentUser.description ;
+  late List personalTileInfo = [name, mail, description];
   List personalTileNames = ['Name', 'E-mail', 'Description'];
 
+  
+  
   void EditPersonalInfo(BuildContext context, int index) {
     TextEditingController chosenTextEditingController;
     switch (index) {
