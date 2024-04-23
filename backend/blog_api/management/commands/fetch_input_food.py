@@ -16,7 +16,7 @@ def save_food_data_from_csv(csv_filepath):
         reader = csv.DictReader(csvfile)
         for row in reader:
             InputFood.objects.create(
-                fdc_id=row['fdc_id'],
+                fdc_id=int(row['fdc_id']),
                 seq_num=row['seq_num'],
                 amount=row['amount'],
                 sr_description=row['sr_description'],

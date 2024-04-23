@@ -112,6 +112,7 @@ class blog(models.Model):
 
         self.save()
 
+
 class FoodTable(models.Model):
 
     fdc_id = models.IntegerField()
@@ -123,25 +124,46 @@ class FoodTable(models.Model):
     def __str__(self):
         return self.description
     
-class FoodNutrient(models.Model):
 
-    name = models.CharField(max_length=255, null=True, blank=True)
-    unit_name = models.CharField(max_length=255, null=True, blank=True)
-    nutrient_nbr = models.CharField(null=True, blank=True, max_length=255)
-    rank = models.IntegerField(null=True, blank=True)
-
-    def __str__(self):
-        return self.name
-    
 class FoundationFood(models.Model):
 
     fdc_id = models.IntegerField()
     NDB_number = models.IntegerField()
     footnote = models.CharField(max_length=255) 
 
+
 class SampleFood(models.Model):
 
     fdc_id = models.IntegerField()
+
+
+class UserBookmark(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    blog = models.ForeignKey(blog, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class UserRating(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(blog, on_delete=models.CASCADE)
+    value = models.PositiveIntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(5)])
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+
+class FoodNutrientTable(models.Model):
+    fdc_id = models.IntegerField(null=True, blank=True, default=0)
+    nutrient_id = models.IntegerField()
+    amount = models.FloatField()
+    data_points = models.CharField(max_length=255)
+    data_points = models.CharField(max_length=255, blank=True, null=True)
+    derivation_id = models.IntegerField()
+    min = models.CharField(blank=True, null=True, max_length=255)
+    max = models.CharField(blank=True, null=True, max_length=255)
+    median = models.CharField(blank=True, null=True, max_length=255)
+    loq = models.CharField(blank=True, null=True, max_length=255)
+    footnote = models.CharField(max_length=255, blank=True, null=True)
+    min_year_acquired = models.CharField(blank=True, null=True, max_length=255)
+
 
 class InputFood(models.Model):
 
@@ -155,16 +177,19 @@ class InputFood(models.Model):
     retention_code = models.CharField(null=True, blank=True, max_length=255)
     survey_flag = models.CharField(null=True, blank=True, max_length=255)
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    age = models.IntegerField()
+    weight = models.FloatField()
+    height = models.FloatField()
+    description = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='image', null=True, blank=True)
+    experience = models.IntegerField()
+    story = models.TextField(null=True, blank=True)
+    diet_goals = models.CharField(max_length=255, null=True, blank=True)
+    food_allergies = models.ManyToManyField(InputFood, related_name='allergic_users', blank=True)
+    gender = models.CharField(max_length=255, null=True, blank=True)
+    graduated_from = models.CharField(max_length=255, null=True, blank=True)
+    cuisines_of_expertise = models.CharField(max_length=255, null=True, blank=True)
+    working_at = models.CharField(max_length=255, null=True, blank=True)
 
-# NEW MODELS
-# -------------------------------------------------------------------------------------------
-class UserBookmark(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    blog = models.ForeignKey(blog, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-class UserRating(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    recipe = models.ForeignKey(blog, on_delete=models.CASCADE)
-    value = models.PositiveIntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(5)])
-    created_at = models.DateTimeField(auto_now_add=True)
