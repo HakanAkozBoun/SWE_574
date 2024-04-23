@@ -14,6 +14,7 @@ import base64
 from django.shortcuts import get_object_or_404
 from .models import UserBookmark
 from .utils.recommendation import get_recommendations
+from rest_framework import views
 
 
 class blogApiView(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
@@ -329,10 +330,10 @@ def add_rating(request):
         print(f"Error submitting rating: {e}")
         return Response({"success": False, "error": str(e)})
     
-class UserProfileViewSet(viewsets.ModelViewSet):
+class UserProfileView(views.APIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
 
-class InputFoodViewSet(viewsets.ModelViewSet):
+class InputFoodView(views.APIView):
     queryset = InputFood.objects.all()
     serializer_class = InputFoodSerializer
