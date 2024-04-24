@@ -203,6 +203,7 @@ class _AddItemPageState extends State<AddItemPage> {
   TextEditingController _inputController8 = TextEditingController();
   TextEditingController _inputController9 = TextEditingController();
   // TextEditingController _inputController10 = TextEditingController();
+  TextEditingController _inputController10 = TextEditingController();
 
   final TextEditingController foodController = TextEditingController();
   final TextEditingController unitController = TextEditingController();
@@ -222,6 +223,7 @@ class _AddItemPageState extends State<AddItemPage> {
       _inputController7.text = widget.item["preparationtime"];
       _inputController8.text = widget.item["cookingtime"];
       // _inputController9.text = widget.item["rate"];
+      _inputController10.text = widget.item["serving"];
 
       print(widget.item["id"]);
 
@@ -342,6 +344,10 @@ class _AddItemPageState extends State<AddItemPage> {
             TextFormField(
               controller: _inputController8,
               decoration: InputDecoration(labelText: 'Cooking Time'),
+            ),
+            TextFormField(
+              controller: _inputController10,
+              decoration: InputDecoration(labelText: ''),
             ),
             // TextFormField(
             //   controller: _inputController9,
@@ -500,7 +506,9 @@ class _AddItemPageState extends State<AddItemPage> {
                       "contentTwo": _inputController5.text,
                       "preparationtime": _inputController7.text,
                       "cookingtime": _inputController8.text,
-                      "rate": 5,
+                      "avg_rating": 5,
+                      "userid": 1,
+                      "serving": _inputController10.text,
                       // "bookmark": _inputController10.text,
                       "image": "image/" +
                           image2.toString().split("/")[7].split("'")[0],
@@ -532,7 +540,9 @@ class _AddItemPageState extends State<AddItemPage> {
                         "contentTwo": _inputController5.text,
                         "preparationtime": _inputController7.text,
                         "cookingtime": _inputController8.text,
-                        "rate": 5,
+                        "avg_rating": 5,
+                        "userid": 1,
+                        "serving": _inputController10.text,
                         // "bookmark": _inputController10.text,
                         "image": image2 != null
                             ? "image/" +
@@ -562,7 +572,9 @@ class _AddItemPageState extends State<AddItemPage> {
                         "contentTwo": _inputController5.text,
                         "preparationtime": _inputController7.text,
                         "cookingtime": _inputController8.text,
-                        "rate": 5,
+                        "avg_rating": 5,
+                        "userid": 1,
+                        "serving": _inputController10.text,
                         // "bookmark": _inputController10.text,
                         "image": "image/" +
                             image2.toString().split("/")[7].split("'")[0],
