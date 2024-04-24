@@ -245,7 +245,7 @@ class _AddItemPageState extends State<AddItemPage> {
       _inputController7.text = widget.item["preparationtime"];
       _inputController8.text = widget.item["cookingtime"];
       // _inputController9.text = widget.item["rate"];
-      _inputController10.text = widget.item["serving"];
+      _inputController10.text = widget.item["serving"].toString();
 
       print(widget.item["id"]);
 
@@ -436,7 +436,7 @@ class _AddItemPageState extends State<AddItemPage> {
                     });
                   },
                   decoration: InputDecoration(
-                    hintText: 'En az 3 karakter giriniz',
+                    hintText: 'Search Food...',
                   ),
                 ),
                 DropdownButton<String>(
