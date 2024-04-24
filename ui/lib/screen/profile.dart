@@ -1,28 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/consent/colors.dart';
+import 'package:recipe/models/userProfile.dart';
 import 'package:recipe/widgets/home/faqs.dart';
 import 'package:recipe/widgets/home/logout.dart';
 import 'package:recipe/widgets/home/personal.dart';
 import 'package:recipe/widgets/home/nutritionalProfile.dart';
 import 'package:recipe/widgets/home/myRecipes.dart';
 import 'package:recipe/widgets/home/following.dart';
-import 'package:recipe/widgets/home/liked.dart';
+import 'package:recipe/widgets/home/bookmarked.dart';
 import 'package:recipe/widgets/home/settings.dart';
-
-String photoPath = "images/dinner1.jpg";
 
 //fotograf secme ozellıgı eklenebilir
 
 // ignore: must_be_immutable
-class Profile extends StatelessWidget {
+class Profile extends StatefulWidget {
   Profile({super.key});
 
   @override
+  State<Profile> createState() => _ProfileState();
+}
+
+class _ProfileState extends State<Profile> {
+  late UserProfile currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    loadCurrentUser();
+  }
+
+  Future<void> loadCurrentUser() async {
+    try {
+      final fetchedUser = await UserProfile.fetchCurrentUser();
+      setState(() {
+        currentUser = fetchedUser;
+      });
+    } catch (e) {
+      print('Error loading current user: $e');
+    }
+  }
+
   List<Icon> icons = [
     Icon(Icons.work, color: maincolor),
     Icon(Icons.restaurant, color: maincolor),
     Icon(Icons.school, color: maincolor),
   ];
+
   List<Icon> constIcons = [
     Icon(Icons.person, color: maincolor),
     Icon(Icons.group, color: maincolor),
@@ -33,20 +56,23 @@ class Profile extends StatelessWidget {
     Icon(Icons.chat, color: maincolor),
     Icon(Icons.login, color: maincolor),
   ];
+
   List tileNames = [
     'Working at: ',
     'Cuisines of expertise: ',
     'Graduated from: ',
   ];
+
   List tileNamesInfo = [
     'Özkardeşler kebap salonu',
     'kebap',
     'Bahçeşehir Üniversitesi Gastronomi bölümü',
   ];
+
   List constTileNames = [
     'Personal',
     'Following',
-    'Liked',
+    'Bookmarked',
     'Nutritional Profile',
     'My Recipes',
     'Settings',
@@ -56,11 +82,11 @@ class Profile extends StatelessWidget {
 
   void _showStableSubPage(BuildContext context, int index) {
     Widget toBeOpened = FAQs();
-    Widget personal = Personal();
-    Widget following = Following();
-    Widget liked = Liked();
+    Widget personal = Personal(currentUser);
+    Widget following = Following(currentUser);
+    Widget bookmarked = Bookmarked(currentUser);
     Widget nutritionalProfile = NutritionalProfile();
-    Widget myRecipes = MyRecipes();
+    Widget myRecipes = MyRecipes(currentUser);
     Widget settings = Settings();
     Widget faqs = FAQs();
     Widget logout = Logout();
@@ -75,7 +101,7 @@ class Profile extends StatelessWidget {
         isFullPage = true;
         break;
       case 2:
-        toBeOpened = liked;
+        toBeOpened = bookmarked;
         isFullPage = false;
         break;
       case 3:
@@ -178,8 +204,7 @@ class Profile extends StatelessWidget {
                   padding: const EdgeInsets.all(4.0),
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundImage:
-                        AssetImage(photoPath), //buraya image ekleyeceğim
+                    backgroundImage: AssetImage(currentUser.image),
                   ),
                 ),
               ),
@@ -187,11 +212,11 @@ class Profile extends StatelessWidget {
           ),
           SizedBox(height: 10),
           Text(
-            'Enes Engel',
+            currentUser.user.username,
             style: TextStyle(fontSize: 18, color: font, fontFamily: 'ro'),
           ),
           Text(
-            "20 yıldır ocakbaşındayım, Adana ve İstanbul'da çalıştım",
+            currentUser.description,
             style: TextStyle(fontSize: 18, color: font, fontFamily: 'ro'),
           ),
           Padding(

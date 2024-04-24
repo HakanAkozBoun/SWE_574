@@ -2,30 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:recipe/models/userProfile.dart';
 import 'package:recipe/models/recipe.dart';
 
-class MyRecipes extends StatefulWidget {
+class Bookmarked extends StatefulWidget {
   late UserProfile currentUser;
-  MyRecipes(this.currentUser, {Key? key}) : super(key: key);
+  Bookmarked(this.currentUser, {Key? key}) : super(key: key);
   @override
-  State<MyRecipes> createState() => _BookmarkedState();
+  State<Bookmarked> createState() => _BookmarkedState();
 }
 
-class _BookmarkedState extends State<MyRecipes> {
-  late List<Recipe> myRecipes = [];
+class _BookmarkedState extends State<Bookmarked> {
+  late List<Recipe> bookmarkedRecipes = [];
 
   @override
   void initState() {
     super.initState();
-    loadMyRecipes();
+    loadBookmarkedRecipes();
   }
 
-  Future<void> loadMyRecipes() async {
+  Future<void> loadBookmarkedRecipes() async {
     try {
-      final fetchedMyRecipes = await UserProfile.fetchSelfRecipes();
+      final fetchedBookmarkedRecipes =
+          await UserProfile.fetchBookmarkedRecipes();
       setState(() {
-        myRecipes = fetchedMyRecipes;
+        bookmarkedRecipes = fetchedBookmarkedRecipes;
       });
     } catch (e) {
-      print('Error loading own recipes : $e');
+      print('Error loading bookmarked recipes: $e');
     }
   }
 
@@ -35,7 +36,7 @@ class _BookmarkedState extends State<MyRecipes> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         child: Column(
-          children: myRecipes.map((recipe) {
+          children: bookmarkedRecipes.map((recipe) {
             return buildRecipeCard(recipe.title, recipe.excerpt, '15 min',
                 '../../images/dinner1.jpg');
           }).toList(),
