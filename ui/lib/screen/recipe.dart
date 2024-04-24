@@ -155,7 +155,7 @@ class _Recipe extends State<Recipe> {
   }
 
   Widget _getbody() {
-    int say = int.parse(fetchedData["avg_rating"] ?? "5");
+    int say = int.parse(fetchedData["avg_rating"].round().toString() ?? "5");
     return Wrap(
       children: [
         Container(
@@ -197,7 +197,7 @@ class _Recipe extends State<Recipe> {
                 child: Row(
                   children: [
                     Text(
-                      "Serving : " + fetchedData["serving"],
+                      "Serving : " + fetchedData["serving"].toString(),
                       style: TextStyle(
                         fontSize: 16,
                         color: font,
