@@ -37,7 +37,7 @@ class Recipe extends StatefulWidget {
 class _Recipe extends State<Recipe> {
   Map<String, dynamic> fetchedData = {};
   Map<String, dynamic> nutritionData = {};
-  int rate = 5;
+  int avg_rating = 5;
 
   @override
   void initState() {
@@ -155,7 +155,7 @@ class _Recipe extends State<Recipe> {
   }
 
   Widget _getbody() {
-    int say = int.parse(fetchedData["rate"] ?? "5");
+    int say = int.parse(fetchedData["avg_rating"].round().toString() ?? "5");
     return Wrap(
       children: [
         Container(
@@ -182,6 +182,22 @@ class _Recipe extends State<Recipe> {
                   children: [
                     Text(
                       "Cooking Time : " + fetchedData["cookingtime"],
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: font,
+                        fontFamily: 'ro',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: Row(
+                  children: [
+                    Text(
+                      "Serving : " + fetchedData["serving"].toString(),
                       style: TextStyle(
                         fontSize: 16,
                         color: font,

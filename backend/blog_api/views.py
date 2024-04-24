@@ -1,6 +1,8 @@
 import json
-from .models import blog, category, unittype, unititem, food, recipe, unitconversion, unit, nutrition, comment, Follower, UserBookmark
-from .serializers import blogSerializer, categorySerializer
+
+from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood
+from .serializers import blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer
+
 from rest_framework import viewsets
 from rest_framework import mixins
 from rest_framework.response import Response
@@ -10,16 +12,12 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate
 from django.forms.models import model_to_dict
 from django.core.files.storage import default_storage
-
 import base64
-
-# NEW IMPORTS
 from django.shortcuts import get_object_or_404
 from .models import UserBookmark
-
 from .utils.recommendation import get_recommendations
+from rest_framework import views
 
-# Create your views here.
 
 
 class blogApiView(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
@@ -183,25 +181,27 @@ def File(request):
 def CreateBlog(request):
     _id = request.data.get('id')
     if _id is None:
-        _blog = blog.objects.create(category_id=request.data.get('category'), title=request.data.get('title'), slug=request.data.get('slug'), excerpt=request.data.get('excerpt'), content=request.data.get('content'), contentTwo=request.data.get(
-            'contentTwo'), preparationtime=request.data.get('preparationtime'), cookingtime=request.data.get('cookingtime'), rate=request.data.get('rate'), image=request.data.get('image'), ingredients=request.data.get('ingredients'), postlabel=request.data.get('postlabel'))
+
+        _blog = blog.objects.create(category_id=request.data.get('category'), title=request.data.get('title'),slug=request.data.get('slug'),excerpt=request.data.get('excerpt'),content=request.data.get('content'),contentTwo=request.data.get('contentTwo'),avg_rating=request.data.get('avg_rating'),serving=request.data.get('serving'),userid=request.data.get('userid'),preparationtime=request.data.get('preparationtime'),cookingtime=request.data.get('cookingtime'),image=request.data.get('image'),ingredients=request.data.get('ingredients'),postlabel=request.data.get('postlabel'))
     else:
         _blog = blog.objects.filter(id=_id).first()
         if _blog is None:
-            return JsonResponse("id not found", safe=False)
-        _blog.category_id = request.data.get('category')
-        _blog.title = request.data.get('title')
-        _blog.slug = request.data.get('slug')
-        _blog.excerpt = request.data.get('excerpt')
-        _blog.content = request.data.get('content')
-        _blog.contentTwo = request.data.get('contentTwo')
-        _blog.preparationtime = request.data.get('preparationtime')
-        _blog.cookingtime = request.data.get('cookingtime')
-        _blog.rate = request.data.get('rate')
-        _blog.bookmark = request.data.get('bookmark')
-        _blog.image = request.data.get('image')
-        _blog.ingredients = request.data.get('ingredients')
-        _blog.postlabel = request.data.get('postlabel')
+             return JsonResponse("id not found", safe=False)
+        _blog.category_id=request.data.get('category')
+        _blog.title=request.data.get('title')
+        _blog.slug=request.data.get('slug')
+        _blog.excerpt=request.data.get('excerpt')
+        _blog.content=request.data.get('content')
+        _blog.contentTwo=request.data.get('contentTwo')
+        _blog.preparationtime=request.data.get('preparationtime')
+        _blog.cookingtime=request.data.get('cookingtime')
+        _blog.avg_rating=request.data.get('avg_rating')
+        _blog.image=request.data.get('image')
+        _blog.ingredients=request.data.get('ingredients')
+        _blog.postlabel=request.data.get('postlabel')
+        _blog.userid=request.data.get('userid')
+        _blog.serving=request.data.get('serving')               
+
         _blog.save()
 
         list = recipe.objects.filter(blog=_id)
@@ -244,7 +244,10 @@ def GetFood(request):
 @api_view(['GET'])
 def GetFoodList(request):
     list = []
-    current = food.objects.all()
+    filter = request.GET.get('filter')
+    if filter is None:
+        filter = ''
+    current = food.objects.filter(name__contains=filter)[:10].all()
     unit = unittype.objects.values_list('name', flat=True).all()
     for item in current:
         list.append({"id": item.id, "unitid": item.unit,
@@ -306,6 +309,11 @@ def GetNutrition(request):
     protein = 0
     iron = 0
     carbonhydrates = 0
+    sugars = 0
+    fiber = 0
+    vitamina = 0
+    vitaminb = 0
+    vitamind = 0
     for i in _recipe:
         __nutrition = _nutrition.filter(food=i.food).first()
         if __nutrition:
@@ -316,7 +324,12 @@ def GetNutrition(request):
             protein += __nutrition.protein * i.metricamount
             iron += __nutrition.iron * i.metricamount
             carbonhydrates += __nutrition.carbonhydrates * i.metricamount
-    return JsonResponse(json.loads('{"blog":"' + str(_blog.title) + '","blogid":' + str(_blog.id) + ',"calorie":' + str(calorie) + ',"fat":' + str(fat) + ',"sodium":' + str(sodium) + ',"calcium":' + str(calcium) + ',"protein":' + str(protein) + ',"iron":' + str(iron) + ',"carbonhydrates":' + str(carbonhydrates) + '}'), safe=False)
+            sugars += __nutrition.sugars * i.metricamount
+            fiber += __nutrition.fiber * i.metricamount
+            vitamina += __nutrition.vitamina * i.metricamount
+            vitaminb += __nutrition.vitaminb * i.metricamount
+            vitamind += __nutrition.vitamind * i.metricamount                                                            
+    return JsonResponse(json.loads('{"blog":"' + str(_blog.title) + '","blogid":' + str(_blog.id) + ',"calorie":' + str(calorie) + ',"vitamind":' + str(vitamind) + ',"vitaminb":' + str(vitaminb) + ',"vitamina":' + str(vitamina) + ',"fiber":' + str(fiber) + ',"sugars":' + str(sugars) + ',"fat":' + str(fat) + ',"sodium":' + str(sodium) + ',"calcium":' + str(calcium) + ',"protein":' + str(protein) + ',"iron":' + str(iron) + ',"carbonhydrates":' + str(carbonhydrates) + '}'), safe=False)
 
 
 @api_view(['GET'])
@@ -402,3 +415,44 @@ def recommend_items(request):
     recommendations = get_recommendations(request.user)
     recommendationSerializer = blogSerializer(recommendations, many=True)
     return Response(recommendationSerializer.data)
+
+
+@api_view(['POST'])
+def add_rating(request):
+    try:
+        # Load JSON data from the request body
+        data = json.loads(request.body.decode('utf-8'))
+        print("data",data)
+        user_id = request.user.id
+        user = get_object_or_404(User, pk=3)
+        recipe_id = data.get('recipe_id')
+        recipe = get_object_or_404(blog, pk=2)
+        value = data.get('value')
+
+        # Check if the user has already rated the recipe
+        existing_rating = UserRating.objects.filter(user=user, recipe=recipe).first()
+
+        if existing_rating:
+            # Update the existing rating
+            existing_rating.value = value
+            existing_rating.save()
+        else:
+            # Create a new rating
+            UserRating.objects.create(user=user, recipe=recipe, value=value)
+
+        # Recalculate the average rating
+        recipe.calculate_avg_rating()
+
+        return Response({'avg_rating': recipe.avg_rating, 'success': True})
+    except Exception as e:
+        print(f"Error submitting rating: {e}")
+        return Response({"success": False, "error": str(e)})
+    
+class UserProfileView(views.APIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+
+class InputFoodView(views.APIView):
+    queryset = InputFood.objects.all()
+    serializer_class = InputFoodSerializer
+

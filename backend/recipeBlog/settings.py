@@ -85,16 +85,16 @@ WSGI_APPLICATION = 'recipeBlog.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.psycopg2',
-#         'NAME': 'cookPad',
-#         'USER': 'postgres',
-#         'PASSWORD': '1',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
+DATABASES = {
+   'default': {
+       'ENGINE': 'django.db.backends.postgresql_psycopg2',
+       'NAME': 'cookPad',
+       'USER': 'postgres',
+       'PASSWORD': '1',
+       'HOST': 'localhost',
+       'PORT': '5432',
+   }
+}
 
 # DATABASES = {
 #     'default': {
@@ -185,6 +185,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #     },
 # }
 
+
 # DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -205,6 +206,18 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+# DATABASES = {
+#      'default': {
+#          'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#          'NAME': 'SWE574',
+#          'USER': 'postgres',
+#          'PASSWORD': 'postgres',
+#          'HOST': 'localhost',
+#          'PORT': '5432',
+#      }
+#  }
+
 
 # DATABASES = {
 #     'default': {
