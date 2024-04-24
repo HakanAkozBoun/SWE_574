@@ -20,7 +20,6 @@ class _LoginState extends State<Login> {
   bool isLoggedIn = false;
 
   Future<void> singUp() async {
-
     String mail = mailController.text;
     String usernameSingUp = usernameSingUpController.text;
     String passwordSingUp = passwordSingUpController.text;
@@ -46,8 +45,6 @@ class _LoginState extends State<Login> {
     if (response.statusCode == 200) {
       // Giriş başarılı
       print("Başarılı");
-      
-
     } else {
       // Giriş başarısız
       print('Başarısız. Hata kodu: ${response.statusCode}');

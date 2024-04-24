@@ -10,7 +10,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         print('Test')
         
-        save_food_nutrient_data_from_csv('/Users/metin/Documents/GitHub/SWE_574/food_nutrient.csv')
+        save_food_nutrient_data_from_csv('C:\\Users\\FA5685\\Desktop\\BOUN_SWE\\Semester3\\SWE574\\SWE_574\\food_nutrient.csv')
 
 def save_food_nutrient_data_from_csv(csv_filepath):
     with open(csv_filepath, newline='') as csvfile:
@@ -21,7 +21,7 @@ def save_food_nutrient_data_from_csv(csv_filepath):
                 nutrient_id=int(row['nutrient_id']),
                 amount=float(row['amount']),
                 data_points=row['data_points'],
-                derivation_id=int(row['derivation_id']),
+                derivation_id=row['derivation_id'],
                 min=row['min'],
                 max=row['max'],
                 median=row['median'],
