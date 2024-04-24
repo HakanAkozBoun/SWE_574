@@ -210,6 +210,28 @@ class _AddItemPageState extends State<AddItemPage> {
   final TextEditingController amountController = TextEditingController();
   final List<FoodItemList> FoodItemLists = [];
 
+  String _filter = '';
+  List<String> _foodList = [];
+  List _foodList2 = [];
+  String _foodList2VALUE = "";
+  Future<void> _fetchFoodList() async {
+    if (_filter.length < 3) return;
+
+    final response = await http.get(
+      Uri.parse('http://10.0.2.2:8000/api/FoodList?filter=$_filter'),
+    );
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body) as List;
+      setState(() {
+        _foodList = jsonData.map((item) => item['name'] as String).toList();
+        _foodList2 = jsonData;
+      });
+    } else {
+      // Hata mesajı göster
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -347,7 +369,7 @@ class _AddItemPageState extends State<AddItemPage> {
             ),
             TextFormField(
               controller: _inputController10,
-              decoration: InputDecoration(labelText: ''),
+              decoration: InputDecoration(labelText: 'Serving'),
             ),
             // TextFormField(
             //   controller: _inputController9,
@@ -374,36 +396,67 @@ class _AddItemPageState extends State<AddItemPage> {
             //   decoration: InputDecoration(labelText: 'Ingradiends List Name'),
             // ),
             SizedBox(height: 20.0),
-            FutureBuilder<List<dynamic>>(
-              future: fetchData2(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  List<dynamic> data = snapshot.data!;
-                  List<FoodItem> items2 =
-                      data.map((item) => FoodItem.fromJson(item)).toList();
+            // FutureBuilder<List<dynamic>>(
+            //   future: fetchData2(),
+            //   builder: (context, snapshot) {
+            //     if (snapshot.connectionState == ConnectionState.waiting) {
+            //       return CircularProgressIndicator();
+            //     } else if (snapshot.hasError) {
+            //       return Text('Error: ${snapshot.error}');
+            //     } else {
+            //       List<dynamic> data = snapshot.data!;
+            //       List<FoodItem> items2 =
+            //           data.map((item) => FoodItem.fromJson(item)).toList();
 
-                  return DropdownButton<FoodItem>(
-                    value: _selectedItem2,
-                    icon: Icon(Icons.arrow_drop_down, color: Colors.black),
-                    items: items2.map((item) {
-                      return DropdownMenuItem<FoodItem>(
-                        value: item,
-                        child: Text(item.name),
-                      );
-                    }).toList(),
-                    onChanged: (FoodItem? selectedItem) {
-                      setState(() {
-                        _selectedItem2 = selectedItem;
-                      });
-                    },
-                  );
-                }
-              },
+            //       return DropdownButton<FoodItem>(
+            //         value: _selectedItem2,
+            //         icon: Icon(Icons.arrow_drop_down, color: Colors.black),
+            //         items: items2.map((item) {
+            //           return DropdownMenuItem<FoodItem>(
+            //             value: item,
+            //             child: Text(item.name),
+            //           );
+            //         }).toList(),
+            //         onChanged: (FoodItem? selectedItem) {
+            //           setState(() {
+            //             _selectedItem2 = selectedItem;
+            //           });
+            //         },
+            //       );
+            //     }
+            //   },
+            // ),
+            Column(
+              children: [
+                TextField(
+                  onChanged: (text) {
+                    setState(() {
+                      _filter = text;
+                      _fetchFoodList();
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'En az 3 karakter giriniz',
+                  ),
+                ),
+                DropdownButton<String>(
+                  // Set the initial value to null to avoid potential conflicts
+                  value: _foodList.isNotEmpty ? _foodList[0] : null,
+                  items: _foodList
+                      // Ensure unique values by using a Set before mapping
+                      .toSet() // Convert list to Set to remove duplicates
+                      .map((food) => DropdownMenuItem(
+                            value: food,
+                            child: Text(food),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    _foodList2VALUE = value!;
+                  },
+                ),
+              ],
             ),
+
             FutureBuilder<List<dynamic>>(
               future: fetchData3(),
               builder: (context, snapshot) {
@@ -452,14 +505,18 @@ class _AddItemPageState extends State<AddItemPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                final food = _selectedItem2?.name;
+                final food = _foodList2
+                    .where((element) => element["name"] == _foodList2VALUE)
+                    .first["name"];
                 final unit = _selectedItem3?.name;
                 final amount = double.tryParse(amountController.text) ?? 0;
                 final newItem = FoodItemList(
                   food: food!,
                   unit: unit!,
                   amount: amount,
-                  foodID: _selectedItem2!.unitid,
+                  foodID: _foodList2
+                      .where((element) => element["name"] == _foodList2VALUE)
+                      .first["unitid"],
                   unitID: _selectedItem3!.id,
                 );
                 setState(() {
