@@ -27,6 +27,11 @@ class nutrition(models.Model):
     protein = models.FloatField()
     iron = models.FloatField()
     carbonhydrates = models.FloatField()
+    sugars = models.FloatField()
+    fiber = models.FloatField()
+    vitamina = models.FloatField()
+    vitaminb = models.FloatField()
+    vitamind = models.FloatField()
     food = models.IntegerField()
  
     def __str__(self):

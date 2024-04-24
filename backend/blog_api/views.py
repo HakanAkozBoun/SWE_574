@@ -157,7 +157,10 @@ def GetFood(request):
 @api_view(['GET'])
 def GetFoodList(request):
     list = []
-    current = food.objects.all()
+    filter = request.GET.get('filter')
+    if filter is None:
+        filter = ''
+    current = food.objects.filter(name__contains=filter)[:10].all()
     unit = unittype.objects.values_list('name', flat=True).all()
     for item in current:
         list.append({"id":item.id, "unitid": item.unit,"unit":unit.get(id=item.unit), "name":item.name})
@@ -209,6 +212,11 @@ def GetNutrition(request):
     protein = 0
     iron = 0
     carbonhydrates = 0
+    sugars = 0
+    fiber = 0
+    vitamina = 0
+    vitaminb = 0
+    vitamind = 0
     for i in _recipe:
         __nutrition = _nutrition.filter(food=i.food).first()
         if __nutrition:
@@ -219,7 +227,12 @@ def GetNutrition(request):
             protein += __nutrition.protein * i.metricamount
             iron += __nutrition.iron * i.metricamount
             carbonhydrates += __nutrition.carbonhydrates * i.metricamount
-    return JsonResponse(json.loads('{"blog":"' + str(_blog.title) + '","blogid":' + str(_blog.id) + ',"calorie":' + str(calorie) + ',"fat":' + str(fat) + ',"sodium":' + str(sodium) + ',"calcium":' + str(calcium) + ',"protein":' + str(protein) + ',"iron":' + str(iron) + ',"carbonhydrates":' + str(carbonhydrates) + '}'), safe=False)
+            sugars += __nutrition.sugars * i.metricamount
+            fiber += __nutrition.fiber * i.metricamount
+            vitamina += __nutrition.vitamina * i.metricamount
+            vitaminb += __nutrition.vitaminb * i.metricamount
+            vitamind += __nutrition.vitamind * i.metricamount                                                            
+    return JsonResponse(json.loads('{"blog":"' + str(_blog.title) + '","blogid":' + str(_blog.id) + ',"calorie":' + str(calorie) + ',"vitamind":' + str(vitamind) + ',"vitaminb":' + str(vitaminb) + ',"vitamina":' + str(vitamina) + ',"fiber":' + str(fiber) + ',"sugars":' + str(sugars) + ',"fat":' + str(fat) + ',"sodium":' + str(sodium) + ',"calcium":' + str(calcium) + ',"protein":' + str(protein) + ',"iron":' + str(iron) + ',"carbonhydrates":' + str(carbonhydrates) + '}'), safe=False)
 
 @api_view(['GET'])
 def GetCommentList(request):
