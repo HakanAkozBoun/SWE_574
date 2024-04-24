@@ -97,6 +97,8 @@ class blog(models.Model):
     image = models.ImageField(upload_to='image', null=True, blank=True)
     ingredients = models.TextField(null=True, blank=True)
     postlabel = models.CharField(max_length=100, choices=POST_CHOICES,null=True, blank=True)
+    userid = models.IntegerField(default=1)
+    serving = models.IntegerField(default=4)
 
     def __str__(self):
         return self.title

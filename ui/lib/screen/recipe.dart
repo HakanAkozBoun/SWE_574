@@ -197,6 +197,22 @@ class _Recipe extends State<Recipe> {
                 child: Row(
                   children: [
                     Text(
+                      "Serving : " + fetchedData["serving"],
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: font,
+                        fontFamily: 'ro',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: Row(
+                  children: [
+                    Text(
                       "Preparation Time : " + fetchedData["preparationtime"],
                       style: TextStyle(
                         fontSize: 16,
