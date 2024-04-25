@@ -240,12 +240,12 @@ class InputFood(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    age = models.IntegerField()
-    weight = models.FloatField()
-    height = models.FloatField()
-    description = models.CharField(max_length=255)
+    age = models.IntegerField(blank=True, null=True)
+    weight = models.FloatField(blank=True, null=True)
+    height = models.FloatField(blank=True, null=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
     image = models.ImageField(upload_to='image', null=True, blank=True)
-    experience = models.IntegerField()
+    experience = models.IntegerField(blank=True, null=True)
     story = models.TextField(null=True, blank=True)
     diet_goals = models.CharField(max_length=255, null=True, blank=True)
     food_allergies = models.ManyToManyField(InputFood, related_name='allergic_users', blank=True)
