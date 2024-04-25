@@ -6,10 +6,15 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:recipe/screen/home.dart';
+import 'package:recipe/constants/backend_url.dart';
+
+// http://10.0.2.2:8000/api
 
 Future<List<dynamic>> fetchData() async {
+  const String categoryUrl = BackendUrl.apiUrl + 'CategoryList/';
+  
   final response =
-      await http.get(Uri.parse('http://10.0.2.2:8000/api/CategoryList/'));
+      await http.get(Uri.parse(categoryUrl));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -18,8 +23,9 @@ Future<List<dynamic>> fetchData() async {
 }
 
 Future<List<dynamic>> fetchData2() async {
+  const String foodListUrl = BackendUrl.apiUrl + 'FoodList/';
   final response =
-      await http.get(Uri.parse('http://10.0.2.2:8000/api/FoodList/'));
+      await http.get(Uri.parse(foodListUrl));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -28,8 +34,9 @@ Future<List<dynamic>> fetchData2() async {
 }
 
 Future<List<dynamic>> fetchData3() async {
+  const String unitListUrl = BackendUrl.apiUrl + 'UnitList/';
   final response =
-      await http.get(Uri.parse('http://10.0.2.2:8000/api/UnitList/'));
+      await http.get(Uri.parse(unitListUrl));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -38,8 +45,9 @@ Future<List<dynamic>> fetchData3() async {
 }
 
 Future<List<dynamic>> fetchData4(id) async {
+  const String recipeList = BackendUrl.apiUrl + 'RecipeList/?blog=';
   final response = await http.get(
-      Uri.parse('http://10.0.2.2:8000/api/RecipeList/?blog=' + id.toString()));
+      Uri.parse(recipeList + id.toString()));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -54,9 +62,11 @@ Future<File?> pickImage() async {
 }
 
 Future<void> uploadImage(File image) async {
+  const String imageFileUrl = BackendUrl.apiUrl + 'File';
+
   final request = http.MultipartRequest(
     'POST',
-    Uri.parse('http://10.0.2.2:8000/api/File/'),
+    Uri.parse(imageFileUrl),
   );
 
   // Handle potential errors during file reading
@@ -215,6 +225,8 @@ class _AddItemPageState extends State<AddItemPage> {
   List _foodList2 = [];
   String _foodList2VALUE = "";
   Future<void> _fetchFoodList() async {
+    // const String foodListFilter = BackendUrl.apiUrl + 'FoodList?filter=$_filter';
+
     if (_filter.length < 3) return;
 
     final response = await http.get(
@@ -281,8 +293,9 @@ class _AddItemPageState extends State<AddItemPage> {
   }
 
   Future<void> sendData(data) async {
+    const String createBlogUrl = BackendUrl.apiUrl + 'CreateBlog';
     final url =
-        Uri.parse('http://10.0.2.2:8000/api/CreateBlog/'); // API'nin URL'si
+        Uri.parse(createBlogUrl); // API'nin URL'si
 
     try {
       final response = await http.post(

@@ -5,6 +5,8 @@ import 'package:recipe/screen/recipe.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:recipe/constants/backend_url.dart';
+
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
@@ -13,8 +15,9 @@ class Home extends StatefulWidget {
 }
 
 Future<List<dynamic>> fetchData() async {
+  const String popularRecipes = BackendUrl.apiUrl + 'PopularPostsApiView/';
   final response = await http
-      .get(Uri.parse('http://10.0.2.2:8000/api/PopularPostsApiView/'));
+      .get(Uri.parse(popularRecipes));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
