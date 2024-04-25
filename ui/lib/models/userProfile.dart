@@ -1,8 +1,14 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'recipe.dart';
+import '../constants/backend_url.dart';
 
 class UserProfile {
+  static const String currentUserUrl = BackendUrl.apiUrl + 'MyProfile/';
+  static const String followingUsersUrl = BackendUrl.apiUrl + 'Following/';
+  static const String bookmarkedRecipesUrl = BackendUrl.apiUrl + 'MyBookmarks/';
+  static const String selfRecipesUrl = BackendUrl.apiUrl + 'MyRecipes/';
+
   final user;
   final int age;
   final double weight;
@@ -46,8 +52,8 @@ class UserProfile {
   }
 
   static Future<UserProfile> fetchCurrentUser() async {
-    final response = await http.get(Uri.parse(
-        'http://10.0.2.2:8000/api/userprofile/')); // EE burada link doğru mu
+    final response =
+        await http.get(Uri.parse(currentUserUrl)); // EE burada link doğru mu
     if (response.statusCode == 200) {
       final jsonBody = json.decode(response.body);
       return UserProfile.fromJson(jsonBody);
@@ -58,8 +64,7 @@ class UserProfile {
 
   static Future<List<UserProfile>> fetchFollowingUsers() async {
     try {
-      final response =
-          await http.get(Uri.parse('http://10.0.2.2:8000/api/Following/'));
+      final response = await http.get(Uri.parse(followingUsersUrl));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((json) => UserProfile.fromJson(json)).toList();
@@ -73,8 +78,7 @@ class UserProfile {
 
   static Future<List<Recipe>> fetchBookmarkedRecipes() async {
     try {
-      final response =
-          await http.get(Uri.parse('http://10.0.2.2:8000/api/MyBookmarks/'));
+      final response = await http.get(Uri.parse(bookmarkedRecipesUrl));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((json) => Recipe.fromJson(json)).toList();
@@ -88,8 +92,7 @@ class UserProfile {
 
   static Future<List<Recipe>> fetchSelfRecipes() async {
     try {
-      final response =
-          await http.get(Uri.parse('http://10.0.2.2:8000/api/MyRecipes/'));
+      final response = await http.get(Uri.parse(selfRecipesUrl));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((json) => Recipe.fromJson(json)).toList();

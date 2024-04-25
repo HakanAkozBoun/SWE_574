@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.utils import timezone
 
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Avg
@@ -24,18 +24,18 @@ class comment(models.Model):
 
 
 class nutrition(models.Model):
-    calorie = models.FloatField()
-    fat = models.FloatField()
-    sodium = models.FloatField()
-    calcium = models.FloatField()
-    protein = models.FloatField()
-    iron = models.FloatField()
-    carbonhydrates = models.FloatField()
-    sugars = models.FloatField()
-    fiber = models.FloatField()
-    vitamina = models.FloatField()
-    vitaminb = models.FloatField()
-    vitamind = models.FloatField()
+    calorie = models.FloatField(null=True)
+    fat = models.FloatField(null=True)
+    sodium = models.FloatField(null=True)
+    calcium = models.FloatField(null=True)
+    protein = models.FloatField(null=True)
+    iron = models.FloatField(null=True)
+    carbonhydrates = models.FloatField(null=True)
+    sugars = models.FloatField(null=True)
+    fiber = models.FloatField(null=True)
+    vitamina = models.FloatField(null=True)
+    vitaminb = models.FloatField(null=True)
+    vitamind = models.FloatField(null=True)
     food = models.IntegerField()
 
     def __str__(self):
@@ -113,14 +113,14 @@ class blog(models.Model):
     image = models.ImageField(upload_to='image', null=True, blank=True)
     ingredients = models.TextField(null=True, blank=True)
 
-    postlabel = models.CharField(max_length=100, choices=POST_CHOICES,null=True, blank=True)
+    postlabel = models.CharField(
+        max_length=100, choices=POST_CHOICES, null=True, blank=True)
     userid = models.IntegerField(default=1)
     serving = models.IntegerField(default=4)
 
-
     def __str__(self):
         return self.title
-    
+
     def calculate_avg_rating(self):
         ratings = UserRating.objects.filter(recipe=self)
         avg_rating = ratings.aggregate(Avg('value'))['value__avg']
@@ -131,7 +131,6 @@ class blog(models.Model):
             self.avg_rating = 0
 
         self.save()
-
 
 
 class Follower(models.Model):
@@ -181,7 +180,6 @@ class FoodNutrient(models.Model):
         return self.name
 
 
-
 class FoundationFood(models.Model):
 
     fdc_id = models.IntegerField()
@@ -189,11 +187,9 @@ class FoundationFood(models.Model):
     footnote = models.CharField(max_length=255)
 
 
-
 class SampleFood(models.Model):
 
     fdc_id = models.IntegerField()
-
 
 
 class UserBookmark(models.Model):
@@ -205,9 +201,10 @@ class UserBookmark(models.Model):
 class UserRating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     recipe = models.ForeignKey(blog, on_delete=models.CASCADE)
-    value = models.PositiveIntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(5)])
+    value = models.PositiveIntegerField(
+        default=0, validators=[MinValueValidator(1), MaxValueValidator(5)])
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
 
 class FoodNutrientTable(models.Model):
     fdc_id = models.IntegerField(null=True, blank=True, default=0)
@@ -224,7 +221,6 @@ class FoodNutrientTable(models.Model):
     min_year_acquired = models.CharField(blank=True, null=True, max_length=255)
 
 
-
 class InputFood(models.Model):
 
     fdc_id = models.IntegerField(null=True, blank=True)
@@ -238,19 +234,30 @@ class InputFood(models.Model):
     retention_code = models.CharField(null=True, blank=True, max_length=255)
     survey_flag = models.CharField(null=True, blank=True, max_length=255)
 
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     age = models.IntegerField()
     weight = models.FloatField()
     height = models.FloatField()
     description = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='image', null=True, blank=True)
+    image = models.CharField(max_length=255, null=True, blank=True)
     experience = models.IntegerField()
     story = models.TextField(null=True, blank=True)
     diet_goals = models.CharField(max_length=255, null=True, blank=True)
-    food_allergies = models.ManyToManyField(InputFood, related_name='allergic_users', blank=True)
+    food_allergies = models.ManyToManyField(
+        InputFood, related_name='allergic_users', blank=True)
     gender = models.CharField(max_length=255, null=True, blank=True)
     graduated_from = models.CharField(max_length=255, null=True, blank=True)
-    cuisines_of_expertise = models.CharField(max_length=255, null=True, blank=True)
+    cuisines_of_expertise = models.CharField(
+        max_length=255, null=True, blank=True)
     working_at = models.CharField(max_length=255, null=True, blank=True)
 
+
+class Eaten(models.Model):
+
+    userId = models.ForeignKey(User, on_delete=models.CASCADE)
+    blogId = models.ForeignKey(blog, on_delete=models.CASCADE)
+    eatenPercentage = models.IntegerField(default=100)
+    eatenDate = models.DateTimeField(default=timezone.now.date())
+    is_active = models.BooleanField(default=True)
