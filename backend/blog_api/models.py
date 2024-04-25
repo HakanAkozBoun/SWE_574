@@ -259,5 +259,5 @@ class Eaten(models.Model):
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
     blogId = models.ForeignKey(blog, on_delete=models.CASCADE)
     eatenPercentage = models.IntegerField(default=100)
-    eatenDate = models.DateTimeField(default=timezone.now.date())
+    eatenDate = models.DateTimeField(default=timezone.datetime.today)
     is_active = models.BooleanField(default=True)

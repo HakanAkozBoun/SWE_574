@@ -9,6 +9,23 @@ import 'package:recipe/widgets/home/myRecipes.dart';
 import 'package:recipe/widgets/home/following.dart';
 import 'package:recipe/widgets/home/bookmarked.dart';
 import 'package:recipe/widgets/home/settings.dart';
+import '../constants/backend_url.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+const String currentUserUrl = BackendUrl.apiUrl + 'MyProfile/';
+
+Future<UserProfile> fetchCurrentUser() async {
+  final response =
+      await http.get(Uri.parse(currentUserUrl)); // EE burada link doğru mu
+  if (response.statusCode == 200) {
+    final jsonBody = json.decode(response.body);
+    return UserProfile.fromJson(jsonBody);
+  } else {
+    throw Exception('Failed to load current user');
+  }
+}
 
 //fotograf secme ozellıgı eklenebilir
 
@@ -21,15 +38,16 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  late UserProfile currentUser;
+  late Future<UserProfile> currentUser;
 
   @override
   void initState() {
     super.initState();
-    loadCurrentUser();
+    currentUser = fetchCurrentUser();
+    //loadCurrentUser();
   }
 
-  Future<void> loadCurrentUser() async {
+  /*Future<void> loadCurrentUser() async {
     try {
       final fetchedUser = await UserProfile.fetchCurrentUser();
       setState(() {
@@ -39,7 +57,7 @@ class _ProfileState extends State<Profile> {
       print('Error loading current user: $e');
     }
   }
-
+*/
   List<Icon> icons = [
     Icon(Icons.work, color: maincolor),
     Icon(Icons.restaurant, color: maincolor),
@@ -80,7 +98,8 @@ class _ProfileState extends State<Profile> {
     'Logout'
   ];
 
-  void _showStableSubPage(BuildContext context, int index) {
+  void _showStableSubPage(
+      BuildContext context, int index, UserProfile currentUser) {
     Widget toBeOpened = FAQs();
     Widget personal = Personal(currentUser);
     Widget following = Following(currentUser);
@@ -191,8 +210,46 @@ class _ProfileState extends State<Profile> {
       body: SafeArea(
           child: Column(
         children: [
-          SizedBox(height: 30),
-          Row(
+          FutureBuilder<UserProfile>(
+            future: currentUser,
+            builder:
+                (BuildContext context, AsyncSnapshot<UserProfile> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Scaffold(
+                  backgroundColor: background,
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Scaffold(
+                  backgroundColor: background,
+                  body: Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  ),
+                );
+              } else if (snapshot.hasData) {
+                UserProfile userProfile = snapshot.data!;
+                return Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: NetworkImage(userProfile.image),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      userProfile.user.username,
+                      style: TextStyle(
+                          fontSize: 18, color: font, fontFamily: 'ro'),
+                    ),
+                    Text(
+                      userProfile.description,
+                      style: TextStyle(
+                          fontSize: 18, color: font, fontFamily: 'ro'),
+                    ),
+                    Divider(height: 40, thickness: 2),
+                    SizedBox(height: 30),
+                    /* Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
@@ -218,75 +275,88 @@ class _ProfileState extends State<Profile> {
           Text(
             currentUser.description,
             style: TextStyle(fontSize: 18, color: font, fontFamily: 'ro'),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Divider(
-              height: 40,
-              thickness: 2,
-            ),
-          ),
-          Flexible(
-            child: ListView.builder(
-              // degisken ilk 3
-              shrinkWrap: true,
-              itemCount: 3,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  leading: Container(
-                    width: 37,
-                    height: 37,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
+          ),*/
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Divider(
+                        height: 40,
+                        thickness: 2,
+                      ),
                     ),
-                    child: icons[index],
-                  ),
-                  title: Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text(
-                      tileNames[index] + tileNamesInfo[index],
-                      style: TextStyle(fontSize: 17, color: font),
+                    Flexible(
+                      child: ListView.builder(
+                        // degisken ilk 3
+                        shrinkWrap: true,
+                        itemCount: 3,
+                        itemBuilder: (BuildContext context, int index) {
+                          return ListTile(
+                            leading: Container(
+                              width: 37,
+                              height: 37,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: icons[index],
+                            ),
+                            title: Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Text(
+                                tileNames[index] + tileNamesInfo[index],
+                                style: TextStyle(fontSize: 17, color: font),
+                              ),
+                            ),
+                            trailing: IconButton(
+                              icon: Icon(Icons.navigate_next),
+                              onPressed: () => _showSubPage(context, index),
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(Icons.navigate_next),
-                    onPressed: () => _showSubPage(context, index),
+                    Flexible(
+                      child: ListView.builder(
+                        // sabit kalacak son 8
+                        shrinkWrap: true,
+                        itemCount: 8,
+                        itemBuilder: (BuildContext context, int index) {
+                          return ListTile(
+                            leading: Container(
+                              width: 37,
+                              height: 37,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: constIcons[index],
+                            ),
+                            title: Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Text(
+                                constTileNames[index],
+                                style: TextStyle(fontSize: 17, color: font),
+                              ),
+                            ),
+                            trailing: IconButton(
+                              icon: Icon(Icons.navigate_next),
+                              onPressed: () => _showStableSubPage(
+                                  context, index, userProfile),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return Scaffold(
+                  backgroundColor: background,
+                  body: Center(
+                    child: Text("No data available"),
                   ),
                 );
-              },
-            ),
-          ),
-          Flexible(
-            child: ListView.builder(
-              // sabit kalacak son 8
-              shrinkWrap: true,
-              itemCount: 8,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  leading: Container(
-                    width: 37,
-                    height: 37,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: constIcons[index],
-                  ),
-                  title: Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text(
-                      constTileNames[index],
-                      style: TextStyle(fontSize: 17, color: font),
-                    ),
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(Icons.navigate_next),
-                    onPressed: () => _showStableSubPage(context, index),
-                  ),
-                );
-              },
-            ),
+              }
+            },
           ),
         ],
       )),
