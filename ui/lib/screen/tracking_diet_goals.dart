@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:recipe/consent/appbar.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:intl/intl.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
 
@@ -45,6 +46,16 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
 
   @override
   Widget build(BuildContext context) {
+    List<String> days = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
+    ];
+
     return Scaffold(
       appBar: appbar(),
       body: Column(
@@ -88,6 +99,12 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
           SizedBox(
             height: 20,
           ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: _showTable ? days.map((day) => _buildDayCell(day)).toList() : [], 
+            ),
+          ),
           _showTable ? _buildTable(_nutritionData) : _buildChart(),
         ],
       ),
@@ -95,71 +112,50 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
   }
 }
 
-Widget _buildChart() {
-  return (Text("dsf"));
-  // return _nutritionData.isEmpty
-  //       ? Center(child: CircularProgressIndicator()) // Show loading indicator while data is loading
-  //       : BarChart(
-  //           BarChartData(
-  //             alignment: BarChartAlignment.spaceAround,
-  //             maxY: getMaxYValue(),
-  //             groupsSpace: 16,
-  //             barTouchData: BarTouchData(enabled: false),
-  //             titlesData: FlTitlesData(
-  //               show: true,
-  //               bottomTitles: titles(
-  //                 showTitles: true,
-  //                 getTitles: (value) {
-  //                   return _nutritionData[value.toInt()]['nutritionName'];
-  //                 },
-  //               ),
-  //               leftTitles: SideTitles(
-  //                 showTitles: true,
-  //                 getTitles: (value) {
-  //                   return value.toInt().toString();
-  //                 },
-  //               ),
-  //             ),
-  //             borderData: FlBorderData(show: false),
-  //             barGroups: createSeriesData(),
-  //           ),
-  //         );
+class ChartData {
+  ChartData(this.x, this.y);
+  final String x;
+  final double y;
 }
 
-List<BarChartGroupData> createSeriesData(
-    List<Map<String, dynamic>> nutritionData) {
-  List<BarChartGroupData> seriesData = [];
-  for (int i = 0; i < nutritionData.length; i++) {
-    Map<String, dynamic> nutrition = nutritionData[i];
-    seriesData.add(BarChartGroupData(
-      x: i,
-      barRods: [
-        BarChartRodData(
-          toY: nutrition['currentIntake'],
-          color: Colors.blue,
-          width: 16,
+Widget _buildChart() {
+  final List<ChartData> chartData = [
+    ChartData("Monday", 35.0),
+    ChartData("Tuesday", 28.0),
+    ChartData("Wednesday", 34.0),
+    ChartData("Thursday", 32.0),
+    ChartData("Friday", 40.0),
+    ChartData("Saturday", 30.0),
+    ChartData("Sunday", 45.0),
+  ];
+
+    final List<ChartData> chartData2 = [
+    ChartData("Monday", 23.0),
+    ChartData("Tuesday", 56.0),
+    ChartData("Wednesday", 21.0),
+    ChartData("Thursday", 54.0),
+    ChartData("Friday", 89.0),
+    ChartData("Saturday", 51.0),
+    ChartData("Sunday", 21.0),
+  ];
+   return Container(
+    child: SfCartesianChart(
+      primaryXAxis: CategoryAxis(), // Use CategoryAxis for the x-axis
+      series: <CartesianSeries>[
+        // Renders line chart
+        LineSeries<ChartData, String>(
+          dataSource: chartData,
+          xValueMapper: (ChartData data, _) => data.x,
+          yValueMapper: (ChartData data, _) => data.y,
         ),
-        BarChartRodData(
-          toY: nutrition['goal'],
-          color: Colors.red,
-          width: 16,
+        LineSeries<ChartData, String>(
+          dataSource: chartData2,
+          xValueMapper: (ChartData data, _) => data.x,
+          yValueMapper: (ChartData data, _) => data.y,
         ),
       ],
-      showingTooltipIndicators: [0],
-    ));
-  }
-
-  return seriesData;
-}
-
-// Function to calculate the maximum Y value for the chart
-double getMaxYValue(List<Map<String, dynamic>> nutritionData) {
-  double maxIntake = nutritionData
-      .map((e) => e['currentIntake'])
-      .reduce((a, b) => a > b ? a : b);
-  double maxGoal =
-      nutritionData.map((e) => e['goal']).reduce((a, b) => a > b ? a : b);
-  return maxIntake > maxGoal ? maxIntake : maxGoal;
+    ),
+  );
 }
 
 Widget _buildTable(List<Map<String, dynamic>> nutritionData) {
@@ -197,20 +193,39 @@ Widget _buildTable(List<Map<String, dynamic>> nutritionData) {
           ],
           // Define rows with style
           rows: nutritionData.map((item) {
-            double remainingValue = item['remaining'];
-            Color textColor = remainingValue > 0 ? Colors.red : Colors.green;
-
-            return DataRow(cells: [
-              DataCell(Text(item['nutritionName'])),
-              DataCell(Text(item['goal'].toString())),
-              DataCell(Text(item['currentIntake'].toString())),
-              DataCell(Text(
-                // show abstract value of remaining
-                remainingValue.abs().toString(),
-                style: TextStyle(color: textColor),
-              )),
-            ]);
+            print(item);
+            return DataRow(
+              cells: [
+                DataCell(Text(item['nutritionName'])),
+                DataCell(Text(item['goal'].toString())),
+                DataCell(Text(item['currentIntake'].toString())),
+                DataCell(Text(item['remaining'].toString())),
+              ],
+            );
           }).toList(),
+        ),
+      ),
+    ),
+  );
+}
+
+Widget _buildDayCell(String day) {
+  return Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(8.0),
+    ),
+    child: TextButton(
+      onPressed: () {
+        // Handle button press here
+        String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+        print('Clicked on $day. Current date: $currentDate');
+      },
+      child: Text(
+        day,
+        style: TextStyle(
+          color: Colors.purple,
+          fontWeight: FontWeight.bold,
+          fontSize: 14.0,
         ),
       ),
     ),
