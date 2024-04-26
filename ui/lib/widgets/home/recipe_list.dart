@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/models/recipe.dart';
+import 'package:recipe/screen/recipe.dart' as RecipeScreen;
 
 class RecipeListWidget extends StatefulWidget {
   const RecipeListWidget({Key? key}) : super(key: key);
@@ -35,8 +36,22 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         child: Column(
           children: recipes.map((recipe) {
-            return buildRecipeCard(recipe.title, recipe.excerpt, '15 min',
-                '../../images/dinner1.jpg');
+            return GestureDetector(
+              onTap: () {
+                // Handle tap event here
+                // For example, navigate to RecipeScreen
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => RecipeScreen.Recipe(
+                      slug: "Recipe",
+                      id: recipe.id,
+                    ),
+                  ),
+                );
+              },
+              child: buildRecipeCard(recipe.title, recipe.excerpt, "recipe.duration",
+                  ""),
+            );
           }).toList(),
         ),
       ),
@@ -72,9 +87,6 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
             SizedBox(
               width: 120,
               child: InkWell(
-                onTap: () {
-                  print('clicked');
-                },
                 child: Container(
                   alignment: Alignment.center,
                   child: Image.asset(
