@@ -71,27 +71,29 @@ class Recipe {
 }
 
 class Recommendation {
-
   static const String recipeUrl = BackendUrl.apiUrl + 'recommend/';
 
+  final int id;
   final String imagePath;
   final String title;
   final String description;
   final String duration;
 
   Recommendation({
-    required this.imagePath,
+    required this.id,
     required this.title,
     required this.description,
     required this.duration,
+    required this.imagePath,
   });
 
   factory Recommendation.fromJson(Map<String, dynamic> json) {
     return Recommendation(
-      imagePath: json['imagePath'] ?? '',
+      id: json['id'],
       title: json['title'] ?? '',
       description: json['excerpt'] ?? '',
       duration: json['duration'] ?? '',
+      imagePath: json['imagePath'] ?? '',
     );
   }
 
