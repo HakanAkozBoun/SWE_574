@@ -99,9 +99,9 @@ WSGI_APPLICATION = 'recipeBlog.wsgi.application'
 DATABASES = {
    'default': {
        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME': 'xymziiwn',
-       'USER': 'xymziiwn',
-       'PASSWORD': 'dZgLKBzSeuds_yro0WckQnE47nJY9DVU',
+       'NAME': 'xymziiwnhakan',
+       'USER': 'xymziiwnhakan',
+       'PASSWORD': 'dZgLKBzSeuds_yro0WckQnE47nJY9DVUhakan',
        'HOST': 'lucky.db.elephantsql.com',
        'PORT': '5432',
    }
