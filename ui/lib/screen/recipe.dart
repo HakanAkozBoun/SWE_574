@@ -7,7 +7,7 @@ import 'dart:convert';
 
 Future<List<dynamic>> fetchData(data) async {
   final response =
-      await http.get(Uri.parse('http://10.0.2.2:8000/api/blogs/?' + data));
+      await http.get(Uri.parse('http://localhost:8000/api/blogs/?' + data));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -17,7 +17,7 @@ Future<List<dynamic>> fetchData(data) async {
 
 Future<dynamic> nutrition(blog) async {
   final response = await http
-      .get(Uri.parse('http://10.0.2.2:8000/api/Nutrition/?blog=' + blog));
+      .get(Uri.parse('http://localhost:8000/api/Nutrition/?blog=' + blog));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -37,7 +37,7 @@ class Recipe extends StatefulWidget {
 class _Recipe extends State<Recipe> {
   Map<String, dynamic> fetchedData = {};
   Map<String, dynamic> nutritionData = {};
-  int avg_rating = 5;
+  // int avg_rating = 5;
 
   @override
   void initState() {
@@ -155,7 +155,8 @@ class _Recipe extends State<Recipe> {
   }
 
   Widget _getbody() {
-    int say = int.parse(fetchedData["avg_rating"].round().toString() ?? "5");
+    int say = int.parse(fetchedData["avg_rating"].round().toString());
+
     return Wrap(
       children: [
         Container(
@@ -181,7 +182,7 @@ class _Recipe extends State<Recipe> {
                 child: Row(
                   children: [
                     Text(
-                      "Cooking Time : " + fetchedData["cookingtime"],
+                      "Cooking Time : " + fetchedData["cookingtime"].toString(),
                       style: TextStyle(
                         fontSize: 16,
                         color: font,
@@ -213,7 +214,7 @@ class _Recipe extends State<Recipe> {
                 child: Row(
                   children: [
                     Text(
-                      "Preparation Time : " + fetchedData["preparationtime"],
+                      "Preparation Time : " + fetchedData["preparationtime"].toString(),
                       style: TextStyle(
                         fontSize: 16,
                         color: font,
