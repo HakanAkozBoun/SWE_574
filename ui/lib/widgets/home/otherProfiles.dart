@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:recipe/widgets/home/testUser.dart';
+//import 'package:recipe/widgets/home/testUser.dart';
 import 'package:recipe/models/userProfile.dart';
-
-String photoPath = "./images/dinner0.jpg";
 
 class OtherProfiles extends StatelessWidget {
   final UserProfile user;

@@ -2,7 +2,7 @@ from django.utils import timezone
 import json
 
 from .models import Eaten, blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood
-from .serializers import blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer
+from .serializers import UserProfileForFrontEndSerializer, blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer
 
 from rest_framework import viewsets
 from rest_framework import mixins
@@ -57,22 +57,16 @@ def GetUserList(request):
 
 @api_view(['GET'])
 def GetFollowingUserList(request):
-
+    '''
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Authentication required'}, status=401)
-
-    following_users = Follower.objects.filter(
-        follower_user=request.user).select_related('following_user')
-
-    user_list = [{
-        'id': follow.following_user.id,
-        'username': follow.following_user.username,
-        # user modele karar vermemiz lazım
-        # 'description': follow.following_user.description,
-        # 'image': follow.following_user.image
-    } for follow in following_users]
-
-    return JsonResponse(user_list, safe=False)
+    '''
+    # EE 1'i değiştir
+    queryset = Follower.objects.filter(
+        follower_user=1).select_related('following_user')
+    user_profiles = [follow.following_user.userprofile for follow in queryset]
+    serializer = UserProfileForFrontEndSerializer(user_profiles, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
@@ -99,12 +93,16 @@ def GetBookmarkedRecipes(request):
 def GetSelfRecipes(request):
 
     # çalışması için user id olması lazım recipe modelinde
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': 'Authentication required'}, status=401)
-
-    self_recipes = recipe.objects.filter(user=request.user)
-
-    recipes_list = [{
+    ''' if not request.user.is_authenticated:
+         return JsonResponse({'error': 'Authentication required'}, status=401)
+     '''
+    # EE id 1 değişmeli
+    # id= request.user.id
+    id = 1
+    queryset = blog.objects.filter(userid=id)
+    serializer = blogSerializer(queryset, many=True)
+    return Response(serializer.data)
+    ''' recipes_list = [{
         'id': recipe.id,
         'food': recipe.food,
         'unit': recipe.unit,
@@ -113,8 +111,7 @@ def GetSelfRecipes(request):
         'metricamount': recipe.metricamount,
         'metricunit': recipe.metricunit
     } for recipe in self_recipes]
-
-    return JsonResponse(recipes_list, safe=False)
+    '''
 
 
 @api_view(['PUT'])
@@ -133,7 +130,10 @@ def GetUser(request):
 
 @api_view(['GET'])
 def GetCurrentUserProfile(request):
-    return JsonResponse(model_to_dict(UserProfile.objects.get(id=1)), safe=False)
+    # EE id=1'i değiştir
+    queryset = UserProfile.objects.get(id=1)
+    serializer_class = UserProfileForFrontEndSerializer
+    return Response(serializer_class(queryset).data)
     # return JsonResponse(model_to_dict(UserProfile.objects.get(id=request.GET.get('id'))), safe=False)
 
 
@@ -185,7 +185,9 @@ def File(request):
 
 @api_view(['POST'])
 def CreateBlog(request):
-    _id = request.data.get('id')
+    # EE user id None olarak sabitlendi
+    # _id = request.data.get('id')
+    _id = None
     if _id is None:
 
         _blog = blog.objects.create(category_id=request.data.get('category'), title=request.data.get('title'), slug=request.data.get('slug'), excerpt=request.data.get('excerpt'), content=request.data.get('content'), contentTwo=request.data.get('contentTwo'), avg_rating=request.data.get(

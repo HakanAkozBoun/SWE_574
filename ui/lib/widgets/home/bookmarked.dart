@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:recipe/consent/colors.dart';
 import 'package:recipe/models/userProfile.dart';
 import 'package:recipe/models/recipe.dart';
 
 class Bookmarked extends StatefulWidget {
-  late UserProfile currentUser;
-  Bookmarked(this.currentUser, {Key? key}) : super(key: key);
+  Bookmarked({super.key});
   @override
   State<Bookmarked> createState() => _BookmarkedState();
 }
 
 class _BookmarkedState extends State<Bookmarked> {
-  late List<Recipe> bookmarkedRecipes = [];
+  late Future<List<Recipe>> bookmarkedRecipes;
 
   @override
   void initState() {
     super.initState();
-    loadBookmarkedRecipes();
+    bookmarkedRecipes = UserProfile.fetchBookmarkedRecipes();
+    // loadBookmarkedRecipes();
   }
 
+/*
   Future<void> loadBookmarkedRecipes() async {
     try {
       final fetchedBookmarkedRecipes =
@@ -28,15 +30,51 @@ class _BookmarkedState extends State<Bookmarked> {
     } catch (e) {
       print('Error loading bookmarked recipes: $e');
     }
-  }
-
+  }*/
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: background,
+        body: SafeArea(
+            child: FutureBuilder<List<Recipe>>(
+          future: bookmarkedRecipes,
+          builder:
+              (BuildContext context, AsyncSnapshot<List<Recipe>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Scaffold(
+                backgroundColor: background,
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Scaffold(
+                backgroundColor: background,
+                body: Center(
+                  child: Text('Error: ${snapshot.error}'),
+                ),
+              );
+            } else if (snapshot.hasData) {
+              List<Recipe> bookmarkedRecipesList = snapshot.data!;
+              return cardList(context, bookmarkedRecipesList);
+            } else {
+              return Scaffold(
+                backgroundColor: background,
+                body: Center(
+                  child: Text("No data available"),
+                ),
+              );
+            }
+          },
+        )));
+  }
+
+  Widget cardList(BuildContext context, List<Recipe> bookmarkedRecipesList) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         child: Column(
-          children: bookmarkedRecipes.map((recipe) {
+          children: bookmarkedRecipesList.map((recipe) {
             return buildRecipeCard(recipe.title, recipe.excerpt, '15 min',
                 '../../images/dinner1.jpg');
           }).toList(),
