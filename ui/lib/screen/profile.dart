@@ -89,7 +89,7 @@ class _ProfileState extends State<Profile> {
         break;
       case 5:
         toBeOpened = bookmarked;
-        isFullPage = false;
+        isFullPage = true;
         break;
       case 6:
         toBeOpened = nutritionalProfile;
