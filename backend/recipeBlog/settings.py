@@ -88,10 +88,10 @@ WSGI_APPLICATION = 'recipeBlog.wsgi.application'
 DATABASES = {
    'default': {
        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME': 'cookPad',
-       'USER': 'postgres',
-       'PASSWORD': '1',
-       'HOST': 'localhost',
+       'NAME': 'xymziiwn',
+       'USER': 'xymziiwn',
+       'PASSWORD': 'dZgLKBzSeuds_yro0WckQnE47nJY9DVU',
+       'HOST': 'lucky.db.elephantsql.com',
        'PORT': '5432',
    }
 }
