@@ -297,7 +297,8 @@ class _Recipe extends State<Recipe> {
                               .where((entry) =>
                                   entry.key != "blogid" && entry.key != "blog")
                               .map((entry) => ListTile(
-                                    title: Text('${entry.key}: ${entry.value}'),
+                                    title: Text(
+                                        '${entry.key}: ${entry.value.round()} ${entry.key == "calorie" ? "kcal" : "g"}'),
                                   ))
                               .toList(),
                         ),
