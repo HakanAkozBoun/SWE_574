@@ -8,46 +8,37 @@ class Login extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
 }
-
 class _LoginState extends State<Login> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
   TextEditingController mailController = TextEditingController();
-  TextEditingController usernameSingUpController = TextEditingController();
-  TextEditingController passwordSingUpController = TextEditingController();
-
+  TextEditingController usernameSignUpController = TextEditingController();
+  TextEditingController passwordSignUpController = TextEditingController();
   bool isLoggedIn = false;
 
-  Future<void> singUp() async {
-    String mail = mailController.text;
-    String usernameSingUp = usernameSingUpController.text;
-    String passwordSingUp = passwordSingUpController.text;
+  Future<void> signUp() async {
+    String email = mailController.text;
+    String username = usernameSignUpController.text;
+    String password = passwordSignUpController.text;
 
-    Uri apiUrl2 = Uri.parse('http://10.0.2.2:8000/api/CreateUser/');
+    Uri apiUrl = Uri.parse('http://10.0.2.2:8000/register/');
 
-    Map data2 = {
-      'user': mail,
-      'pass': passwordSingUp,
-      'mail': mail,
-      'first_name': usernameSingUp,
-      'last_name': usernameSingUp,
+    Map<String, dynamic> data = {
+      'email': email,
+      'username': username,
+      'password': password,
     };
 
-    // POST isteği gönder
     var response = await http.post(
-      apiUrl2,
-      body: jsonEncode(data2),
+      apiUrl,
+      body: jsonEncode(data),
       headers: {'Content-Type': 'application/json; charset=UTF-8'},
     );
 
-    // Yanıtın durumunu kontrol et
-    if (response.statusCode == 200) {
-      // Giriş başarılı
-      print("Başarılı");
+    if (response.statusCode == 201) {
+      print("Kayıt Başarılı");
     } else {
-      // Giriş başarısız
-      print('Başarısız. Hata kodu: ${response.statusCode}');
+      print('Kayıt Başarısız. Hata kodu: ${response.statusCode}');
     }
   }
 
@@ -55,35 +46,27 @@ class _LoginState extends State<Login> {
     String username = usernameController.text;
     String password = passwordController.text;
 
-    // API endpoint
     Uri apiUrl = Uri.parse('http://10.0.2.2:8000/api/Login/');
 
-    // Gönderilecek veri
-    Map data = {
-      'user': username,
-      'pass': password,
+    Map<String, dynamic> data = {
+      'username': username,
+      'password': password,
     };
 
-    // POST isteği gönder
     var response = await http.post(
       apiUrl,
       body: jsonEncode(data),
       headers: {'Content-Type': 'application/json; charset=UTF-8'},
     );
 
-    // Yanıtın durumunu kontrol et
     if (response.statusCode == 200) {
-      // Giriş başarılı
-      print("Başarılı");
-
+      print("Giriş Başarılı");
       setState(() {
         isLoggedIn = true;
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: ((context) => Navigation())));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Navigation()));
       });
     } else {
-      // Giriş başarısız
-      print('Giriş başarısız. Hata kodu: ${response.statusCode}');
+      print('Giriş Başarısız. Hata kodu: ${response.statusCode}');
     }
   }
 
@@ -158,11 +141,7 @@ class _LoginState extends State<Login> {
             ),
             SizedBox(height: 30),
             GestureDetector(
-              onTap: () {
-                login();
-                //   Navigator.of(context).push(
-                //       MaterialPageRoute(builder: ((context) => Navigation())));
-              },
+              onTap: login,
               child: Container(
                 alignment: Alignment.center,
                 height: 50,
@@ -185,35 +164,6 @@ class _LoginState extends State<Login> {
             SizedBox(height: 180),
             Expanded(
               child: GestureDetector(
-                child: Container(
-                  height: 100,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.shade300,
-                        offset: Offset(1, 1),
-                        blurRadius: 20,
-                      ),
-                    ],
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(120),
-                      topRight: Radius.circular(120),
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Sign up',
-                      style: TextStyle(
-                        fontFamily: 'ro',
-                        color: font,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
                 onTap: () {
                   showModalBottomSheet(
                     isScrollControlled: true,
@@ -247,8 +197,7 @@ class _LoginState extends State<Login> {
                                 ),
                                 SizedBox(height: 40),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 30),
+                                  padding: const EdgeInsets.symmetric(horizontal: 30),
                                   child: Container(
                                     padding: EdgeInsets.only(left: 15),
                                     decoration: BoxDecoration(
@@ -262,8 +211,7 @@ class _LoginState extends State<Login> {
                                         hintText: 'Email',
                                         hintStyle: TextStyle(fontFamily: 'ro'),
                                         border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
+                                          borderRadius: BorderRadius.circular(15),
                                           borderSide: BorderSide.none,
                                         ),
                                       ),
@@ -272,8 +220,7 @@ class _LoginState extends State<Login> {
                                 ),
                                 SizedBox(height: 20),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 30),
+                                  padding: const EdgeInsets.symmetric(horizontal: 30),
                                   child: Container(
                                     padding: EdgeInsets.only(left: 15),
                                     decoration: BoxDecoration(
@@ -281,14 +228,13 @@ class _LoginState extends State<Login> {
                                       borderRadius: BorderRadius.circular(15),
                                     ),
                                     child: TextField(
-                                      controller: usernameSingUpController,
+                                      controller: usernameSignUpController,
                                       decoration: InputDecoration(
                                         icon: Icon(Icons.person),
                                         hintText: 'User Name',
                                         hintStyle: TextStyle(fontFamily: 'ro'),
                                         border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
+                                          borderRadius: BorderRadius.circular(15),
                                           borderSide: BorderSide.none,
                                         ),
                                       ),
@@ -297,8 +243,7 @@ class _LoginState extends State<Login> {
                                 ),
                                 SizedBox(height: 20),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 30),
+                                  padding: const EdgeInsets.symmetric(horizontal: 30),
                                   child: Container(
                                     padding: EdgeInsets.only(left: 15),
                                     decoration: BoxDecoration(
@@ -308,14 +253,13 @@ class _LoginState extends State<Login> {
                                     child: TextField(
                                       obscureText: true,
                                       obscuringCharacter: '*',
-                                      controller: passwordSingUpController,
+                                      controller: passwordSignUpController,
                                       decoration: InputDecoration(
                                         icon: Icon(Icons.lock),
                                         hintText: 'password',
                                         hintStyle: TextStyle(fontFamily: 'ro'),
                                         border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
+                                          borderRadius: BorderRadius.circular(15),
                                           borderSide: BorderSide.none,
                                         ),
                                       ),
@@ -324,9 +268,7 @@ class _LoginState extends State<Login> {
                                 ),
                                 SizedBox(height: 30),
                                 GestureDetector(
-                                  onTap: () {
-                                    singUp();
-                                  },
+                                  onTap: signUp,
                                   child: Container(
                                     alignment: Alignment.center,
                                     height: 50,
@@ -354,6 +296,35 @@ class _LoginState extends State<Login> {
                     },
                   );
                 },
+                child: Container(
+                  height: 100,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.shade300,
+                        offset: Offset(1, 1),
+                        blurRadius: 20,
+                      ),
+                    ],
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(120),
+                      topRight: Radius.circular(120),
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Sign up',
+                      style: TextStyle(
+                        fontFamily: 'ro',
+                        color: font,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
