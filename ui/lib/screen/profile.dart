@@ -9,44 +9,36 @@ import 'package:recipe/widgets/home/myRecipes.dart';
 import 'package:recipe/widgets/home/following.dart';
 import 'package:recipe/widgets/home/bookmarked.dart';
 import 'package:recipe/widgets/home/settings.dart';
+import 'dart:async';
 
 //fotograf secme ozellıgı eklenebilir
 
 // ignore: must_be_immutable
 class Profile extends StatefulWidget {
-  Profile({super.key});
+  final int? userId; // Make userId nullable
+
+  Profile({this.userId, Key? key}) : super(key: key);
+  //Profile({super.key});
 
   @override
   State<Profile> createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
-  late UserProfile currentUser;
+  late Future<UserProfile> currentUser;
+  late int finalUserId;
 
   @override
   void initState() {
     super.initState();
-    loadCurrentUser();
+    finalUserId = widget.userId ?? 1;
+    currentUser = UserProfile.fetchCurrentUser(finalUserId);
   }
 
-  Future<void> loadCurrentUser() async {
-    try {
-      final fetchedUser = await UserProfile.fetchCurrentUser();
-      setState(() {
-        currentUser = fetchedUser;
-      });
-    } catch (e) {
-      print('Error loading current user: $e');
-    }
-  }
-
-  List<Icon> icons = [
+  List<Icon> allIcons = [
     Icon(Icons.work, color: maincolor),
     Icon(Icons.restaurant, color: maincolor),
     Icon(Icons.school, color: maincolor),
-  ];
-
-  List<Icon> constIcons = [
     Icon(Icons.person, color: maincolor),
     Icon(Icons.group, color: maincolor),
     Icon(Icons.thumb_up, color: maincolor),
@@ -56,20 +48,10 @@ class _ProfileState extends State<Profile> {
     Icon(Icons.chat, color: maincolor),
     Icon(Icons.login, color: maincolor),
   ];
-
-  List tileNames = [
+  List allTileNames = [
     'Working at: ',
     'Cuisines of expertise: ',
     'Graduated from: ',
-  ];
-
-  List tileNamesInfo = [
-    'Özkardeşler kebap salonu',
-    'kebap',
-    'Bahçeşehir Üniversitesi Gastronomi bölümü',
-  ];
-
-  List constTileNames = [
     'Personal',
     'Following',
     'Bookmarked',
@@ -80,47 +62,57 @@ class _ProfileState extends State<Profile> {
     'Logout'
   ];
 
-  void _showStableSubPage(BuildContext context, int index) {
+  void _showAllSubPages(
+      BuildContext context, int index, UserProfile currentUser) {
     Widget toBeOpened = FAQs();
-    Widget personal = Personal(currentUser);
-    Widget following = Following(currentUser);
-    Widget bookmarked = Bookmarked(currentUser);
+    Widget personal = Personal(userId: finalUserId);
+    Widget following = Following(userId: finalUserId);
+    Widget bookmarked = Bookmarked(userId: finalUserId);
     Widget nutritionalProfile = NutritionalProfile();
-    Widget myRecipes = MyRecipes(currentUser);
+    Widget myRecipes = MyRecipes(userId: finalUserId);
     Widget settings = Settings();
     Widget faqs = FAQs();
     Widget logout = Logout();
     bool isFullPage = false;
     switch (index) {
       case 0:
-        toBeOpened = personal;
         isFullPage = false;
         break;
       case 1:
-        toBeOpened = following;
-        isFullPage = true;
+        isFullPage = false;
         break;
       case 2:
-        toBeOpened = bookmarked;
         isFullPage = false;
         break;
       case 3:
-        toBeOpened = nutritionalProfile;
-        isFullPage = true;
+        toBeOpened = personal;
+        isFullPage = false;
         break;
       case 4:
-        toBeOpened = myRecipes;
+        toBeOpened = following;
         isFullPage = true;
         break;
       case 5:
-        toBeOpened = settings;
+        toBeOpened = bookmarked;
         isFullPage = true;
         break;
       case 6:
+        toBeOpened = nutritionalProfile;
+        isFullPage = true;
+        break;
+      case 7:
+        toBeOpened = myRecipes;
+        isFullPage = true;
+        break;
+      case 8:
+        toBeOpened = settings;
+        isFullPage = true;
+        break;
+      case 9:
         toBeOpened = faqs;
         isFullPage = false;
         break;
-      case 7:
+      case 10:
         toBeOpened = logout;
         isFullPage = false;
         break;
@@ -149,20 +141,25 @@ class _ProfileState extends State<Profile> {
             },
           ));
     } else {
-      showModalBottomSheet(
-          context: context,
-          builder: (BuildContext bc) {
-            return toBeOpened;
-          });
+      if (index < 3) {
+        String givenText = getRelevantText(currentUser, index);
+        _showSubPage(context, givenText, index);
+      } else {
+        showModalBottomSheet(
+            context: context,
+            builder: (BuildContext bc) {
+              return toBeOpened;
+            });
+      }
     }
 
     //TextEditingController textEditingController =
     //  TextEditingController(text: index.toString());
   }
 
-  void _showSubPage(BuildContext context, int index) {
+  void _showSubPage(BuildContext context, givenText, index) {
     TextEditingController textEditingController =
-        TextEditingController(text: tileNamesInfo[index]);
+        TextEditingController(text: givenText);
     showModalBottomSheet(
       context: context,
       builder: (BuildContext bc) {
@@ -174,10 +171,9 @@ class _ProfileState extends State<Profile> {
               controller: textEditingController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: tileNames[index],
+                labelText: allTileNames[index],
               ),
               autofocus: true,
-              //child: Text( tileName),
             ),
           ),
         );
@@ -187,109 +183,109 @@ class _ProfileState extends State<Profile> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: background,
-      body: SafeArea(
-          child: Column(
-        children: [
-          SizedBox(height: 30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: maincolor, width: 2),
-                  shape: BoxShape.circle,
+        backgroundColor: background,
+        body: SafeArea(
+            child: FutureBuilder<UserProfile>(
+          future: currentUser,
+          builder: (BuildContext context, AsyncSnapshot<UserProfile> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Scaffold(
+                backgroundColor: background,
+                body: Center(
+                  child: CircularProgressIndicator(),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: CircleAvatar(
+              );
+            } else if (snapshot.hasError) {
+              return Scaffold(
+                backgroundColor: background,
+                body: Center(
+                  child: Text('Error: ${snapshot.error}'),
+                ),
+              );
+            } else if (snapshot.hasData) {
+              UserProfile currentUser = snapshot.data!;
+              return Column(
+                children: [
+                  CircleAvatar(
                     radius: 50,
-                    backgroundImage: AssetImage(currentUser.image),
+                    backgroundImage: NetworkImage(currentUser.image),
                   ),
+                  SizedBox(height: 10),
+                  Text(
+                    currentUser.user.username,
+                    style:
+                        TextStyle(fontSize: 18, color: font, fontFamily: 'ro'),
+                  ),
+                  Text(
+                    currentUser.description,
+                    style:
+                        TextStyle(fontSize: 18, color: font, fontFamily: 'ro'),
+                  ),
+                  Divider(height: 40, thickness: 2),
+                  SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Divider(
+                      height: 40,
+                      thickness: 2,
+                    ),
+                  ),
+                  Flexible(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: 10,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ListTile(
+                          leading: Container(
+                            width: 37,
+                            height: 37,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: allIcons[index],
+                          ),
+                          title: Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Text(
+                              allTileNames[index] +
+                                  getRelevantText(currentUser, index),
+                              style: TextStyle(fontSize: 17, color: font),
+                            ),
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(Icons.navigate_next),
+                            onPressed: () =>
+                                _showAllSubPages(context, index, currentUser),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return Scaffold(
+                backgroundColor: background,
+                body: Center(
+                  child: Text("No data available"),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 10),
-          Text(
-            currentUser.user.username,
-            style: TextStyle(fontSize: 18, color: font, fontFamily: 'ro'),
-          ),
-          Text(
-            currentUser.description,
-            style: TextStyle(fontSize: 18, color: font, fontFamily: 'ro'),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Divider(
-              height: 40,
-              thickness: 2,
-            ),
-          ),
-          Flexible(
-            child: ListView.builder(
-              // degisken ilk 3
-              shrinkWrap: true,
-              itemCount: 3,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  leading: Container(
-                    width: 37,
-                    height: 37,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: icons[index],
-                  ),
-                  title: Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text(
-                      tileNames[index] + tileNamesInfo[index],
-                      style: TextStyle(fontSize: 17, color: font),
-                    ),
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(Icons.navigate_next),
-                    onPressed: () => _showSubPage(context, index),
-                  ),
-                );
-              },
-            ),
-          ),
-          Flexible(
-            child: ListView.builder(
-              // sabit kalacak son 8
-              shrinkWrap: true,
-              itemCount: 8,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  leading: Container(
-                    width: 37,
-                    height: 37,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: constIcons[index],
-                  ),
-                  title: Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text(
-                      constTileNames[index],
-                      style: TextStyle(fontSize: 17, color: font),
-                    ),
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(Icons.navigate_next),
-                    onPressed: () => _showStableSubPage(context, index),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      )),
-    );
+              );
+            }
+          },
+        )));
+  }
+
+  String getRelevantText(UserProfile user, int index) {
+    switch (index) {
+      case 0:
+        return user.workingAt;
+      case 1:
+        return user.cuisinesOfExpertise;
+      case 2:
+        return user.graduatedFrom;
+      default:
+        return '';
+    }
   }
 }

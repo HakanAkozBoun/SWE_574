@@ -1,7 +1,7 @@
 from django.urls import path, include
 
-from .views import add_rating, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login,CreateBlog,GetBlog,UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, GetUnitList, RegisterAPIView
-from .views import add_rating, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login,CreateBlog,GetBlog,UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView
+from .views import add_rating, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, #CreateUser
+
 
 from rest_framework import routers
 
@@ -45,14 +45,17 @@ urlpatterns = [
     path('Following/', GetFollowingUserList, name='FollowingUserList'),
     path('MyBookmarks/', GetBookmarkedRecipes, name='BookmarkedRecipes'),
     path('MyRecipes/', GetSelfRecipes, name='SelfRecipes'),
-
+    path('MyProfile/', GetCurrentUserProfile, name='SelfProfile'),
+    path('DailyNutrition/', GetNutritionDaily, name='DailyNutrition'),
 
 
 
     path('add_rating/', add_rating, name='add_rating'),
     path('userprofile/', UserProfileView.as_view(), name='UserProfileViewSet'),
     path('inputfood/', InputFoodView.as_view(), name='InputFoodViewSet'),
+
     path('CreateUser/', RegisterAPIView.as_view(), name='RegisterAPIView'),
     path('allergy/', AllergyView.as_view(), name='AllergyViewSet'),
     
 ]
+

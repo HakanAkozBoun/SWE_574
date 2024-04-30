@@ -97,6 +97,17 @@ DATABASES = {
 }
 
 # DATABASES = {
+
+#    'default': {
+#       'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'cookPad',
+#        'USER': 'postgres',
+#        'PASSWORD': '1',
+#        'HOST': 'localhost',
+#        'PORT': '5432',
+#    }
+
+# DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.postgresql_psycopg2',
 #        'NAME': 'xymziiwn',
@@ -179,11 +190,12 @@ MEDIA_ROOT = BASE_DIR/'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",
-#     "http://localhost:3001",
-#     "http://127.0.0.1:3000",
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8000",
+]
 
 # DATABASES = {
 #     'default': {
