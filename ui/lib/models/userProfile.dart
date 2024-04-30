@@ -1,22 +1,37 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'recipe.dart';
+import '../constants/backend_url.dart';
 
 class UserProfile {
-  final user;
+  // static const String currentUserUrl = BackendUrl.apiUrl + 'MyProfile/';
+  //static const String followingUsersUrl = BackendUrl.apiUrl + 'Following/';
+  //static const String bookmarkedRecipesUrl = BackendUrl.apiUrl + 'MyBookmarks/';
+  //static const String selfRecipesUrl = BackendUrl.apiUrl + 'MyRecipes/';
+
+  final int id;
+  final User user;
+  //final String username;
+  //final String email;
   final int age;
   final double weight;
   final double height;
   final String description;
   final String image;
-  final String experience;
+  final int experience;
   final String gender;
   final String graduatedFrom;
   final String cuisinesOfExpertise;
   final String workingAt;
+  final String story;
+  //final String foodAllergies;
+  final String dietGoals;
 
   UserProfile({
+    required this.id,
     required this.user,
+    //required this.username,
+    //required this.email,
     required this.age,
     required this.weight,
     required this.height,
@@ -27,27 +42,36 @@ class UserProfile {
     required this.graduatedFrom,
     required this.cuisinesOfExpertise,
     required this.workingAt,
+    required this.story,
+    //required this.foodAllergies,
+    required this.dietGoals,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
-      user: json['user'],
-      age: json['age'],
-      weight: json['weight'],
-      height: json['height'],
-      description: json['description'],
-      image: json['image'],
-      experience: json['experience'],
-      gender: json['gender'],
-      graduatedFrom: json['graduatedFrom'],
-      cuisinesOfExpertise: json['cuisinesOfExpertise'],
-      workingAt: json['workingAt'],
+      id: json['id'],
+      user: User.fromJson(json['user']),
+      // username: json['username'] ?? '',
+      // email: json['email'] ?? '',
+      age: json['age'] ?? 0,
+      weight: json['weight'] ?? '',
+      height: json['height'] ?? '',
+      description: json['description'] ?? '',
+      image: json['image'] ?? '',
+      experience: json['experience'] ?? 0,
+      story: json['story'] ?? '',
+      // foodAllergies: json['food_allergies'] ?? '',
+      dietGoals: json['diet_goals'] ?? '',
+      gender: json['gender'] ?? '',
+      graduatedFrom: json['graduated_from'] ?? '',
+      cuisinesOfExpertise: json['cuisines_of_expertise'] ?? '',
+      workingAt: json['working_at'] ?? '',
     );
   }
 
-  static Future<UserProfile> fetchCurrentUser() async {
+  static Future<UserProfile> fetchCurrentUser(int userId) async {
     final response = await http.get(Uri.parse(
-        'http://10.0.2.2:8000/api/userprofile/')); // EE burada link doğru mu
+        '${BackendUrl.currentUserUrl}?id=$userId')); // EE burada link doğru mu
     if (response.statusCode == 200) {
       final jsonBody = json.decode(response.body);
       return UserProfile.fromJson(jsonBody);
@@ -56,10 +80,11 @@ class UserProfile {
     }
   }
 
-  static Future<List<UserProfile>> fetchFollowingUsers() async {
+  static Future<List<UserProfile>> fetchFollowingUsers(int userId) async {
     try {
-      final response =
-          await http.get(Uri.parse('http://10.0.2.2:8000/api/Following/'));
+      //final response = await http.get(Uri.parse(BackendUrl.followingUsersUrl));
+      final response = await http
+          .get(Uri.parse('${BackendUrl.followingUsersUrl}?id=$userId'));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((json) => UserProfile.fromJson(json)).toList();
@@ -71,10 +96,10 @@ class UserProfile {
     }
   }
 
-  static Future<List<Recipe>> fetchBookmarkedRecipes() async {
+  static Future<List<Recipe>> fetchBookmarkedRecipes(int userId) async {
     try {
-      final response =
-          await http.get(Uri.parse('http://10.0.2.2:8000/api/MyBookmarks/'));
+      final response = await http
+          .get(Uri.parse('${BackendUrl.bookmarkedRecipesUrl}?id=$userId'));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((json) => Recipe.fromJson(json)).toList();
@@ -86,10 +111,10 @@ class UserProfile {
     }
   }
 
-  static Future<List<Recipe>> fetchSelfRecipes() async {
+  static Future<List<Recipe>> fetchSelfRecipes(int userId) async {
     try {
       final response =
-          await http.get(Uri.parse('http://10.0.2.2:8000/api/MyRecipes/'));
+          await http.get(Uri.parse('${BackendUrl.selfRecipesUrl}?id=$userId'));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((json) => Recipe.fromJson(json)).toList();
@@ -99,5 +124,19 @@ class UserProfile {
     } catch (e) {
       throw Exception('Failed to load own recipes');
     }
+  }
+}
+
+class User {
+  final String username;
+  final String email;
+
+  User({required this.username, required this.email});
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      username: json['username'],
+      email: json['email'],
+    );
   }
 }

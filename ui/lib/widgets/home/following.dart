@@ -1,81 +1,111 @@
 import 'package:flutter/material.dart';
+import 'package:recipe/consent/colors.dart';
 import 'package:recipe/models/userProfile.dart';
 import 'otherProfiles.dart';
-import 'testUser.dart';
+//import 'testUser.dart';
 
+// EE kimseyi takip etmiyorsa testi lazım
+// ignore: must_be_immutable
 class Following extends StatefulWidget {
-  late UserProfile currentUser;
-  Following(this.currentUser, {Key? key}) : super(key: key);
+  final int userId;
+
+  Following({required this.userId, Key? key}) : super(key: key);
+  //Following({super.key});
 
   @override
   State<Following> createState() => _FollowingState();
 }
 
 class _FollowingState extends State<Following> {
-  late List<UserProfile> followingUsers = [];
+  //late Future<UserProfile> currentUser;
+  late Future<List<UserProfile>> followingUsers;
 
   @override
   void initState() {
     super.initState();
-    loadFollowingUsers();
-  }
-
-  Future<void> loadFollowingUsers() async {
-    try {
-      final fetchedFollowingUsers = await UserProfile.fetchFollowingUsers();
-      setState(() {
-        followingUsers = fetchedFollowingUsers;
-      });
-    } catch (e) {
-      print('Error loading following users: $e');
-    }
+    // currentUser = apiCalls.fetchCurrentUser();
+    followingUsers = UserProfile.fetchFollowingUsers(widget.userId);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Followed Accounts'),
-      ),
-      body: ListView.builder(
-        itemCount: followingUsers.length,
-        itemBuilder: (context, index) {
-          UserProfile user = followingUsers[index];
-          return Card(
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundImage: AssetImage(user.image),
-              ),
-              title: RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: '${user.user.username} ',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextSpan(
-                      text: ':     ${user.description} ',
-                      style: TextStyle(
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
+        backgroundColor: background,
+        body: SafeArea(
+            child: FutureBuilder<List<UserProfile>>(
+          future: followingUsers,
+          builder: (BuildContext context,
+              AsyncSnapshot<List<UserProfile>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Scaffold(
+                backgroundColor: background,
+                body: Center(
+                  child: CircularProgressIndicator(),
                 ),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => OtherProfiles(user: user)),
-                );
-              },
-            ),
-          );
-        },
-      ),
-    );
+              );
+            } else if (snapshot.hasError) {
+              return Scaffold(
+                backgroundColor: background,
+                body: Center(
+                  child: Text('Error: ${snapshot.error}'),
+                ),
+              );
+            } else if (snapshot.hasData) {
+              List<UserProfile> followingUsersList = snapshot.data!;
+              return Scaffold(
+                appBar: AppBar(
+                  title: Text('Followed Accounts'),
+                ),
+                body: ListView.builder(
+                  itemCount: followingUsersList.length,
+                  itemBuilder: (context, index) {
+                    UserProfile user = followingUsersList[index];
+                    return Card(
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: AssetImage(user.image),
+                        ),
+                        title: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '${user.user.username} ',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextSpan(
+                                text: ':     ${user.description} ',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    OtherProfiles(user: user)),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+              );
+            } else {
+              return Scaffold(
+                backgroundColor: background,
+                body: Center(
+                  child: Text("No data available"),
+                ),
+              );
+            }
+          },
+        )));
   }
 }

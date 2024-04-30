@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:recipe/consent/colors.dart';
 import 'package:recipe/models/userProfile.dart';
 import 'package:recipe/models/recipe.dart';
 
 class MyRecipes extends StatefulWidget {
-  late UserProfile currentUser;
-  MyRecipes(this.currentUser, {Key? key}) : super(key: key);
+  final int userId;
+
+  MyRecipes({required this.userId, Key? key}) : super(key: key);
   @override
-  State<MyRecipes> createState() => _BookmarkedState();
+  State<MyRecipes> createState() => _MyRecipes();
 }
 
-class _BookmarkedState extends State<MyRecipes> {
-  late List<Recipe> myRecipes = [];
+class _MyRecipes extends State<MyRecipes> {
+  late Future<List<Recipe>> myRecipes;
 
   @override
   void initState() {
     super.initState();
-    loadMyRecipes();
+    myRecipes = UserProfile.fetchSelfRecipes(widget.userId);
+    // loadMyRecipes();
   }
 
+/*
   Future<void> loadMyRecipes() async {
     try {
       final fetchedMyRecipes = await UserProfile.fetchSelfRecipes();
@@ -27,10 +31,150 @@ class _BookmarkedState extends State<MyRecipes> {
     } catch (e) {
       print('Error loading own recipes : $e');
     }
-  }
-
+  }*/
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: background,
+        body: SafeArea(
+            child: FutureBuilder<List<Recipe>>(
+          future: myRecipes,
+          builder:
+              (BuildContext context, AsyncSnapshot<List<Recipe>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Scaffold(
+                backgroundColor: background,
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Scaffold(
+                backgroundColor: background,
+                body: Center(
+                  child: Text('Error: ${snapshot.error}'),
+                ),
+              );
+            } else if (snapshot.hasData) {
+              List<Recipe> myRecipesList = snapshot.data!;
+              return cardList(context, myRecipesList);
+              /* Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 10),
+                        child: Column(
+                          children: myRecipesList.map((recipe) {
+                            return buildRecipeCard(recipe.title, recipe.excerpt,
+                                '15 min', '../../images/dinner1.jpg');
+                          }).toList(),
+                        ),
+                      ),*/
+
+              /*
+                      title: Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          allTileNames[index] +
+                              getRelevantText(currentUser, index),
+                          style: TextStyle(fontSize: 17, color: font),
+                        ),
+                      ),
+                      trailing: IconButton(
+                        icon: Icon(Icons.navigate_next),
+                        onPressed: () =>
+                            _showAllSubPages(context, index, currentUser),
+                      ),
+                    );
+                  },*/
+
+              /*
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 10),
+                    child: Column(
+                      children: myRecipesList.map((recipe) {
+                        return buildRecipeCard(recipe.title, recipe.excerpt,
+                            '15 min', '../../images/dinner1.jpg');
+                      }).toList(),
+                    ),
+                  ),
+                ),*/
+
+              /*  return Scaffold(
+                appBar: AppBar(
+                  title: Text('Followed Accounts'),
+                ),
+                body: ListView.builder(
+                  itemCount: followingUsersList.length,
+                  itemBuilder: (context, index) {
+                    UserProfile user = followingUsersList[index];
+                    return Card(
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: AssetImage(user.image),
+                        ),
+                        title: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '${user.user.username} ',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextSpan(
+                                text: ':     ${user.description} ',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    OtherProfiles(user: user)),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+              );
+          */
+            } else {
+              return Scaffold(
+                backgroundColor: background,
+                body: Center(
+                  child: Text("No data available"),
+                ),
+              );
+            }
+          },
+        )));
+  }
+
+/*
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        child: Column(
+          children: myRecipes.map((recipe) {
+            return buildRecipeCard(recipe.title, recipe.excerpt, '15 min',
+                '../../images/dinner1.jpg');
+          }).toList(),
+        ),
+      ),
+    );
+  }
+*/
+  Widget cardList(BuildContext context, List<Recipe> myRecipes) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
