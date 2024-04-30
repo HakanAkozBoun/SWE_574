@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipe/screen/addPost.dart';
 import 'package:recipe/screen/login.dart';
 import 'package:recipe/screen/home2.dart';
 import 'package:recipe/screen/profile.dart';
@@ -41,7 +42,7 @@ class appDrawer extends StatelessWidget {
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (BuildContext context) => Profile(userId: 1),
+                  builder: (BuildContext context) => Profile(userId: 7),
                 ),
               );
             },
@@ -59,6 +60,15 @@ class appDrawer extends StatelessWidget {
           ListTile(
             title: const Text('Logout'),
             onTap: () {},
+          ),
+          ListTile(
+            title: const Text('Add recipe'),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) => AddItemPage(edit: 0, item: {}, id: 0)),
+              );
+            },
           ),
         ],
       ),

@@ -249,7 +249,7 @@ class _AddItemPageState extends State<AddItemPage> {
     if (_filter.length < 3) return;
 
     final response = await http.get(
-      Uri.parse('http://10.0.2.2:8000/api/FoodList?filter=$_filter'),
+      Uri.parse('http://167.172.171.174:8000/api/FoodList?filter=$_filter'),
     );
 
     if (response.statusCode == 200) {

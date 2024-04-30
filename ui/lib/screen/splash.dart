@@ -4,6 +4,7 @@ import 'package:recipe/consent/colors.dart';
 import 'package:recipe/screen/home.dart';
 import 'package:recipe/screen/home2.dart';
 import 'package:recipe/screen/login.dart';
+import 'package:recipe/screen/profile.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
