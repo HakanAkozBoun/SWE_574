@@ -71,7 +71,7 @@ class _AllergyPageState extends State<AllergyPage> {
       body: Column(
         children: [
           Text(
-            userId,
+            userId.toString(),
             style: TextStyle(
               fontSize: 18,
               fontFamily: 'ro',

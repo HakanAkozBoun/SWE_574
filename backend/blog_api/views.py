@@ -364,7 +364,7 @@ def Login(request):
     user = authenticate(username=username, password=password)
     if user is not None:
         return JsonResponse(json.loads('{"token":"' + base64.b64encode(bytes(username + ":" + password, 'utf-8')).decode('utf-8') + '", "id":' + str(user.id) + ',"name":"' + user.username + '"}'), safe=False)
-    return JsonResponse("Wrong User or Password", safe=False)
+    return JsonResponse("Wrong User or Password", safe=False, status=401)
 
 
 # NEW VIEWS

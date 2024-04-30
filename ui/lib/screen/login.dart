@@ -51,8 +51,8 @@ class _LoginState extends State<Login> {
     Uri apiUrl = Uri.parse('http://10.0.2.2:8000/api/Login/');
 
     Map<String, dynamic> data = {
-      'username': username,
-      'password': password,
+      'user': username,
+      'pass': password,
     };
 
     var response = await http.post(
@@ -67,7 +67,8 @@ class _LoginState extends State<Login> {
 
       var jsonResponse = jsonDecode(response.body);    
       UserData userData = UserData();
-      userData.setUserId(jsonResponse['id']);
+      int userId = int.parse(jsonResponse['id'].toString());
+      userData.setUserId(userId);
 
       setState(() {
         isLoggedIn = true;
