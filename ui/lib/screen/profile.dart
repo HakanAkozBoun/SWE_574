@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/consent/colors.dart';
 import 'package:recipe/models/userProfile.dart';
+import 'package:recipe/widgets/home/app_drawer.dart';
+import 'package:recipe/widgets/home/appbar2.dart';
 import 'package:recipe/widgets/home/faqs.dart';
 import 'package:recipe/widgets/home/logout.dart';
 import 'package:recipe/widgets/home/personal.dart';
@@ -183,6 +185,8 @@ class _ProfileState extends State<Profile> {
 
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar2(),
+        drawer: appDrawer(),
         backgroundColor: background,
         body: SafeArea(
             child: FutureBuilder<UserProfile>(

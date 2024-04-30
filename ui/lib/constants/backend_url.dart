@@ -1,5 +1,9 @@
 class BackendUrl {
-  static const String apiUrl = 'http://127.0.0.1:8000/api/';
+  //static const String apiUrl = 'http://167.172.171.174:8000/api/';
+  //http://167.172.171.174:8000/api/UnitItemList/?unit=1
+  static const String apiUrl = 'http://167.172.171.174:8000/api/';
+  //static const String apiUrl = 'http://127.0.0.1:8000/api/';
+
   static const String currentUserUrl = BackendUrl.apiUrl + 'MyProfile/';
   static const String followingUsersUrl = BackendUrl.apiUrl + 'Following/';
   static const String bookmarkedRecipesUrl = BackendUrl.apiUrl + 'MyBookmarks/';
