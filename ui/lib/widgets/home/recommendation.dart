@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/models/recipe.dart';
+import 'package:recipe/screen/recipe.dart' as RecipeScreen;
 
 class RecommendationWidget extends StatefulWidget {
   const RecommendationWidget({super.key});
@@ -35,14 +36,27 @@ class _RecommendationWidgetState extends State<RecommendationWidget> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
         child: Row(
-          children: recommendations.map((recommendation) {
-            return buildRecommendation(
-              'recommendation.imagePath',
-              recommendation.title,
-              recommendation.description,
-              '10 min',
-            );
-          }).toList(),
+          children: recommendations.map(
+            (recommendation) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => RecipeScreen.Recipe(
+                        slug: "Recipe",
+                        id: recommendation.id,
+                      ),
+                    ),
+                  );
+                },
+                child: buildRecommendation(
+                    recommendation.title,
+                    recommendation.description,
+                    "recipe.duration",
+                    recommendation.imagePath),
+              );
+            },
+          ).toList(),
         ),
       ),
     );
@@ -52,7 +66,7 @@ class _RecommendationWidgetState extends State<RecommendationWidget> {
   final double height = 250.0;
 
   Widget buildRecommendation(
-      String imagePath, String title, String description, String duration) {
+      String title, String description, String duration, String imagePath) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 7),
       child: Container(

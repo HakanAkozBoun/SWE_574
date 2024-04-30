@@ -6,10 +6,15 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:recipe/screen/home.dart';
+import 'package:recipe/constants/backend_url.dart';
+
+// http://10.0.2.2:8000/api
 
 Future<List<dynamic>> fetchData() async {
+  const String categoryUrl = BackendUrl.apiUrl + 'CategoryList/';
+  
   final response =
-      await http.get(Uri.parse('http://10.0.2.2:8000/api/CategoryList/'));
+      await http.get(Uri.parse(categoryUrl));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -18,8 +23,9 @@ Future<List<dynamic>> fetchData() async {
 }
 
 Future<List<dynamic>> fetchData2() async {
+  const String foodListUrl = BackendUrl.apiUrl + 'FoodList/';
   final response =
-      await http.get(Uri.parse('http://10.0.2.2:8000/api/FoodList/'));
+      await http.get(Uri.parse(foodListUrl));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -28,8 +34,9 @@ Future<List<dynamic>> fetchData2() async {
 }
 
 Future<List<dynamic>> fetchData3() async {
+  const String unitListUrl = BackendUrl.apiUrl + 'UnitList/';
   final response =
-      await http.get(Uri.parse('http://10.0.2.2:8000/api/UnitList/'));
+      await http.get(Uri.parse(unitListUrl));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -38,8 +45,9 @@ Future<List<dynamic>> fetchData3() async {
 }
 
 Future<List<dynamic>> fetchData4(id) async {
+  const String recipeList = BackendUrl.apiUrl + 'RecipeList/?blog=';
   final response = await http.get(
-      Uri.parse('http://10.0.2.2:8000/api/RecipeList/?blog=' + id.toString()));
+      Uri.parse(recipeList + id.toString()));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -54,9 +62,11 @@ Future<File?> pickImage() async {
 }
 
 Future<void> uploadImage(File image) async {
+  const String imageFileUrl = BackendUrl.apiUrl + 'File';
+
   final request = http.MultipartRequest(
     'POST',
-    Uri.parse('http://10.0.2.2:8000/api/File/'),
+    Uri.parse(imageFileUrl),
   );
 
   // Handle potential errors during file reading
@@ -210,11 +220,32 @@ class _AddItemPageState extends State<AddItemPage> {
   final TextEditingController amountController = TextEditingController();
   final List<FoodItemList> FoodItemLists = [];
 
+  List<String> elemanlar = [];
+  String instruction = "";
+  String yeniEleman = "";
+
+  void elemanEkle() {
+    setState(() {
+      elemanlar.add(yeniEleman);
+      instruction +=
+          "" + (elemanlar.length).toString() + "-) " + yeniEleman + "\n";
+      yeniEleman = "";
+    });
+  }
+
+  void elemanSil(int index) {
+    setState(() {
+      elemanlar.removeAt(index);
+    });
+  }
+
   String _filter = '';
   List<String> _foodList = [];
   List _foodList2 = [];
   String _foodList2VALUE = "";
   Future<void> _fetchFoodList() async {
+    // const String foodListFilter = BackendUrl.apiUrl + 'FoodList?filter=$_filter';
+
     if (_filter.length < 3) return;
 
     final response = await http.get(
@@ -246,6 +277,12 @@ class _AddItemPageState extends State<AddItemPage> {
       _inputController8.text = widget.item["cookingtime"];
       // _inputController9.text = widget.item["rate"];
       _inputController10.text = widget.item["serving"].toString();
+
+      for (var i = 0;
+          i < widget.item["contentTwo"].split("\n").length - 1;
+          i++) {
+        elemanlar.add(widget.item["contentTwo"].split("\n")[i]);
+      }
 
       print(widget.item["id"]);
 
@@ -281,8 +318,9 @@ class _AddItemPageState extends State<AddItemPage> {
   }
 
   Future<void> sendData(data) async {
+    const String createBlogUrl = BackendUrl.apiUrl + 'CreateBlog';
     final url =
-        Uri.parse('http://10.0.2.2:8000/api/CreateBlog/'); // API'nin URL'si
+        Uri.parse(createBlogUrl); // API'nin URL'si
 
     try {
       final response = await http.post(
@@ -355,10 +393,6 @@ class _AddItemPageState extends State<AddItemPage> {
               controller: _inputController1,
               decoration: InputDecoration(labelText: 'Title'),
             ),
-            // TextFormField(
-            //   controller: _inputController2,
-            //   decoration: InputDecoration(labelText: 'Slug'),
-            // ),
             TextFormField(
               controller: _inputController7,
               decoration: InputDecoration(labelText: 'Preparation Time'),
@@ -371,61 +405,11 @@ class _AddItemPageState extends State<AddItemPage> {
               controller: _inputController10,
               decoration: InputDecoration(labelText: 'Serving'),
             ),
-            // TextFormField(
-            //   controller: _inputController9,
-            //   decoration: InputDecoration(labelText: 'Rate'),
-            // ),
-            // TextFormField(
-            //   controller: _inputController10,
-            //   decoration: InputDecoration(labelText: 'Bookmark'),
-            // ),
-            // TextFormField(
-            //   controller: _inputController3,
-            //   decoration: InputDecoration(labelText: 'Excerpt'),
-            // ),
             TextFormField(
               controller: _inputController4,
               decoration: InputDecoration(labelText: 'Description'),
             ),
-            TextFormField(
-              controller: _inputController5,
-              decoration: InputDecoration(labelText: 'Instruction List'),
-            ),
-            // TextFormField(
-            //   controller: _inputController6,
-            //   decoration: InputDecoration(labelText: 'Ingradiends List Name'),
-            // ),
             SizedBox(height: 20.0),
-            // FutureBuilder<List<dynamic>>(
-            //   future: fetchData2(),
-            //   builder: (context, snapshot) {
-            //     if (snapshot.connectionState == ConnectionState.waiting) {
-            //       return CircularProgressIndicator();
-            //     } else if (snapshot.hasError) {
-            //       return Text('Error: ${snapshot.error}');
-            //     } else {
-            //       List<dynamic> data = snapshot.data!;
-            //       List<FoodItem> items2 =
-            //           data.map((item) => FoodItem.fromJson(item)).toList();
-
-            //       return DropdownButton<FoodItem>(
-            //         value: _selectedItem2,
-            //         icon: Icon(Icons.arrow_drop_down, color: Colors.black),
-            //         items: items2.map((item) {
-            //           return DropdownMenuItem<FoodItem>(
-            //             value: item,
-            //             child: Text(item.name),
-            //           );
-            //         }).toList(),
-            //         onChanged: (FoodItem? selectedItem) {
-            //           setState(() {
-            //             _selectedItem2 = selectedItem;
-            //           });
-            //         },
-            //       );
-            //     }
-            //   },
-            // ),
             Column(
               children: [
                 TextField(
@@ -456,7 +440,6 @@ class _AddItemPageState extends State<AddItemPage> {
                 ),
               ],
             ),
-
             FutureBuilder<List<dynamic>>(
               future: fetchData3(),
               builder: (context, snapshot) {
@@ -494,16 +477,6 @@ class _AddItemPageState extends State<AddItemPage> {
             ),
             SizedBox(height: 8),
             ElevatedButton(
-              onPressed: () async {
-                final image = await pickImage();
-                image2 = image.toString();
-                if (image != null) {
-                  await uploadImage(image);
-                }
-              },
-              child: Text('Resim Seç'),
-            ),
-            ElevatedButton(
               onPressed: () {
                 final food = _foodList2
                     .where((element) => element["name"] == _foodList2VALUE)
@@ -535,6 +508,7 @@ class _AddItemPageState extends State<AddItemPage> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: FoodItemLists.length,
               itemBuilder: (context, index) {
@@ -545,6 +519,60 @@ class _AddItemPageState extends State<AddItemPage> {
                       'Unit: ${foodItem.unit}, Amount: ${foodItem.amount}'),
                 );
               },
+            ),
+            Column(
+              children: [
+                TextField(
+                  decoration: InputDecoration(labelText: 'New Instruction'),
+                  onChanged: (deger) {
+                    setState(() {
+                      yeniEleman = deger;
+                    });
+                  },
+                ),
+                ElevatedButton(
+                  onPressed: elemanEkle,
+                  child: Text('Instruction Add'),
+                ),
+              ],
+            ),
+            ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: elemanlar.length,
+              itemBuilder: (context, index) {
+                return Dismissible(
+                  key: Key(elemanlar[index]),
+                  onDismissed: (direction) {
+                    elemanSil(index);
+                  },
+                  child: ListTile(
+                    title: Text(widget.edit == 1 || widget.edit == 2
+                        ? elemanlar[index]
+                        : "" +
+                            (index + 1).toString() +
+                            "-) " +
+                            elemanlar[index]),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        elemanSil(index);
+                        // Snackbar gibi bir geri alma bildirimi ekleyebilirsiniz.
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final image = await pickImage();
+                image2 = image.toString();
+                if (image != null) {
+                  await uploadImage(image);
+                }
+              },
+              child: Text('Resim Seç'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -560,7 +588,7 @@ class _AddItemPageState extends State<AddItemPage> {
                           .replaceAll(' ', '-'),
                       "excerpt": _inputController1.text,
                       "content": _inputController4.text,
-                      "contentTwo": _inputController5.text,
+                      "contentTwo": instruction,
                       "preparationtime": _inputController7.text,
                       "cookingtime": _inputController8.text,
                       "avg_rating": 5,
@@ -594,7 +622,7 @@ class _AddItemPageState extends State<AddItemPage> {
                             .replaceAll(' ', '-'),
                         "excerpt": _inputController1.text,
                         "content": _inputController4.text,
-                        "contentTwo": _inputController5.text,
+                        "contentTwo": instruction,
                         "preparationtime": _inputController7.text,
                         "cookingtime": _inputController8.text,
                         "avg_rating": 5,
@@ -626,7 +654,7 @@ class _AddItemPageState extends State<AddItemPage> {
                             .replaceAll(' ', '-'),
                         "excerpt": _inputController1.text,
                         "content": _inputController4.text,
-                        "contentTwo": _inputController5.text,
+                        "contentTwo": instruction,
                         "preparationtime": _inputController7.text,
                         "cookingtime": _inputController8.text,
                         "avg_rating": 5,

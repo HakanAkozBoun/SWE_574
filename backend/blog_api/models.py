@@ -254,6 +254,7 @@ class UserProfile(models.Model):
     working_at = models.CharField(max_length=255, null=True, blank=True)
 
 
+
 class Eaten(models.Model):
 
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -261,3 +262,9 @@ class Eaten(models.Model):
     eatenPercentage = models.IntegerField(default=100)
     eatenDate = models.DateTimeField(default=timezone.datetime.today)
     is_active = models.BooleanField(default=True)
+
+class Allergy(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    food = models.ForeignKey(food, on_delete=models.CASCADE)
+    
+

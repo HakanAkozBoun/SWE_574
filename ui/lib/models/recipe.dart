@@ -13,6 +13,9 @@ class Recipe {
   final String excerpt;
   final String content;
   final String contentTwo;
+  final String preparationtime;
+  final String cookingtime;
+  final double avg_rating;
   final String image;
   final String ingredients;
   final String postLabel;
@@ -25,6 +28,9 @@ class Recipe {
     required this.excerpt,
     required this.content,
     required this.contentTwo,
+    required this.preparationtime,
+    required this.cookingtime,
+    required this.avg_rating,
     required this.image,
     required this.ingredients,
     required this.postLabel,
@@ -39,6 +45,9 @@ class Recipe {
       excerpt: json['excerpt'] ?? '',
       content: json['content'] ?? '',
       contentTwo: json['contentTwo'] ?? '',
+      preparationtime: json['preparationtime'] ?? '',
+      cookingtime: json['cookingtime'] ?? '',
+      avg_rating: json['avg_rating'] ?? 0.0,
       image: json['image'] ?? '',
       ingredients: json['ingredients'] ?? '',
       postLabel: json['postLabel'] ?? '',
@@ -62,27 +71,29 @@ class Recipe {
 }
 
 class Recommendation {
-
   static const String recipeUrl = BackendUrl.apiUrl + 'recommend/';
 
+  final int id;
   final String imagePath;
   final String title;
   final String description;
   final String duration;
 
   Recommendation({
-    required this.imagePath,
+    required this.id,
     required this.title,
     required this.description,
     required this.duration,
+    required this.imagePath,
   });
 
   factory Recommendation.fromJson(Map<String, dynamic> json) {
     return Recommendation(
-      imagePath: json['imagePath'] ?? '',
+      id: json['id'],
       title: json['title'] ?? '',
       description: json['excerpt'] ?? '',
       duration: json['duration'] ?? '',
+      imagePath: json['imagePath'] ?? '',
     );
   }
 
