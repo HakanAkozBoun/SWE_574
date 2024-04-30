@@ -3,6 +3,8 @@ import 'package:recipe/consent/colors.dart';
 import 'package:recipe/consent/navigation.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:recipe/screen/allergy.dart';
+import 'package:recipe/helpers/userData.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -60,10 +62,17 @@ class _LoginState extends State<Login> {
     );
 
     if (response.statusCode == 200) {
-      print("Giriş Başarılı");
+      // Giriş başarılı
+      print("Başarılı");
+
+      var jsonResponse = jsonDecode(response.body);    
+      UserData userData = UserData();
+      userData.setUserId(jsonResponse['id']);
+
       setState(() {
         isLoggedIn = true;
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Navigation()));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: ((context) => AllergyPage())));
       });
     } else {
       print('Giriş Başarısız. Hata kodu: ${response.statusCode}');

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:recipe/constants/backend_url.dart';
+import 'package:recipe/helpers/userData.dart';
 
 class AllergyPage extends StatefulWidget {
   const AllergyPage({Key? key}) : super(key: key);
@@ -14,11 +15,15 @@ class _AllergyPageState extends State<AllergyPage> {
   List<dynamic> _allFoods = [];
   List<dynamic> _selectedFoods = [];
   String _searchQuery = '';
+  var userId;
 
   @override
   void initState() {
     super.initState();
     fetchFoods();
+
+    UserData userData = UserData();
+    userId = userData.getUserId();
   }
 
   Future<void> fetchFoods() async {
@@ -39,17 +44,17 @@ class _AllergyPageState extends State<AllergyPage> {
   Future<void> saveAllergies() async {
     try {
       final response = await http.post(
-        Uri.parse(BackendUrl.apiUrl + 'AddAllergy/'), // Change this to the correct API endpoint
+        Uri.parse(BackendUrl.apiUrl + 'allergy/'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode({
-          'user_id': 'your_user_id',
+          'user_id': userId,
           'food_ids': _selectedFoods.map((food) => food['id']).toList(),
         }),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         print('Allergies updated successfully');
       } else {
         throw Exception('Failed to save allergies');
@@ -65,6 +70,13 @@ class _AllergyPageState extends State<AllergyPage> {
       appBar: AppBar(title: Text('Allergy Tracker')),
       body: Column(
         children: [
+          Text(
+            userId,
+            style: TextStyle(
+              fontSize: 18,
+              fontFamily: 'ro',
+            ),
+          ),
           Padding(
             padding: EdgeInsets.all(8.0),
             child: TextField(
@@ -93,9 +105,11 @@ class _AllergyPageState extends State<AllergyPage> {
                       onChanged: (bool? value) {
                         setState(() {
                           if (value!) {
-                            _selectedFoods.add(food);
+                            if (!_selectedFoods.contains(food)) {
+                              _selectedFoods.add(food);
+                            }
                           } else {
-                            _selectedFoods.remove(food);
+                            _selectedFoods.removeWhere((item) => item['id'] == food['id']);
                           }
                         });
                       },
@@ -107,9 +121,7 @@ class _AllergyPageState extends State<AllergyPage> {
             ),
           ),
           ElevatedButton(
-            onPressed: () {
-              saveAllergies();
-            },
+            onPressed: saveAllergies,
             child: Text('Save Allergies'),
           )
         ],
