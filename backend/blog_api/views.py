@@ -62,8 +62,11 @@ def GetFollowingUserList(request):
         return JsonResponse({'error': 'Authentication required'}, status=401)
     '''
     # EE 1'i değiştir
+  #  queryset = Follower.objects.filter(follower_user=1).select_related('following_user')
+    user_id = request.query_params.get('id')
     queryset = Follower.objects.filter(
-        follower_user=1).select_related('following_user')
+        follower_user=user_id).select_related('following_user')
+
     user_profiles = [follow.following_user.userprofile for follow in queryset]
     serializer = UserProfileForFrontEndSerializer(user_profiles, many=True)
     return Response(serializer.data)
@@ -74,10 +77,12 @@ def GetBookmarkedRecipes(request):
 
    # if not request.user.is_authenticated:
     #    return JsonResponse({'error': 'Authentication required'}, status=401)
+    user_id = request.query_params.get('id', '1')
     user = get_object_or_404(User, pk=1)
    # bookmarks = UserBookmark.objects.filter(
     #    user=request.user).select_related('blog')
-    bookmarks = UserBookmark.objects.filter(user=user).select_related('blog')
+    bookmarks = UserBookmark.objects.filter(
+        user=user_id).select_related('blog')
 
     bookmarked_recipes_list = [{
         'id': bookmark.blog.id,
@@ -98,8 +103,9 @@ def GetSelfRecipes(request):
      '''
     # EE id 1 değişmeli
     # id= request.user.id
-    id = 1
-    queryset = blog.objects.filter(userid=id)
+    user_id = request.query_params.get('id', '1')
+
+    queryset = blog.objects.filter(userid=user_id)
     serializer = blogSerializer(queryset, many=True)
     return Response(serializer.data)
     ''' recipes_list = [{
@@ -131,7 +137,8 @@ def GetUser(request):
 @api_view(['GET'])
 def GetCurrentUserProfile(request):
     # EE id=1'i değiştir
-    queryset = UserProfile.objects.get(id=1)
+    user_id = request.query_params.get('id', '1')
+    queryset = UserProfile.objects.get(id=user_id)
     serializer_class = UserProfileForFrontEndSerializer
     return Response(serializer_class(queryset).data)
     # return JsonResponse(model_to_dict(UserProfile.objects.get(id=request.GET.get('id'))), safe=False)
@@ -304,6 +311,134 @@ def GetUnitItemList(request):
 @api_view(['GET'])
 def GetUnitConversionList(request):
     return JsonResponse(list(unitconversion.objects.filter(unittype=request.GET.get('unit')).values("id", "imperial", "metric", "mvalue", "ivalue", "unittype")), safe=False)
+
+
+'''
+@api_view(['GET'])
+def GetGoals(request):
+    user_id = request.query_params.get('id', '1')
+    userProfile = UserProfile.objects.get(id=user_id)
+    goals = CalculateGoals(userProfile)
+    serializer_class = UserProfileForFrontEndSerializer
+    return Response(serializer_class(queryset).data)
+'''
+
+
+def CalculateGoals(userProfile):
+    calorie = CalculateGoalCalorie()
+    fat = CalculateGoalFat()
+    sodium = CalculateGoalSodium()
+    calcium = CalculateGoalCalcium(
+        age=userProfile.age, gender=userProfile.gender)  # miligrams
+    protein = CalculateGoalProtein()
+    iron = CalculateGoalIron()
+    carbonhydrates = CalculateGoalCarbonhydrates()
+    sugars = CalculateGoalSugars()
+    fiber = CalculateGoalFiber()
+    vitamina = CalculateGoalVitamina()
+    vitaminb = CalculateGoalVitaminb()
+    vitamind = CalculateGoalVitamind()
+
+
+def CalculateGoalCalorie():
+    return 0
+
+
+def CalculateGoalFat():
+    return 0
+
+
+def CalculateGoalSodium():
+    return 0
+
+
+def CalculateGoalCalcium(age, gender):
+    # https://ods.od.nih.gov/factsheets/Calcium-HealthProfessionalnths*	200 mg	200 mg
+    necessaryCalciumIntake = 0
+    if (gender == "M" or "m"):
+        if (age <= 1):
+            necessaryCalciumIntake = 260
+
+        elif (age > 1 and age <= 3):
+
+            necessaryCalciumIntake = 700
+
+        elif (age > 3 and age <= 8):
+            necessaryCalciumIntake = 1000
+
+        elif (age > 8 and age <= 13):
+            necessaryCalciumIntake = 1300
+
+        elif (age > 13 and age <= 18):
+            necessaryCalciumIntake = 1300
+
+        elif (age > 18 and age <= 50):
+            necessaryCalciumIntake = 1000
+
+        elif (age > 50 and age <= 70):
+            necessaryCalciumIntake = 1000
+
+        elif (age > 70):
+            necessaryCalciumIntake = 1200
+
+    elif (gender == "F" or "f"):
+        if (age <= 1):
+            necessaryCalciumIntake = 260
+
+        elif (age > 1 and age <= 3):
+
+            necessaryCalciumIntake = 700
+
+        elif (age > 3 and age <= 8):
+            necessaryCalciumIntake = 1000
+
+        elif (age > 8 and age <= 13):
+            necessaryCalciumIntake = 1300
+
+        elif (age > 13 and age <= 18):
+            necessaryCalciumIntake = 1300
+
+        elif (age > 18 and age <= 50):
+            necessaryCalciumIntake = 1000
+
+        elif (age > 50 and age <= 70):
+            necessaryCalciumIntake = 1200
+
+        elif (age > 70):
+            necessaryCalciumIntake = 1200
+    return necessaryCalciumIntake
+
+
+def CalculateGoalProtein():
+    return 0
+
+
+def CalculateGoalIron():
+    return 0
+
+
+def CalculateGoalCarbonhydrates():
+    return 0
+
+
+def CalculateGoalSugars():
+    return 0
+
+
+def CalculateGoalFiber():
+    return 0
+
+
+def CalculateGoalVitamina():
+    return 0
+
+
+def CalculateGoalVitaminb():
+    return 0
+
+
+def CalculateGoalVitamind():
+    return 0
 
 
 @api_view(['GET'])
