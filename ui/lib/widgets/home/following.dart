@@ -7,7 +7,10 @@ import 'otherProfiles.dart';
 // EE kimseyi takip etmiyorsa testi lazım
 // ignore: must_be_immutable
 class Following extends StatefulWidget {
-  Following({super.key});
+  final int userId;
+
+  Following({required this.userId, Key? key}) : super(key: key);
+  //Following({super.key});
 
   @override
   State<Following> createState() => _FollowingState();
@@ -21,7 +24,7 @@ class _FollowingState extends State<Following> {
   void initState() {
     super.initState();
     // currentUser = apiCalls.fetchCurrentUser();
-    followingUsers = UserProfile.fetchFollowingUsers();
+    followingUsers = UserProfile.fetchFollowingUsers(widget.userId);
   }
 
   @override

@@ -4,7 +4,9 @@ import 'package:recipe/models/userProfile.dart';
 
 // ignore: must_be_immutable
 class Personal extends StatefulWidget {
-  Personal({super.key});
+  final int userId;
+
+  Personal({required this.userId, Key? key}) : super(key: key);
 
   @override
   State<Personal> createState() => _PersonalState();
@@ -16,7 +18,7 @@ class _PersonalState extends State<Personal> {
   @override
   void initState() {
     super.initState();
-    currentUser = UserProfile.fetchCurrentUser();
+    currentUser = UserProfile.fetchCurrentUser(widget.userId);
   }
 
   //String name = "a";

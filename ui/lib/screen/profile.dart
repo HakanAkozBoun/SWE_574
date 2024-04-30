@@ -15,7 +15,10 @@ import 'dart:async';
 
 // ignore: must_be_immutable
 class Profile extends StatefulWidget {
-  Profile({super.key});
+  final int? userId; // Make userId nullable
+
+  Profile({this.userId, Key? key}) : super(key: key);
+  //Profile({super.key});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -23,11 +26,13 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   late Future<UserProfile> currentUser;
+  late int finalUserId;
 
   @override
   void initState() {
     super.initState();
-    currentUser = UserProfile.fetchCurrentUser();
+    finalUserId = widget.userId ?? 1;
+    currentUser = UserProfile.fetchCurrentUser(finalUserId);
   }
 
   List<Icon> allIcons = [
@@ -60,11 +65,11 @@ class _ProfileState extends State<Profile> {
   void _showAllSubPages(
       BuildContext context, int index, UserProfile currentUser) {
     Widget toBeOpened = FAQs();
-    Widget personal = Personal();
-    Widget following = Following();
-    Widget bookmarked = Bookmarked();
+    Widget personal = Personal(userId: finalUserId);
+    Widget following = Following(userId: finalUserId);
+    Widget bookmarked = Bookmarked(userId: finalUserId);
     Widget nutritionalProfile = NutritionalProfile();
-    Widget myRecipes = MyRecipes();
+    Widget myRecipes = MyRecipes(userId: finalUserId);
     Widget settings = Settings();
     Widget faqs = FAQs();
     Widget logout = Logout();

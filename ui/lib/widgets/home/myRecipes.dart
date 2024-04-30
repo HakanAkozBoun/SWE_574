@@ -4,7 +4,9 @@ import 'package:recipe/models/userProfile.dart';
 import 'package:recipe/models/recipe.dart';
 
 class MyRecipes extends StatefulWidget {
-  MyRecipes({super.key});
+  final int userId;
+
+  MyRecipes({required this.userId, Key? key}) : super(key: key);
   @override
   State<MyRecipes> createState() => _MyRecipes();
 }
@@ -15,7 +17,7 @@ class _MyRecipes extends State<MyRecipes> {
   @override
   void initState() {
     super.initState();
-    myRecipes = UserProfile.fetchSelfRecipes();
+    myRecipes = UserProfile.fetchSelfRecipes(widget.userId);
     // loadMyRecipes();
   }
 

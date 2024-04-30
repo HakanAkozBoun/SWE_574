@@ -4,7 +4,10 @@ import 'package:recipe/models/userProfile.dart';
 import 'package:recipe/models/recipe.dart';
 
 class Bookmarked extends StatefulWidget {
-  Bookmarked({super.key});
+  final int userId;
+
+  Bookmarked({required this.userId, Key? key}) : super(key: key);
+
   @override
   State<Bookmarked> createState() => _BookmarkedState();
 }
@@ -15,7 +18,7 @@ class _BookmarkedState extends State<Bookmarked> {
   @override
   void initState() {
     super.initState();
-    bookmarkedRecipes = UserProfile.fetchBookmarkedRecipes();
+    bookmarkedRecipes = UserProfile.fetchBookmarkedRecipes(widget.userId);
     // loadBookmarkedRecipes();
   }
 

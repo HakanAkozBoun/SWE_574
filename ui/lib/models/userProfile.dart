@@ -69,9 +69,9 @@ class UserProfile {
     );
   }
 
-  static Future<UserProfile> fetchCurrentUser() async {
-    final response = await http
-        .get(Uri.parse(BackendUrl.currentUserUrl)); // EE burada link doğru mu
+  static Future<UserProfile> fetchCurrentUser(int userId) async {
+    final response = await http.get(Uri.parse(
+        '${BackendUrl.currentUserUrl}?id=$userId')); // EE burada link doğru mu
     if (response.statusCode == 200) {
       final jsonBody = json.decode(response.body);
       return UserProfile.fromJson(jsonBody);
@@ -80,9 +80,11 @@ class UserProfile {
     }
   }
 
-  static Future<List<UserProfile>> fetchFollowingUsers() async {
+  static Future<List<UserProfile>> fetchFollowingUsers(int userId) async {
     try {
-      final response = await http.get(Uri.parse(BackendUrl.followingUsersUrl));
+      //final response = await http.get(Uri.parse(BackendUrl.followingUsersUrl));
+      final response = await http
+          .get(Uri.parse('${BackendUrl.followingUsersUrl}?id=$userId'));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((json) => UserProfile.fromJson(json)).toList();
@@ -94,10 +96,10 @@ class UserProfile {
     }
   }
 
-  static Future<List<Recipe>> fetchBookmarkedRecipes() async {
+  static Future<List<Recipe>> fetchBookmarkedRecipes(int userId) async {
     try {
-      final response =
-          await http.get(Uri.parse(BackendUrl.bookmarkedRecipesUrl));
+      final response = await http
+          .get(Uri.parse('${BackendUrl.bookmarkedRecipesUrl}?id=$userId'));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((json) => Recipe.fromJson(json)).toList();
@@ -109,9 +111,10 @@ class UserProfile {
     }
   }
 
-  static Future<List<Recipe>> fetchSelfRecipes() async {
+  static Future<List<Recipe>> fetchSelfRecipes(int userId) async {
     try {
-      final response = await http.get(Uri.parse(BackendUrl.selfRecipesUrl));
+      final response =
+          await http.get(Uri.parse('${BackendUrl.selfRecipesUrl}?id=$userId'));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((json) => Recipe.fromJson(json)).toList();
