@@ -254,3 +254,7 @@ class UserProfile(models.Model):
     cuisines_of_expertise = models.CharField(max_length=255, null=True, blank=True)
     working_at = models.CharField(max_length=255, null=True, blank=True)
 
+class Allergy(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    food = models.ForeignKey(food, on_delete=models.CASCADE)
+    

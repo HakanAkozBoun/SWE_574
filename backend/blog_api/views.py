@@ -2,6 +2,7 @@ import json
 
 from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood
 from .serializers import blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer, UserSerializer
+from .serializers import blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer, AllergySerializer, AllergySerializer
 
 from rest_framework import viewsets
 from rest_framework import mixins
@@ -20,6 +21,11 @@ from rest_framework import views
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
+from rest_framework import serializers, views, status
+from rest_framework.response import Response
+from .models import Allergy
+from django.contrib.auth.models import User
+
 
 
 class blogApiView(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
@@ -461,3 +467,19 @@ class RegisterAPIView(APIView):
             else:
                 return Response({"message": "Kullanıcı oluşturulamadı"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class AllergyView(views.APIView):
+    serializer_class = AllergySerializer
+
+    def post(self, request, *args, **kwargs):
+        user_id = request.data.get('user_id')
+        food_ids = request.data.get('food_ids')
+        user = User.objects.get(id=user_id)
+        
+        allergies = []
+        for food_id in food_ids:
+            foods = food.objects.get(id=food_id)
+            allergy = Allergy(user=user, food=foods)
+            allergies.append(allergy)
+        
+        Allergy.objects.bulk_create(allergies)
+        return Response({"message": "Allergies saved successfully"}, status=status.HTTP_201_CREATED)
