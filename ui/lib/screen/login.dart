@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:recipe/screen/allergy.dart';
 import 'package:recipe/helpers/userData.dart';
+import 'package:recipe/screen/home.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -23,12 +24,12 @@ class _LoginState extends State<Login> {
     String username = usernameSignUpController.text;
     String password = passwordSignUpController.text;
 
-    Uri apiUrl = Uri.parse('http://10.0.2.2:8000/register/');
+    Uri apiUrl = Uri.parse('http://10.0.2.2:8000/api/CreateUser/');
 
     Map<String, dynamic> data = {
-      'email': email,
-      'username': username,
-      'password': password,
+      'mail': email,
+      'user': username,
+      'pass': password,
     };
 
     var response = await http.post(
@@ -73,7 +74,7 @@ class _LoginState extends State<Login> {
       setState(() {
         isLoggedIn = true;
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: ((context) => AllergyPage())));
+            .push(MaterialPageRoute(builder: ((context) => Home())));
       });
     } else {
       print('Giriş Başarısız. Hata kodu: ${response.statusCode}');
