@@ -1,7 +1,8 @@
 import json
 
 from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood
-from .serializers import blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer
+from .serializers import blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer, UserSerializer
+from .serializers import blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer, AllergySerializer, AllergySerializer
 
 from rest_framework import viewsets
 from rest_framework import mixins
@@ -17,6 +18,13 @@ from django.shortcuts import get_object_or_404
 from .models import UserBookmark
 from .utils.recommendation import get_recommendations
 from rest_framework import views
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from rest_framework.views import APIView
+from rest_framework import serializers, views, status
+from rest_framework.response import Response
+from .models import Allergy
+from django.contrib.auth.models import User
 
 
 
@@ -136,22 +144,6 @@ def GetCategoryList(request):
     all_users = category.objects.all().values("id", "name", "image")
     user_list = list(all_users)
     return JsonResponse(user_list, safe=False)
-
-
-@api_view(['POST'])
-def CreateUser(request):
-    _id = request.data.get('id')
-    if _id is None:
-        User.objects.create_user(username=request.data.get('user'), email=request.data.get(
-            'mail'), first_name="hakan", last_name="akoz", password=request.data.get('pass'))
-    else:
-        user = User.objects.get(id=request.data.get('id'))
-        if user is None:
-            return JsonResponse("id not found", safe=False)
-        user.username = request.data.get('user')
-        user.email = request.data.get('mail')
-        user.save()
-    return JsonResponse("OK", safe=False)
 
 
 @api_view(['POST'])
@@ -372,7 +364,7 @@ def Login(request):
     user = authenticate(username=username, password=password)
     if user is not None:
         return JsonResponse(json.loads('{"token":"' + base64.b64encode(bytes(username + ":" + password, 'utf-8')).decode('utf-8') + '", "id":' + str(user.id) + ',"name":"' + user.username + '"}'), safe=False)
-    return JsonResponse("Wrong User or Password", safe=False)
+    return JsonResponse("Wrong User or Password", safe=False, status=401)
 
 
 # NEW VIEWS
@@ -456,3 +448,38 @@ class InputFoodView(views.APIView):
     queryset = InputFood.objects.all()
     serializer_class = InputFoodSerializer
 
+class RegisterAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, format=None):
+        fixed_data = {
+            "username": request.data.get('user'),
+            "email": request.data.get('mail'),
+            "password": request.data.get('pass'),
+        }
+        serializer = UserSerializer(data=fixed_data)
+        print(request.data)
+
+        if serializer.is_valid():
+            user = serializer.save()
+            if user:
+                return Response({"message": "Kullanıcı oluşturuldu", "user_id": user.id}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"message": "Kullanıcı oluşturulamadı"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class AllergyView(views.APIView):
+    serializer_class = AllergySerializer
+
+    def post(self, request, *args, **kwargs):
+        user_id = request.data.get('user_id')
+        food_ids = request.data.get('food_ids')
+        user = User.objects.get(id=user_id)
+        
+        allergies = []
+        for food_id in food_ids:
+            foods = food.objects.get(id=food_id)
+            allergy = Allergy(user=user, food=foods)
+            allergies.append(allergy)
+        
+        Allergy.objects.bulk_create(allergies)
+        return Response({"message": "Allergies saved successfully"}, status=status.HTTP_201_CREATED)
