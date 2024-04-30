@@ -5,6 +5,10 @@ import 'package:recipe/screen/home.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:recipe/widgets/home/app_drawer.dart';
+import 'package:recipe/widgets/home/appbar2.dart';
+
+
 Future<List<dynamic>> fetchData(data) async {
   final response =
       await http.get(Uri.parse('http://localhost:8000/api/blogs/?' + data));
@@ -63,6 +67,8 @@ class _Recipe extends State<Recipe> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar2(),
+      drawer: appDrawer(),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: CustomScrollView(
