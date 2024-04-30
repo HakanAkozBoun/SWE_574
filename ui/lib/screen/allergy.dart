@@ -28,7 +28,7 @@ class _AllergyPageState extends State<AllergyPage> {
 
   Future<void> fetchFoods() async {
     try {
-      final response = await http.get(Uri.parse(BackendUrl.apiUrl + 'FoodList/'));
+      final response = await http.get(Uri.parse(BackendUrl.apiUrl + 'FoodList/?filter='+_searchQuery));
       if (response.statusCode == 200) {
         setState(() {
           _allFoods = json.decode(response.body);
@@ -84,6 +84,8 @@ class _AllergyPageState extends State<AllergyPage> {
                 setState(() {
                   _searchQuery = value.toLowerCase();
                 });
+
+                fetchFoods();
               },
               decoration: InputDecoration(
                 labelText: 'Search Food',
@@ -97,7 +99,7 @@ class _AllergyPageState extends State<AllergyPage> {
               itemCount: _allFoods.length,
               itemBuilder: (context, index) {
                 final food = _allFoods[index];
-                if (food['name'].toLowerCase().contains(_searchQuery)) {
+
                   return ListTile(
                     title: Text(food['name']),
                     trailing: Checkbox(
@@ -115,8 +117,6 @@ class _AllergyPageState extends State<AllergyPage> {
                       },
                     ),
                   );
-                }
-                return Container();
               },
             ),
           ),
