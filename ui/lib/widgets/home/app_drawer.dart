@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/screen/login.dart';
 import 'package:recipe/screen/home2.dart';
+import 'package:recipe/screen/profile.dart';
 
 class appDrawer extends StatelessWidget {
   const appDrawer({Key? key}) : super(key: key);
@@ -38,7 +39,11 @@ class appDrawer extends StatelessWidget {
           ListTile(
             title: const Text('MyProfile'),
             onTap: () {
-              
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) => Profile(: userId1),
+                ),
+              );
             },
           ),
           ListTile(
@@ -53,8 +58,7 @@ class appDrawer extends StatelessWidget {
           ),
           ListTile(
             title: const Text('Logout'),
-            onTap: () {
-            },
+            onTap: () {},
           ),
         ],
       ),
