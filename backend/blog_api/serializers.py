@@ -31,11 +31,10 @@ class InputFoodSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class UserForProfileFrontEndSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['username', 'email', 'id']
 
 
 class UserProfileForFrontEndSerializer(serializers.ModelSerializer):
@@ -45,18 +44,21 @@ class UserProfileForFrontEndSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['id', 'user', 'age', 'weight', 'height', 'description', 'image', 'experience', 'story',
-                  'diet_goals', 'food_allergies', 'working_at', 'gender', 'graduated_from', 'cuisines_of_expertise']
+        fields = ['id', 'user', 'age', 'weight', 'height', 'description', 'image',
+                  'experience',  'working_at', 'gender', 'graduated_from', 'cuisines_of_expertise']
 
-        
+
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ('user', 'age', 'weight', 'height', 'description', 'experience', 'story', 'image', 'diet_goals', 'food_allergies', 'gender', 'graduated_from', 'cuisines_of_expertise', 'working_at')
+        fields = ('user', 'age', 'weight', 'height', 'description', 'experience', 'image',
+                  'gender', 'graduated_from', 'cuisines_of_expertise', 'working_at')
+
 
 class UserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(read_only=True)
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password = serializers.CharField(
+        write_only=True, required=True, validators=[validate_password])
     email = serializers.EmailField(required=True)
 
     class Meta:
@@ -72,8 +74,9 @@ class UserSerializer(serializers.ModelSerializer):
         )
         UserProfile.objects.create(user=user, **profile_data)
         return user
+
+
 class AllergySerializer(serializers.ModelSerializer):
     class Meta:
         model = Allergy
         fields = '__all__'
-

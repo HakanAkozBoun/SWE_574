@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from .views import add_rating, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily  # CreateUser
+from .views import UpdateUserProfile, add_rating, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserProfilesList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily  # CreateUser
 
 
 from rest_framework import routers
@@ -42,10 +42,11 @@ urlpatterns = [
     path('bookmark/', bookmark_toggle, name='bookmark_toggle'),
     path('recommend/', recommend_items, name='recommend_items'),
 
-    path('Following/', GetFollowingUserList, name='FollowingUserList'),
+    path('Following/', GetFollowingUserProfilesList, name='FollowingUserList'),
     path('MyBookmarks/', GetBookmarkedRecipes, name='BookmarkedRecipes'),
     path('MyRecipes/', GetSelfRecipes, name='SelfRecipes'),
     path('MyProfile/', GetCurrentUserProfile, name='SelfProfile'),
+    path('UpdateMyProfile/', UpdateUserProfile, name='UpdateProfile'),
     path('DailyNutrition/', GetNutritionDaily, name='DailyNutrition'),
 
 

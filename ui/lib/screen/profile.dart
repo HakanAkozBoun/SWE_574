@@ -33,7 +33,9 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    finalUserId = widget.userId ?? 1;
+    //EE
+    finalUserId = widget.userId ?? 20;
+    finalUserId = 20;
     currentUser = UserProfile.fetchCurrentUser(finalUserId);
   }
 
@@ -168,15 +170,42 @@ class _ProfileState extends State<Profile> {
         return Container(
           height: MediaQuery.of(context).size.height *
               0.5, // ekranın tamamını kaplamasın diye
-          child: Center(
-            child: TextField(
-              controller: textEditingController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: allTileNames[index],
+          child: Column(
+            children: [
+              SizedBox(height: 50),
+              Center(
+                child: TextField(
+                  controller: textEditingController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: allTileNames[index],
+                  ),
+                  autofocus: true,
+                ),
               ),
-              autofocus: true,
-            ),
+              SizedBox(height: 70),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(width: 50),
+                  IconButton(
+                    iconSize: 100,
+                    icon: Icon(Icons.close, color: Colors.red),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  SizedBox(width: 50),
+                  IconButton(
+                    iconSize: 100,
+                    icon: Icon(Icons.check, color: Colors.green),
+                    onPressed: () {
+                      UpdateShownInfo(textEditingController.text, index);
+                    },
+                  ),
+                ],
+              ),
+            ],
           ),
         );
       },
@@ -291,5 +320,30 @@ class _ProfileState extends State<Profile> {
       default:
         return '';
     }
+  }
+
+  UpdateShownInfo(String text, int index) async {
+    String field = "";
+    switch (index) {
+      case 0:
+        field = "working_at";
+        break;
+      case 1:
+        field = "cuisines_of_expertise";
+        break;
+      case 2:
+        field = "graduated_from";
+        break;
+      default:
+        field = "";
+    }
+    var myMap = Map<String, String>();
+    myMap[field] = text;
+    UserProfile updatedProfile =
+        await UserProfile.updateUserProfile(finalUserId, myMap);
+    setState(() {
+      currentUser = Future.value(updatedProfile);
+    });
+    Navigator.pop(context);
   }
 }
