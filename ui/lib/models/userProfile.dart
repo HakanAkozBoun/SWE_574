@@ -126,7 +126,7 @@ class UserProfile {
         },
         body: json.encode(map),
       );
-      
+
       if (response.statusCode == 200) {
         return UserProfile.fromJson(json.decode(response.body));
       } else {
@@ -135,6 +135,79 @@ class UserProfile {
       }
     } catch (e) {
       throw Exception('Failed to update profile: $e');
+    }
+  }
+
+  static Future<UserProfile> updateUser(
+      int userId, Map<String, dynamic> map) async {
+    var url = Uri.parse('${BackendUrl.updateUser}?id=$userId');
+
+    try {
+      var response = await http.patch(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode(map),
+      );
+
+      if (response.statusCode == 200) {
+        print(response.body);
+
+        return UserProfile.fromJson(json.decode(response.body));
+      } else {
+        throw Exception(
+            'Failed to update profile. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to update profile: $e');
+    }
+  }
+
+  static Future<bool> UsernameExists(int userId, String username) async {
+    var queryParams = {
+      'user_id': userId.toString(),
+      'username': username,
+    };
+
+    var uri = Uri.parse(BackendUrl.checkUsernameAvailability)
+        .replace(queryParameters: queryParams);
+
+    try {
+      var response = await http.get(uri);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        return data['exists'];
+      } else {
+        throw Exception(
+            'Failed to check username availability. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to check username availability: $e');
+    }
+  }
+
+  static Future<bool> EmailExists(int userId, String email) async {
+    var queryParams = {
+      'user_id': userId.toString(),
+      'email': email,
+    };
+
+    var uri = Uri.parse(BackendUrl.checkEmailAvailability)
+        .replace(queryParameters: queryParams);
+
+    try {
+      var response = await http.get(uri);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        return data['exists'];
+      } else {
+        throw Exception(
+            'Failed to check email availability. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to check email availability: $e');
     }
   }
 }

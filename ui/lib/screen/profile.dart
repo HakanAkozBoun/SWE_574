@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/consent/colors.dart';
 import 'package:recipe/models/userProfile.dart';
+import 'package:recipe/widgets/home/PersonalPage.dart';
 import 'package:recipe/widgets/home/app_drawer.dart';
 import 'package:recipe/widgets/home/appbar2.dart';
 import 'package:recipe/widgets/home/faqs.dart';
@@ -69,7 +70,7 @@ class _ProfileState extends State<Profile> {
   void _showAllSubPages(
       BuildContext context, int index, UserProfile currentUser) {
     Widget toBeOpened = FAQs();
-    Widget personal = Personal(userId: finalUserId);
+    Widget personal = PersonalPage(userId: finalUserId);
     Widget following = Following(userId: finalUserId);
     Widget bookmarked = Bookmarked(userId: finalUserId);
     Widget nutritionalProfile = NutritionalProfile();
@@ -90,7 +91,7 @@ class _ProfileState extends State<Profile> {
         break;
       case 3:
         toBeOpened = personal;
-        isFullPage = false;
+        isFullPage = true;
         break;
       case 4:
         toBeOpened = following;
