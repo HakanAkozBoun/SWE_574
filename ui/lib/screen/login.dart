@@ -77,7 +77,7 @@ class _LoginState extends State<Login> {
       setState(() {
         isLoggedIn = true;
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: ((context) => Home2()));
+            .push(MaterialPageRoute(builder: ((context) => Home2())));
       });
     } else {
       print('Giriş Başarısız. Hata kodu: ${response.statusCode}');
