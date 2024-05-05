@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:recipe/screen/allergy.dart';
 import 'package:recipe/helpers/userData.dart';
 import 'package:recipe/screen/home.dart';
+import 'package:recipe/screen/home2.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -74,7 +75,7 @@ class _LoginState extends State<Login> {
       setState(() {
         isLoggedIn = true;
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: ((context) => Home())));
+            .push(MaterialPageRoute(builder: ((context) => Home2())));
       });
     } else {
       print('Giriş Başarısız. Hata kodu: ${response.statusCode}');

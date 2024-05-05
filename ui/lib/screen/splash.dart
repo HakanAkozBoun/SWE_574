@@ -30,7 +30,7 @@ class _SplashPageState extends State<SplashPage> {
       backgroundColor: background,
       showLoader: true,
       loaderColor: Colors.pink,
-      navigator: Home2(),
+      navigator: Login(),
       durationInSeconds: 3,
     );
   }

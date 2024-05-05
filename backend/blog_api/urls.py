@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from .views import add_rating, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily  # CreateUser
+from .views import add_rating, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, search_recipes  # CreateUser
 
 
 from rest_framework import routers
@@ -56,5 +56,6 @@ urlpatterns = [
 
     path('CreateUser/', RegisterAPIView.as_view(), name='RegisterAPIView'),
     path('allergy/', AllergyView.as_view(), name='AllergyViewSet'),
+    path('search/', search_recipes, name='search_recipes'),
 
 ]

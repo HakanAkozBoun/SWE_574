@@ -1,9 +1,7 @@
 from django.utils import timezone
 import json
-
-from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood, Eaten
+from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood, Eaten, Allergy
 from .serializers import blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer, UserSerializer, AllergySerializer, UserProfileForFrontEndSerializer
-
 from rest_framework import viewsets
 from rest_framework import mixins
 from rest_framework.response import Response
@@ -25,6 +23,7 @@ from rest_framework import serializers, views, status
 from rest_framework.response import Response
 from .models import Allergy
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 
 class blogApiView(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
@@ -689,6 +688,7 @@ class RegisterAPIView(APIView):
             else:
                 return Response({"message": "Kullanıcı oluşturulamadı"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 class AllergyView(views.APIView):
     serializer_class = AllergySerializer
 
@@ -706,3 +706,16 @@ class AllergyView(views.APIView):
         Allergy.objects.bulk_create(allergies)
         return Response({"message": "Allergies saved successfully"}, status=status.HTTP_201_CREATED)
 
+def search_recipes(request):
+    query = request.GET.get('query', '')
+    user_id = request.user.id
+
+    allergic_foods = Allergy.objects.filter(user_id=user_id).values_list('food_id', flat=True)
+
+    recipes = recipe.objects.filter(
+        Q(food__name__icontains=query) &
+        ~Q(food__id__in=allergic_foods)
+    )
+
+    data = list(recipes.values('food', 'unit', 'amount', 'blog'))
+    return Response(data, safe=False)
