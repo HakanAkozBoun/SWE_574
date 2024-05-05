@@ -63,7 +63,7 @@ def GetUserList(request):
 
 
 @api_view(['GET'])
-def GetFollowingUserList(request):
+def GetFollowingUserProfilesList(request):
     '''
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Authentication required'}, status=401)
@@ -71,12 +71,13 @@ def GetFollowingUserList(request):
     # EE 1'i değiştir
   #  queryset = Follower.objects.filter(follower_user=1).select_related('following_user')
     user_id = request.query_params.get('id')
-    queryset = Follower.objects.filter(
+    following_user_set = Follower.objects.filter(
         follower_user=user_id).select_related('following_user')
-
-    user_profiles = [follow.following_user.userprofile for follow in queryset]
-    serializer = UserProfileForFrontEndSerializer(user_profiles, many=True)
-    return Response(serializer.data)
+    following_user_profiles = UserProfile.objects.filter(
+        user__in=[follow.following_user for follow in following_user_set])
+    serializers = UserProfileForFrontEndSerializer(
+        following_user_profiles, many=True)
+    return Response(serializers.data)
 
 
 @api_view(['GET'])
@@ -85,9 +86,6 @@ def GetBookmarkedRecipes(request):
    # if not request.user.is_authenticated:
     #    return JsonResponse({'error': 'Authentication required'}, status=401)
     user_id = request.query_params.get('id', '1')
-    user = get_object_or_404(User, pk=1)
-   # bookmarks = UserBookmark.objects.filter(
-    #    user=request.user).select_related('blog')
     bookmarks = UserBookmark.objects.filter(
         user=user_id).select_related('blog')
 
@@ -141,11 +139,32 @@ def GetUser(request):
     return JsonResponse(model_to_dict(User.objects.get(id=request.GET.get('id'))), safe=False)
 
 
+@api_view(['PATCH'])
+def UpdateUserProfile(request):
+    user_id = request.query_params.get('id')
+    try:
+        userProfile = UserProfile.objects.get(user=user_id)
+    except UserProfile.DoesNotExist:
+        return JsonResponse({'error': 'UserProfile not found.'}, status=404)
+
+    fields_to_update = ['age', 'weight', 'height', 'description', 'image',
+                        'experience', 'gender', 'graduated_from', 'cuisines_of_expertise', 'working_at']
+    for field in fields_to_update:
+        if field in request.data:
+            setattr(userProfile, field, request.data[field])
+
+    userProfile.save()
+    serializer_class = UserProfileForFrontEndSerializer
+    return Response(serializer_class(userProfile).data)
+    # return JsonResponse(model_to_dict(userProfile), safe=False)
+
+
 @api_view(['GET'])
 def GetCurrentUserProfile(request):
     # EE id=1'i değiştir
     user_id = request.query_params.get('id', '1')
-    queryset = UserProfile.objects.get(id=user_id)
+    given_user = User.objects.get(id=user_id)
+    queryset = UserProfile.objects.get(user=given_user)
     serializer_class = UserProfileForFrontEndSerializer
     return Response(serializer_class(queryset).data)
     # return JsonResponse(model_to_dict(UserProfile.objects.get(id=request.GET.get('id'))), safe=False)
@@ -670,6 +689,7 @@ class InputFoodView(views.APIView):
     queryset = InputFood.objects.all()
     serializer_class = InputFoodSerializer
 
+
 class RegisterAPIView(APIView):
     permission_classes = [AllowAny]
 
@@ -689,6 +709,8 @@ class RegisterAPIView(APIView):
             else:
                 return Response({"message": "Kullanıcı oluşturulamadı"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class AllergyView(views.APIView):
     serializer_class = AllergySerializer
 
@@ -696,13 +718,12 @@ class AllergyView(views.APIView):
         user_id = request.data.get('user_id')
         food_ids = request.data.get('food_ids')
         user = User.objects.get(id=user_id)
-        
+
         allergies = []
         for food_id in food_ids:
             foods = food.objects.get(id=food_id)
             allergy = Allergy(user=user, food=foods)
             allergies.append(allergy)
-        
+
         Allergy.objects.bulk_create(allergies)
         return Response({"message": "Allergies saved successfully"}, status=status.HTTP_201_CREATED)
-

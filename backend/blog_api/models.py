@@ -237,22 +237,17 @@ class InputFood(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    age = models.IntegerField()
-    weight = models.FloatField()
-    height = models.FloatField()
-    description = models.CharField(max_length=255)
+    age = models.IntegerField(null=True)
+    weight = models.FloatField(null=True)
+    height = models.FloatField(null=True)
+    description = models.CharField(max_length=255, null=True, blank=True)
     image = models.CharField(max_length=255, null=True, blank=True)
-    experience = models.IntegerField()
-    story = models.TextField(null=True, blank=True)
-    diet_goals = models.CharField(max_length=255, null=True, blank=True)
-    food_allergies = models.ManyToManyField(
-        InputFood, related_name='allergic_users', blank=True)
+    experience = models.IntegerField(null=True)
     gender = models.CharField(max_length=255, null=True, blank=True)
     graduated_from = models.CharField(max_length=255, null=True, blank=True)
     cuisines_of_expertise = models.CharField(
         max_length=255, null=True, blank=True)
     working_at = models.CharField(max_length=255, null=True, blank=True)
-
 
 
 class Eaten(models.Model):
@@ -263,8 +258,7 @@ class Eaten(models.Model):
     eatenDate = models.DateTimeField(default=timezone.datetime.today)
     is_active = models.BooleanField(default=True)
 
+
 class Allergy(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     food = models.ForeignKey(food, on_delete=models.CASCADE)
-    
-
