@@ -21,15 +21,17 @@ class _PersonalState extends State<Personal> {
     currentUser = UserProfile.fetchCurrentUser(widget.userId);
   }
 
-  //String name = "a";
-//
-  //String mail = "a";
-//
-  //String description = "a";
-
-  //List personalTileInfo = [name, mail, description];
-
-  List personalTileNames = ['Username', 'E-mail', 'Description'];
+  List personalTileNames = [
+    'Username',
+    'E-mail',
+    'Description',
+    'age',
+    'weight',
+    'height',
+    'image',
+    'experience',
+    'gender'
+  ];
 
   String getPersonalInfo(UserProfile givenUser, int index) {
     switch (index) {
@@ -39,6 +41,18 @@ class _PersonalState extends State<Personal> {
         return givenUser.user.email;
       case 2:
         return givenUser.description;
+      case 3:
+        return givenUser.age.toString();
+      case 4:
+        return givenUser.weight.toString();
+      case 5:
+        return givenUser.height.toString();
+      case 6:
+        return givenUser.image;
+      case 7:
+        return givenUser.experience.toString();
+      case 8:
+        return givenUser.gender;
       default: //burası degisebilir
         return givenUser.user.username;
     }
@@ -122,9 +136,10 @@ class _PersonalState extends State<Personal> {
               );
             } else if (snapshot.hasData) {
               UserProfile gotUser = snapshot.data!;
-              return ListView.builder(
+              return Flexible(child: InfoList(context, gotUser));
+              /* return ListView.builder(
                 shrinkWrap: true,
-                itemCount: 3,
+                itemCount: 9,
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     leading: Container(
@@ -155,6 +170,7 @@ class _PersonalState extends State<Personal> {
                   );
                 },
               );
+           */
             } else {
               return Scaffold(
                 backgroundColor: background,
@@ -165,5 +181,53 @@ class _PersonalState extends State<Personal> {
             }
           },
         )));
+  }
+
+  Widget InfoList(BuildContext context, UserProfile givenUser) {
+    return Column(
+      children: [
+        personalTile(
+            personalTileNames[0], givenUser.user.username, Icons.person),
+        personalTile(personalTileNames[1], givenUser.user.email, Icons.email),
+        personalTile(
+            personalTileNames[2], givenUser.description, Icons.description),
+        personalTile(
+            personalTileNames[3], givenUser.age.toString(), Icons.cake),
+        personalTile(personalTileNames[4], givenUser.weight.toString(),
+            Icons.line_weight),
+        personalTile(
+            personalTileNames[5], givenUser.height.toString(), Icons.height),
+        personalTile(personalTileNames[6], givenUser.image, Icons.image),
+        personalTile(
+            personalTileNames[7], givenUser.experience.toString(), Icons.star),
+        personalTile(personalTileNames[8], givenUser.gender, Icons.wc),
+      ],
+    );
+  }
+
+  ListTile personalTile(String title, String presonalInfo, IconData icon) {
+    return ListTile(
+      leading: Container(
+        width: 100,
+        height: 100,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(100),
+        ),
+        child: Text(
+          title,
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 14, color: font),
+        ),
+      ),
+      title: Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Text(
+          presonalInfo,
+          style: TextStyle(fontSize: 17, color: font),
+        ),
+      ),
+      trailing: IconButton(icon: Icon(Icons.edit), onPressed: () => {}),
+    );
   }
 }

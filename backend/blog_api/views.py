@@ -2,7 +2,7 @@ from django.utils import timezone
 import json
 
 from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood, Eaten
-from .serializers import blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer, UserSerializer, AllergySerializer, UserProfileForFrontEndSerializer
+from .serializers import UserForProfileFrontEndSerializer, blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer, UserSerializer, AllergySerializer, UserProfileForFrontEndSerializer
 
 from rest_framework import viewsets
 from rest_framework import mixins
@@ -137,6 +137,53 @@ def UpdateUser(request):
 @api_view(['GET'])
 def GetUser(request):
     return JsonResponse(model_to_dict(User.objects.get(id=request.GET.get('id'))), safe=False)
+
+
+@api_view(['GET'])
+def check_email(request):
+    email = request.GET.get('email', None)
+    user_id = request.GET.get('user_id', None)
+    if not email:
+        return JsonResponse({'error': 'No username provided'}, status=400)
+
+    if user_id:
+        exists = User.objects.filter(
+            email=email).exclude(id=user_id).exists()
+    else:
+        exists = User.objects.filter(email=email).exists()
+
+    return JsonResponse({'exists': exists})
+
+
+@api_view(['GET'])
+def check_username(request):
+    username = request.GET.get('username', None)
+    user_id = request.GET.get('user_id', None)
+    if not username:
+        return JsonResponse({'error': 'No username provided'}, status=400)
+
+    if user_id:
+        exists = User.objects.filter(
+            username=username).exclude(id=user_id).exists()
+    else:
+        exists = User.objects.filter(username=username).exists()
+
+    return JsonResponse({'exists': exists})
+
+
+@api_view(['PATCH'])
+def UpdateUserInfo(request):
+    user_id = request.query_params.get('id', '1')
+    user = User.objects.get(id=user_id)
+    fields_to_update = ['username', 'email',
+                        'password',  'first_name', 'last_name']
+    for field in fields_to_update:
+        if field in request.data:
+            setattr(user, field, request.data[field])
+    user.save()
+    userProfile = UserProfile.objects.get(user=user)
+    serializer_class = UserProfileForFrontEndSerializer
+    return Response(serializer_class(userProfile).data)
 
 
 @api_view(['PATCH'])
