@@ -3,6 +3,7 @@ import 'package:recipe/consent/colors.dart';
 import 'package:recipe/consent/navigation.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:recipe/models/userProfile.dart';
 import 'package:recipe/screen/allergy.dart';
 import 'package:recipe/helpers/userData.dart';
 import 'package:recipe/screen/home.dart';

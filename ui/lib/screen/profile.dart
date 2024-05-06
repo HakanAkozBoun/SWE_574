@@ -216,7 +216,7 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar2(),
-        drawer: appDrawer(),
+        drawer: AppDrawer(),
         backgroundColor: background,
         body: SafeArea(
             child: FutureBuilder<UserProfile>(

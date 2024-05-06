@@ -114,7 +114,7 @@ class _Recipe extends State<Recipe> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar2(),
-      drawer: appDrawer(),
+      drawer: AppDrawer(),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: CustomScrollView(
