@@ -7,11 +7,12 @@ import 'dart:convert';
 
 import 'package:recipe/widgets/home/app_drawer.dart';
 import 'package:recipe/widgets/home/appbar2.dart';
+import 'package:recipe/constants/backend_url.dart';
 
+const String uri = BackendUrl.apiUrl;
 
 Future<List<dynamic>> fetchData(data) async {
-  final response =
-      await http.get(Uri.parse('http://localhost:8000/api/blogs/?' + data));
+  final response = await http.get(Uri.parse(uri + '/blogs/?' + data));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -20,8 +21,7 @@ Future<List<dynamic>> fetchData(data) async {
 }
 
 Future<dynamic> nutrition(blog) async {
-  final response = await http
-      .get(Uri.parse('http://localhost:8000/api/Nutrition/?blog=' + blog));
+  final response = await http.get(Uri.parse(uri + '/Nutrition/?blog=' + blog));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -43,9 +43,13 @@ class _Recipe extends State<Recipe> {
   Map<String, dynamic> nutritionData = {};
   // int avg_rating = 5;
 
+  List<Yorum> yorumlar = [];
+  String yeniYorum = '';
+
   @override
   void initState() {
     super.initState();
+    yorumlariYukle();
     fetchData(widget.slug).then((data) {
       setState(() {
         var selectedItem =
@@ -62,6 +66,48 @@ class _Recipe extends State<Recipe> {
     }).catchError((error) {
       print("Error fetching data: $error");
     });
+  }
+
+  void yorumlariYukle() async {
+    // API'den yorumları alın ve yorumlar listesine ekleyin
+
+    var response = await http
+        .get(Uri.parse(uri + '/CommentList/?blog=' + widget.id.toString()));
+    if (response.statusCode == 200) {
+      print(response.body);
+      setState(() {
+        yorumlar = (jsonDecode(response.body) as List)
+            .map((yorumData) => Yorum(
+                text: yorumData["text"].toString(),
+                blog: yorumData["id"],
+                user: yorumData["name"].toString()))
+            .toList();
+      });
+    } else {
+      // Hata mesajı gösterin
+    }
+  }
+
+  Map<String, dynamic> dataList = {};
+  void yeniYorumGonder() async {
+    // Yeni yorumu API'ye gönderin
+    dataList = {"user": 13, "blog": widget.id, "text": yeniYorum.toString()};
+    print(jsonEncode(dataList));
+    var response = await http.post(Uri.parse(uri + '/CreateComment/'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(dataList));
+    if (response.statusCode == 200) {
+      print("Gönderildi");
+      setState(() {
+        yorumlar.add(Yorum(
+            text: yeniYorum.toString(), blog: widget.id, user: 'Hakan Aköz'));
+        yeniYorum = '';
+      });
+    } else {
+      // Hata mesajı gösterin
+    }
   }
 
   @override
@@ -220,7 +266,8 @@ class _Recipe extends State<Recipe> {
                 child: Row(
                   children: [
                     Text(
-                      "Preparation Time : " + fetchedData["preparationtime"].toString(),
+                      "Preparation Time : " +
+                          fetchedData["preparationtime"].toString(),
                       style: TextStyle(
                         fontSize: 16,
                         color: font,
@@ -341,6 +388,57 @@ class _Recipe extends State<Recipe> {
                       fontWeight: FontWeight.w500,
                     )),
               ),
+              Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: Row(
+                  children: [
+                    Text(
+                      'Comments',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: font,
+                        fontFamily: 'ro',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: yorumlar.length,
+                itemBuilder: (context, index) {
+                  var yorum = yorumlar[index];
+                  return ListTile(
+                    title: Text(yorum.text),
+                    subtitle: Text(yorum.user),
+                  );
+                },
+              ),
+              SizedBox(height: 20),
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: TextField(
+                      decoration: InputDecoration(hintText: 'Yorumunuzu girin'),
+                      onChanged: (value) {
+                        setState(() {
+                          yeniYorum = value;
+                        });
+                      },
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      yeniYorumGonder();
+                    },
+                    child: Text('Gönder'),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
               Center(
                 child: ElevatedButton(
                   onPressed: () {
@@ -369,5 +467,17 @@ class _Recipe extends State<Recipe> {
         ),
       ],
     );
+  }
+}
+
+class Yorum {
+  String text;
+  String user;
+  int blog;
+
+  Yorum({required this.text, required this.user, required this.blog});
+
+  factory Yorum.fromJson(Map<String, dynamic> json) {
+    return Yorum(text: json['yorum'], user: json['yazar'], blog: json['blog']);
   }
 }
