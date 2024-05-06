@@ -36,7 +36,6 @@ class _ProfileState extends State<Profile> {
     super.initState();
     //EE
     finalUserId = widget.userId ?? 20;
-    finalUserId = 20;
     currentUser = UserProfile.fetchCurrentUser(finalUserId);
   }
 
