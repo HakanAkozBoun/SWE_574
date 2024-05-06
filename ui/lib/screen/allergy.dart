@@ -5,8 +5,9 @@ import 'package:recipe/constants/backend_url.dart';
 import 'package:recipe/helpers/userData.dart';
 
 class AllergyPage extends StatefulWidget {
-  const AllergyPage({Key? key}) : super(key: key);
+  final int? userId; // Make userId nullable
 
+  AllergyPage({this.userId, Key? key}) : super(key: key);
   @override
   _AllergyPageState createState() => _AllergyPageState();
 }
@@ -21,9 +22,9 @@ class _AllergyPageState extends State<AllergyPage> {
   void initState() {
     super.initState();
     fetchFoods();
-
-    UserData userData = UserData();
-    userId = userData.getUserId();
+      userId = widget.userId;
+    //UserData userData = UserData();
+    //userId = userData.getUserId();
   }
 
   Future<void> fetchFoods() async {

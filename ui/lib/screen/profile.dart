@@ -13,6 +13,7 @@ import 'package:recipe/widgets/home/following.dart';
 import 'package:recipe/widgets/home/bookmarked.dart';
 import 'package:recipe/widgets/home/settings.dart';
 import 'dart:async';
+import 'allergy.dart';
 
 //fotograf secme ozellıgı eklenebilir
 
@@ -75,6 +76,7 @@ class _ProfileState extends State<Profile> {
     Widget bookmarked = Bookmarked(userId: finalUserId);
     Widget nutritionalProfile = NutritionalProfile();
     Widget myRecipes = MyRecipes(userId: finalUserId);
+    Widget myAllergies= AllergyPage(userId: finalUserId);
     Widget settings = Settings();
     Widget faqs = FAQs();
     Widget logout = Logout();
@@ -110,14 +112,18 @@ class _ProfileState extends State<Profile> {
         isFullPage = true;
         break;
       case 8:
-        toBeOpened = settings;
+        toBeOpened = myAllergies;
         isFullPage = true;
         break;
       case 9:
+        toBeOpened = settings;
+        isFullPage = true;
+        break;
+      case 10:
         toBeOpened = faqs;
         isFullPage = false;
         break;
-      case 10:
+      case 11:
         toBeOpened = logout;
         isFullPage = false;
         break;
@@ -267,7 +273,7 @@ class _ProfileState extends State<Profile> {
                   Flexible(
                     child: ListView.builder(
                       shrinkWrap: true,
-                      itemCount: 10,
+                      itemCount: 12,
                       itemBuilder: (BuildContext context, int index) {
                         return ListTile(
                           leading: Container(
