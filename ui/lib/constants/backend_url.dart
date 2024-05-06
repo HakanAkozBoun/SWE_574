@@ -8,4 +8,7 @@ class BackendUrl {
   static const String bookmarkedRecipesUrl = apiUrl + 'MyBookmarks/';
   static const String selfRecipesUrl = apiUrl + 'MyRecipes/';
   static const String updateUserProfile = apiUrl + 'UpdateMyProfile/';
+  static const String updateUser = apiUrl + 'UpdateUserInfo/';
+  static const String checkUsernameAvailability = apiUrl + 'CheckUsername/';
+  static const String checkEmailAvailability = apiUrl + 'CheckEmail/';
 }

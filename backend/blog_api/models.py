@@ -237,12 +237,12 @@ class InputFood(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    age = models.IntegerField(null=True)
-    weight = models.FloatField(null=True)
-    height = models.FloatField(null=True)
+    age = models.IntegerField(null=True, blank=True)
+    weight = models.FloatField(null=True, blank=True)
+    height = models.FloatField(null=True, blank=True)
     description = models.CharField(max_length=255, null=True, blank=True)
     image = models.CharField(max_length=255, null=True, blank=True)
-    experience = models.IntegerField(null=True)
+    experience = models.IntegerField(null=True, blank=True)
     gender = models.CharField(max_length=255, null=True, blank=True)
     graduated_from = models.CharField(max_length=255, null=True, blank=True)
     cuisines_of_expertise = models.CharField(
