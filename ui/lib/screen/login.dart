@@ -6,6 +6,9 @@ import 'package:http/http.dart' as http;
 import 'package:recipe/screen/allergy.dart';
 import 'package:recipe/helpers/userData.dart';
 import 'package:recipe/screen/home.dart';
+import '../constants/backend_url.dart';
+import 'home2.dart';
+import 'profile.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -24,7 +27,7 @@ class _LoginState extends State<Login> {
     String username = usernameSignUpController.text;
     String password = passwordSignUpController.text;
 
-    Uri apiUrl = Uri.parse('http://10.0.2.2:8000/api/CreateUser/');
+    Uri apiUrl = Uri.parse(BackendUrl.apiUrl+'CreateUser/');
 
     Map<String, dynamic> data = {
       'mail': email,
@@ -49,7 +52,7 @@ class _LoginState extends State<Login> {
     String username = usernameController.text;
     String password = passwordController.text;
 
-    Uri apiUrl = Uri.parse('http://10.0.2.2:8000/api/Login/');
+    Uri apiUrl = Uri.parse(BackendUrl.apiUrl+'Login/');
 
     Map<String, dynamic> data = {
       'user': username,
@@ -74,7 +77,7 @@ class _LoginState extends State<Login> {
       setState(() {
         isLoggedIn = true;
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: ((context) => Home())));
+            .push(MaterialPageRoute(builder: ((context) => Home2())));
       });
     } else {
       print('Giriş Başarısız. Hata kodu: ${response.statusCode}');
@@ -115,7 +118,7 @@ class _LoginState extends State<Login> {
                   controller: usernameController,
                   decoration: InputDecoration(
                     icon: Icon(Icons.email),
-                    hintText: 'Email',
+                    hintText: 'Username',
                     hintStyle: TextStyle(fontFamily: 'ro'),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15),
