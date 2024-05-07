@@ -51,6 +51,7 @@ class _ProfileState extends State<Profile> {
     Icon(Icons.fitness_center, color: maincolor),
     Icon(Icons.edit_document, color: maincolor),
     Icon(Icons.settings, color: maincolor),
+    Icon(Icons.settings, color: maincolor),
     Icon(Icons.chat, color: maincolor),
     Icon(Icons.login, color: maincolor),
   ];
@@ -63,6 +64,7 @@ class _ProfileState extends State<Profile> {
     'Bookmarked',
     'Nutritional Profile',
     'My Recipes',
+    'My Allergies',
     'Settings',
     'FAQs',
     'Logout'
@@ -76,7 +78,7 @@ class _ProfileState extends State<Profile> {
     Widget bookmarked = Bookmarked(userId: finalUserId);
     Widget nutritionalProfile = NutritionalProfile();
     Widget myRecipes = MyRecipes(userId: finalUserId);
-    Widget myAllergies= AllergyPage(userId: finalUserId);
+    Widget myAllergies = AllergyPage(userId: finalUserId);
     Widget settings = Settings();
     Widget faqs = FAQs();
     Widget logout = Logout();
