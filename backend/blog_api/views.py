@@ -608,6 +608,7 @@ def bookmark_toggle(request):
         error_message = f"Error toggling bookmark: {str(e)}"
         return Response({"success": False, "error": error_message})
 
+
 @api_view(['GET'])
 def recommend_items(request):
     user_id = request.GET.get('user_id')
@@ -647,80 +648,77 @@ def add_rating(request):
         return Response({"success": False, "error": str(e)})
 
 
+def GetNutritionOfSingleRecipe(eaten_recipe_Id, eatenServing):
+    _nutrition = nutrition.objects.all()
+    _recipe = recipe.objects.filter(blog=eaten_recipe_Id)
+    calorie = 0
+    fat = 0
+    sodium = 0
+    calcium = 0
+    protein = 0
+    iron = 0
+    carbonhydrates = 0
+    sugars = 0
+    fiber = 0
+    vitamina = 0
+    vitaminb = 0
+    vitamind = 0
+    for i in _recipe:
+        __nutrition = _nutrition.filter(food=i.food).first()
+        if __nutrition:
+            calorie += __nutrition.calorie * i.metricamount
+            fat += __nutrition.fat * i.metricamount
+            sodium += __nutrition.sodium * i.metricamount
+            calcium += __nutrition.calcium * i.metricamount
+            protein += __nutrition.protein * i.metricamount
+            iron += __nutrition.iron * i.metricamount
+            carbonhydrates += __nutrition.carbonhydrates * i.metricamount
+            sugars += __nutrition.sugars * i.metricamount
+            fiber += __nutrition.fiber * i.metricamount
+            vitamina += __nutrition.vitamina * i.metricamount
+            vitaminb += __nutrition.vitaminb * i.metricamount
+            vitamind += __nutrition.vitamind * i.metricamount
+    calorie = (calorie/_recipe.servings)*eatenServing
+    fat = (fat/_recipe.servings)*eatenServing
+    sodium = (sodium/_recipe.servings)*eatenServing
+    calcium = (calcium/_recipe.servings)*eatenServing
+    protein = (protein/_recipe.servings)*eatenServing
+    iron = (iron/_recipe.servings)*eatenServing
+    carbonhydrates = (carbonhydrates/_recipe.servings)*eatenServing
+    sugars = (sugars/_recipe.servings)*eatenServing
+    fiber = (fiber/_recipe.servings)*eatenServing
+    vitamina = (vitamina/_recipe.servings)*eatenServing
+    vitaminb = (vitaminb/_recipe.servings)*eatenServing
+    vitamind = (vitamind/_recipe.servings)*eatenServing
+    return calorie, fat, sodium, calcium, protein, iron, carbonhydrates, sugars, fiber, vitamina, vitaminb, vitamind
+
+
+def GetNutritionsOfRecipeList(eaten):
+    calorie = 0
+    fat = 0
+    sodium = 0
+    calcium = 0
+    protein = 0
+    iron = 0
+    carbonhydrates = 0
+    sugars = 0
+    fiber = 0
+    vitamina = 0
+    vitaminb = 0
+    vitamind = 0
+    for recipe in eaten:
+        calorie, fat, sodium, calcium, protein, iron, carbonhydrates, sugars, fiber, vitamina, vitaminb, vitamind += GetNutritionOfSingleRecipe(recipe.blogId, recipe.eaten_serving)
+    return calorie, fat, sodium, calcium, protein, iron, carbonhydrates, sugars, fiber, vitamina, vitaminb, vitamind
+
+
 @api_view(['GET'])
 def GetNutritionDaily(request):
-    today = timezone.now().date()
-    _eaten = Eaten.objects.filter(userId=request.GET.get(
-        'user'), date=request.GET.get(eatenDate=today))
-    _calorie = 0
-    _fat = 0
-    _sodium = 0
-    _calcium = 0
-    _protein = 0
-    _iron = 0
-    _carbonhydrates = 0
-    _sugars = 0
-    _fiber = 0
-    _vitamina = 0
-    _vitaminb = 0
-    _vitamind = 0
-    for singleRecipe in _eaten:
-        _blog = blog.objects.get(id=singleRecipe.blogId)
-        _nutrition = nutrition.objects.all()
-        _recipe = recipe.objects.filter(blog=_blog.id)
-        calorie = 0
-        fat = 0
-        sodium = 0
-        calcium = 0
-        protein = 0
-        iron = 0
-        carbonhydrates = 0
-        sugars = 0
-        fiber = 0
-        vitamina = 0
-        vitaminb = 0
-        vitamind = 0
-        for i in _recipe:
-            __nutrition = _nutrition.filter(food=i.food).first()
-            if __nutrition:
-                calorie += __nutrition.calorie * i.metricamount
-                fat += __nutrition.fat * i.metricamount
-                sodium += __nutrition.sodium * i.metricamount
-                calcium += __nutrition.calcium * i.metricamount
-                protein += __nutrition.protein * i.metricamount
-                iron += __nutrition.iron * i.metricamount
-                carbonhydrates += __nutrition.carbonhydrates * i.metricamount
-                sugars += __nutrition.sugars * i.metricamount
-                fiber += __nutrition.fiber * i.metricamount
-                vitamina += __nutrition.vitamina * i.metricamount
-                vitaminb += __nutrition.vitaminb * i.metricamount
-                vitamind += __nutrition.vitamind * i.metricamount
-        _calorie += (calorie * singleRecipe.eatenPercentage)/100
-        _fat += (fat * singleRecipe.eatenPercentage)/100
-        _sodium += (sodium * singleRecipe.eatenPercentage)/100
-        _calcium += (calcium * singleRecipe.eatenPercentage)/100
-        _protein += (protein * singleRecipe.eatenPercentage)/100
-        _iron += (iron * singleRecipe.eatenPercentage)/100
-        _carbonhydrates += (carbonhydrates * singleRecipe.eatenPercentage)/100
-        _sugars += (sugars * singleRecipe.eatenPercentage)/100
-        _fiber += (fiber * singleRecipe.eatenPercentage)/100
-        _vitamina += (vitamina * singleRecipe.eatenPercentage)/100
-        _vitaminb += (vitaminb * singleRecipe.eatenPercentage)/100
-        _vitamind += (vitamind * singleRecipe.eatenPercentage)/100
-        return JsonResponse(json.loads('{"Date":"' + str(today) +
-                                       ',"calorie":' + str(_calorie) +
-                                       ',"vitamind":' + str(_vitamind) +
-                                       ',"vitaminb":' + str(_vitaminb) +
-                                       ',"vitamina":' + str(_vitamina) +
-                                       ',"fiber":' + str(_fiber) +
-                                       ',"sugars":' + str(_sugars) +
-                                       ',"fat":' + str(_fat) +
-                                       ',"sodium":' + str(_sodium) +
-                                       ',"calcium":' + str(_calcium) +
-                                       ',"protein":' + str(_protein) +
-                                       ',"iron":' + str(_iron) +
-                                       ',"carbonhydrates":' + str(_carbonhydrates) +
-                                       '}'), safe=False)
+    requestedDate = request.GET.get('date')
+    user = request.GET.get('user')
+    eaten = Eaten.objects.filter(userId=user, date=requestedDate)
+    calorie, fat, sodium, calcium, protein, iron, carbonhydrates, sugars, fiber, vitamina, vitaminb, vitamind = GetNutritionsOfRecipeList(
+        eaten)
+    return JsonResponse(json.loads('{"calorie":' + str(calorie) + ',"vitamind":' + str(vitamind) + ',"vitaminb":' + str(vitaminb) + ',"vitamina":' + str(vitamina) + ',"fiber":' + str(fiber) + ',"sugars":' + str(sugars) + ',"fat":' + str(fat) + ',"sodium":' + str(sodium) + ',"calcium":' + str(calcium) + ',"protein":' + str(protein) + ',"iron":' + str(iron) + ',"carbonhydrates":' + str(carbonhydrates) + '}'), safe=False)
 
 
 class UserProfileView(views.APIView):
