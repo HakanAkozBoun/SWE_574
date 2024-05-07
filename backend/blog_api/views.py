@@ -579,25 +579,24 @@ def Login(request):
 # NEW VIEWS
 # ---------------------------------------------------------------------------------------
 
-@api_view(['POST'])
+@api_view(['GET'])
 def bookmark_toggle(request):
     try:
-        # user = request.user
-        user = get_object_or_404(User, pk=3)
-        blog_id = request.data.get('id')
+        user_id = request.GET.get('user_id')
+        user = get_object_or_404(User, pk=user_id)
+        blog_id = request.GET.get('blog_id')
         blog_ = get_object_or_404(blog, pk=blog_id)
-        print(blog_)
 
         user_bookmark = UserBookmark.objects.filter(user=user, blog=blog_)
 
         if user_bookmark.exists():
             user_bookmark.delete()
             is_bookmarked = False
-            message = "Bookmark deleted successfully"
+            message = "Bookmark deleted"
         else:
             UserBookmark.objects.create(user=user, blog=blog_)
             is_bookmarked = True
-            message = "Bookmark created successfully"
+            message = "Bookmark created"
 
         bookmark_data = {
             "success": True,
@@ -609,26 +608,23 @@ def bookmark_toggle(request):
         error_message = f"Error toggling bookmark: {str(e)}"
         return Response({"success": False, "error": error_message})
 
-
 @api_view(['GET'])
 def recommend_items(request):
-    request.user = User.objects.get(id=3)
+    user_id = request.GET.get('user_id')
+    request.user = User.objects.get(id=user_id)
     recommendations = get_recommendations(request.user)
     recommendationSerializer = blogSerializer(recommendations, many=True)
     return Response(recommendationSerializer.data)
 
 
-@api_view(['POST'])
+@api_view(['GET'])
 def add_rating(request):
     try:
-        # Load JSON data from the request body
-        data = json.loads(request.body.decode('utf-8'))
-        print("data", data)
-        user_id = request.user.id
-        user = get_object_or_404(User, pk=3)
-        recipe_id = data.get('recipe_id')
-        recipe = get_object_or_404(blog, pk=2)
-        value = data.get('value')
+        user_id = request.GET.get('user_id')
+        user = get_object_or_404(User, pk=user_id)
+        recipe_id = request.GET.get('recipe_id')
+        recipe = get_object_or_404(blog, pk=recipe_id)
+        value = request.GET.get('value')
 
         # Check if the user has already rated the recipe
         existing_rating = UserRating.objects.filter(
