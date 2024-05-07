@@ -5,14 +5,12 @@ from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Avg
 
-
 class food(models.Model):
     name = models.CharField(max_length=255)
     unit = models.IntegerField()
 
     def __str__(self):
         return self.name
-
 
 class comment(models.Model):
     blog = models.IntegerField()
@@ -21,7 +19,6 @@ class comment(models.Model):
 
     def __str__(self):
         return self.recipe
-
 
 class nutrition(models.Model):
     calorie = models.FloatField(null=True)
@@ -41,7 +38,6 @@ class nutrition(models.Model):
     def __str__(self):
         return self.unit
 
-
 class recipe(models.Model):
     food = models.IntegerField()
     unit = models.IntegerField()
@@ -53,7 +49,6 @@ class recipe(models.Model):
     def __str__(self):
         return self.food
 
-
 class unit(models.Model):
     name = models.CharField(max_length=255)
     type = models.IntegerField()
@@ -61,13 +56,11 @@ class unit(models.Model):
     def __str__(self):
         return self.name
 
-
 class unittype(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
-
 
 class unititem(models.Model):
     imperial = models.CharField(max_length=255)
@@ -76,7 +69,6 @@ class unititem(models.Model):
 
     def __str__(self):
         return self.metric
-
 
 class unitconversion(models.Model):
     imperial = models.FloatField()
@@ -88,14 +80,12 @@ class unitconversion(models.Model):
     def __str__(self):
         return self.metric
 
-
 class category(models.Model):
     name = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='image', null=True, blank=True)
+    image = models.IntegerField()
 
     def __str__(self):
         return self.name
-
 
 class blog(models.Model):
     POST_CHOICES = [
@@ -110,7 +100,7 @@ class blog(models.Model):
     preparationtime = models.TextField(null=True, blank=True)
     cookingtime = models.TextField(null=True, blank=True)
     avg_rating = models.FloatField(default=0)
-    image = models.ImageField(upload_to='image', null=True, blank=True)
+    image = models.IntegerField()
     ingredients = models.TextField(null=True, blank=True)
 
     postlabel = models.CharField(
@@ -132,7 +122,6 @@ class blog(models.Model):
 
         self.save()
 
-
 class Follower(models.Model):
     follower_user = models.ForeignKey(
         User,
@@ -146,7 +135,6 @@ class Follower(models.Model):
     )
     # is_active eklenebilir
 
-
 '''
 class Bookmark(models.Model):
     user = models.ForeignKey(
@@ -155,7 +143,6 @@ class Bookmark(models.Model):
         recipe, on_delete=models.CASCADE, related_name='bookmarked_by')
 
 '''
-
 
 class FoodTable(models.Model):
 
@@ -168,7 +155,6 @@ class FoodTable(models.Model):
     def __str__(self):
         return self.description
 
-
 class FoodNutrient(models.Model):
 
     name = models.CharField(max_length=255, null=True, blank=True)
@@ -179,24 +165,20 @@ class FoodNutrient(models.Model):
     def __str__(self):
         return self.name
 
-
 class FoundationFood(models.Model):
 
     fdc_id = models.IntegerField()
     NDB_number = models.IntegerField()
     footnote = models.CharField(max_length=255)
 
-
 class SampleFood(models.Model):
 
     fdc_id = models.IntegerField()
-
 
 class UserBookmark(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     blog = models.ForeignKey(blog, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-
 
 class UserRating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -204,7 +186,6 @@ class UserRating(models.Model):
     value = models.PositiveIntegerField(
         default=0, validators=[MinValueValidator(1), MaxValueValidator(5)])
     created_at = models.DateTimeField(auto_now_add=True)
-
 
 class FoodNutrientTable(models.Model):
     fdc_id = models.IntegerField(null=True, blank=True, default=0)
@@ -220,7 +201,6 @@ class FoodNutrientTable(models.Model):
     footnote = models.CharField(max_length=255, blank=True, null=True)
     min_year_acquired = models.CharField(blank=True, null=True, max_length=255)
 
-
 class InputFood(models.Model):
 
     fdc_id = models.IntegerField(null=True, blank=True)
@@ -233,7 +213,6 @@ class InputFood(models.Model):
     gram_weight = models.FloatField(null=True, blank=True)
     retention_code = models.CharField(null=True, blank=True, max_length=255)
     survey_flag = models.CharField(null=True, blank=True, max_length=255)
-
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -249,7 +228,6 @@ class UserProfile(models.Model):
         max_length=255, null=True, blank=True)
     working_at = models.CharField(max_length=255, null=True, blank=True)
 
-
 class Eaten(models.Model):
 
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -258,7 +236,14 @@ class Eaten(models.Model):
     eatenDate = models.DateTimeField(default=timezone.datetime.today)
     is_active = models.BooleanField(default=True)
 
-
 class Allergy(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     food = models.ForeignKey(food, on_delete=models.CASCADE)
+
+class image(models.Model):
+    #id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255,null=True, blank=True)
+    data = models.TextField(max_length=255,null=True, blank=True)
+    type = models.CharField(max_length=255,null=True, blank=True)
+    def __str__(self):
+        return self.name
