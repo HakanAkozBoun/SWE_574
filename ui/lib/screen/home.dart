@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:recipe/consent/appbar.dart';
 import 'package:recipe/consent/colors.dart';
@@ -16,8 +18,7 @@ class Home extends StatefulWidget {
 
 Future<List<dynamic>> fetchData() async {
   const String popularRecipes = BackendUrl.apiUrl + 'PopularPostsApiView/';
-  final response = await http
-      .get(Uri.parse(popularRecipes));
+  final response = await http.get(Uri.parse(popularRecipes));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -56,6 +57,8 @@ class _HomeState extends State<Home> {
                 (context, index) {
                   if (fetchedData != null) {
                     // Eğer veri varsa fetchedData'yı kullan
+                    var url = fetchedData![index]['base64'];
+                    Uint8List decodedImage = base64Decode(url);
                     return GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
@@ -85,19 +88,8 @@ class _HomeState extends State<Home> {
                                 vertical: 15,
                               ),
                               child: Container(
-                                height: 120,
-                                width: 120,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: NetworkImage(
-                                      'http://10.0.2.2:8000' +
-                                          fetchedData![index]['image'] +
-                                          '',
-                                    ),
-                                    fit: BoxFit.cover,
-                                  ),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
+                                height: 140,
+                                child: Image.memory(decodedImage),
                               ),
                             ),
                             SizedBox(height: 20),

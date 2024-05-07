@@ -12,9 +12,8 @@ import 'package:recipe/constants/backend_url.dart';
 
 Future<List<dynamic>> fetchData() async {
   const String categoryUrl = BackendUrl.apiUrl + 'CategoryList/';
-  
-  final response =
-      await http.get(Uri.parse(categoryUrl));
+
+  final response = await http.get(Uri.parse(categoryUrl));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -24,8 +23,7 @@ Future<List<dynamic>> fetchData() async {
 
 Future<List<dynamic>> fetchData2() async {
   const String foodListUrl = BackendUrl.apiUrl + 'FoodList/';
-  final response =
-      await http.get(Uri.parse(foodListUrl));
+  final response = await http.get(Uri.parse(foodListUrl));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -35,8 +33,7 @@ Future<List<dynamic>> fetchData2() async {
 
 Future<List<dynamic>> fetchData3() async {
   const String unitListUrl = BackendUrl.apiUrl + 'UnitList/';
-  final response =
-      await http.get(Uri.parse(unitListUrl));
+  final response = await http.get(Uri.parse(unitListUrl));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -46,8 +43,7 @@ Future<List<dynamic>> fetchData3() async {
 
 Future<List<dynamic>> fetchData4(id) async {
   const String recipeList = BackendUrl.apiUrl + 'RecipeList/?blog=';
-  final response = await http.get(
-      Uri.parse(recipeList + id.toString()));
+  final response = await http.get(Uri.parse(recipeList + id.toString()));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -201,6 +197,7 @@ class _AddItemPageState extends State<AddItemPage> {
   Item? _selectedItem;
   FoodItem? _selectedItem2;
   UnitItem? _selectedItem3;
+  var imageID;
 
   List? foodList;
   TextEditingController _inputController1 = TextEditingController();
@@ -319,8 +316,7 @@ class _AddItemPageState extends State<AddItemPage> {
 
   Future<void> sendData(data) async {
     const String createBlogUrl = BackendUrl.apiUrl + 'CreateBlog';
-    final url =
-        Uri.parse(createBlogUrl); // API'nin URL'si
+    final url = Uri.parse(createBlogUrl); // API'nin URL'si
 
     try {
       final response = await http.post(

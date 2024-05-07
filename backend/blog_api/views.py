@@ -268,8 +268,7 @@ def CreateCategory(request):
 @api_view(['POST'])
 def File(request):
     file = request.FILES['file']
-    image_ = image.objects.create(name=file.name, data=base64.b64encode(file.read()), type=file.content_type)
-    print(image_.type)
+    image_ = image.objects.create(name=file.name, data=base64.b64encode(file.read()).decode('ascii'), type=file.content_type)
     return JsonResponse({'id': image_.id, 'name': image_.name}, safe=False)
 @api_view(['POST'])
 def CreateBlog(request):
