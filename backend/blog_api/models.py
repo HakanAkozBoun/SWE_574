@@ -10,7 +10,7 @@ class food(models.Model):
     name = models.CharField(max_length=255)
     unit = models.IntegerField()
 
-    def __str__(self):
+    def _str_(self):
         return self.name
 
 
@@ -19,7 +19,7 @@ class comment(models.Model):
     user = models.IntegerField()
     text = models.CharField(max_length=255)
 
-    def __str__(self):
+    def _str_(self):
         return self.recipe
 
 
@@ -38,7 +38,7 @@ class nutrition(models.Model):
     vitamind = models.FloatField(null=True)
     food = models.IntegerField()
 
-    def __str__(self):
+    def _str_(self):
         return self.unit
 
 
@@ -50,7 +50,7 @@ class recipe(models.Model):
     metricamount = models.IntegerField()
     metricunit = models.IntegerField()
 
-    def __str__(self):
+    def _str_(self):
         return self.food
 
 
@@ -58,14 +58,14 @@ class unit(models.Model):
     name = models.CharField(max_length=255)
     type = models.IntegerField()
 
-    def __str__(self):
+    def _str_(self):
         return self.name
 
 
 class unittype(models.Model):
     name = models.CharField(max_length=255)
 
-    def __str__(self):
+    def _str_(self):
         return self.name
 
 
@@ -74,7 +74,7 @@ class unititem(models.Model):
     metric = models.CharField(max_length=255)
     unit = models.IntegerField()
 
-    def __str__(self):
+    def _str_(self):
         return self.metric
 
 
@@ -85,7 +85,7 @@ class unitconversion(models.Model):
     ivalue = models.FloatField()
     unittype = models.IntegerField()
 
-    def __str__(self):
+    def _str_(self):
         return self.metric
 
 
@@ -93,7 +93,7 @@ class category(models.Model):
     name = models.CharField(max_length=255)
     image = models.ImageField(upload_to='image', null=True, blank=True)
 
-    def __str__(self):
+    def _str_(self):
         return self.name
 
 
@@ -118,7 +118,7 @@ class blog(models.Model):
     userid = models.IntegerField(default=1)
     serving = models.IntegerField(default=4)
 
-    def __str__(self):
+    def _str_(self):
         return self.title
 
     def calculate_avg_rating(self):
@@ -165,7 +165,7 @@ class FoodTable(models.Model):
     food_category_id = models.CharField(null=True, blank=True, max_length=255)
     publication_date = models.DateField()
 
-    def __str__(self):
+    def _str_(self):
         return self.description
 
 
@@ -176,7 +176,7 @@ class FoodNutrient(models.Model):
     nutrient_nbr = models.CharField(null=True, blank=True, max_length=255)
     rank = models.IntegerField(null=True, blank=True)
 
-    def __str__(self):
+    def _str_(self):
         return self.name
 
 
