@@ -85,16 +85,16 @@ WSGI_APPLICATION = 'recipeBlog.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 
-DATABASES = {
-   'default': {
-       'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME': 'xymziiwn',
-       'USER': 'xymziiwn',
-       'PASSWORD': 'dZgLKBzSeuds_yro0WckQnE47nJY9DVU',
-       'HOST': 'lucky.db.elephantsql.com',
-       'PORT': '5432',
-   }
-}
+# DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'xymziiwn',
+#        'USER': 'xymziiwn',
+#        'PASSWORD': 'dZgLKBzSeuds_yro0WckQnE47nJY9DVU',
+#        'HOST': 'lucky.db.elephantsql.com',
+#        'PORT': '5432',
+#    }
+# }
 
 # DATABASES = {
 
@@ -106,17 +106,30 @@ DATABASES = {
 #        'HOST': 'localhost',
 #        'PORT': '5432',
 #    }
+# }
 
 # DATABASES = {
+
 #    'default': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': 'xymziiwn',
-#        'USER': 'xymziiwn',
-#        'PASSWORD': 'dZgLKBzSeuds_yro0WckQnE47nJY9DVU',
-#        'HOST': 'lucky.db.elephantsql.com',
+#       'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'cookPad2',
+#        'USER': 'postgres',
+#        'PASSWORD': '1',
+#        'HOST': 'localhost',
 #        'PORT': '5432',
 #    }
 # }
+
+DATABASES = {
+   'default': {
+       'ENGINE': 'django.db.backends.postgresql_psycopg2',
+       'NAME': 'xymziiwn',
+       'USER': 'xymziiwn',
+       'PASSWORD': 'dZgLKBzSeuds_yro0WckQnE47nJY9DVU',
+       'HOST': 'lucky.db.elephantsql.com',
+       'PORT': '5432',
+   }
+}
 
 # DATABASES = {
 #     'default': {

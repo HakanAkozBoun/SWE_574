@@ -91,8 +91,7 @@ class unitconversion(models.Model):
 
 class category(models.Model):
     name = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='image', null=True, blank=True)
-
+    image = models.IntegerField(null=True, blank=True)
     def _str_(self):
         return self.name
 
@@ -110,7 +109,7 @@ class blog(models.Model):
     preparationtime = models.TextField(null=True, blank=True)
     cookingtime = models.TextField(null=True, blank=True)
     avg_rating = models.FloatField(default=0)
-    image = models.ImageField(upload_to='image', null=True, blank=True)
+    image = models.IntegerField(null=True, blank=True)
     ingredients = models.TextField(null=True, blank=True)
 
     postlabel = models.CharField(
@@ -261,3 +260,11 @@ class Eaten(models.Model):
 class Allergy(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     food = models.ForeignKey(food, on_delete=models.CASCADE)
+
+class image(models.Model):
+    #id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255,null=True, blank=True)
+    data = models.TextField(max_length=255,null=True, blank=True)
+    type = models.CharField(max_length=255,null=True, blank=True)
+    def __str__(self):
+        return self.name
