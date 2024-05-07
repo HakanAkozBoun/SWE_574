@@ -243,8 +243,8 @@ def CreateCategory(request):
 @api_view(['POST'])
 def File(request):
     file = request.FILES['file']
-    file_name = default_storage.save('image\\' + file.name, file)
-    return JsonResponse(file_name, safe=False)
+    image_ = image.objects.create(name=file.name, data=base64.b64encode(file.read()).decode('ascii'), type=file.content_type)
+    return JsonResponse({'id': image_.id, 'name': image_.name}, safe=False)
 
 
 @api_view(['POST'])
