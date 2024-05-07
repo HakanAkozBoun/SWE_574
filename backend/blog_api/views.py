@@ -1,9 +1,9 @@
 from django.utils import timezone
 import json
-
-from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood, Eaten
+ 
+from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood, Eaten, image
 from .serializers import UserForProfileFrontEndSerializer, blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer, UserSerializer, AllergySerializer, UserProfileForFrontEndSerializer
-
+ 
 from rest_framework import viewsets
 from rest_framework import mixins
 from rest_framework.response import Response
@@ -25,43 +25,37 @@ from rest_framework import serializers, views, status
 from rest_framework.response import Response
 from .models import Allergy
 from django.contrib.auth.models import User
-
-
+ 
 class blogApiView(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     queryset = blog.objects.all()
     serializer_class = blogSerializer
     lookup_field = 'slug'
-
-
+ 
 class categoryApiView(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     queryset = category.objects.all()
     serializer_class = categorySerializer
     lookup_field = 'id'
-
-
+ 
 class CategoryPostApiView(viewsets.ViewSet):
     def retrieve(self, request, pk=None):
         queryset = blog.objects.filter(category=pk)
         serializer = blogSerializer(queryset, many=True)
         return Response(serializer.data)
-
-
-class PopularPostsApiView(viewsets.ViewSet):
-    def list(self, request, pk=None):
-        queryset = blog.objects.filter(
-            postlabel__iexact='POPULAR').order_by('-id')[0:4]
-        serializer = blogSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-
+ 
+# class PopularPostsApiView(viewsets.ViewSet):
+#     def list(self, request, pk=None):
+#         queryset = blog.objects.filter(
+#             postlabel__iexact='POPULAR').order_by('-id')[0:4]
+#         serializer = blogSerializer(queryset, many=True)
+#         return Response(serializer.data)
+ 
 @api_view(['GET'])
 def GetUserList(request):
     all_users = User.objects.all().values("id", "username", "first_name",
                                           "last_name", 'email', 'is_active', 'last_login')
     user_list = list(all_users)
     return JsonResponse(user_list, safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetFollowingUserProfilesList(request):
     '''
@@ -78,30 +72,28 @@ def GetFollowingUserProfilesList(request):
     serializers = UserProfileForFrontEndSerializer(
         following_user_profiles, many=True)
     return Response(serializers.data)
-
-
+ 
 @api_view(['GET'])
 def GetBookmarkedRecipes(request):
-
+ 
    # if not request.user.is_authenticated:
     #    return JsonResponse({'error': 'Authentication required'}, status=401)
     user_id = request.query_params.get('id', '1')
     bookmarks = UserBookmark.objects.filter(
         user=user_id).select_related('blog')
-
+ 
     bookmarked_recipes_list = [{
         'id': bookmark.blog.id,
         'title': bookmark.blog.title,
         # recipelere desc ekleyebiliriz istersek
         # 'description': bookmark.bookmarked_recipe.description,
     } for bookmark in bookmarks]
-
+ 
     return JsonResponse(bookmarked_recipes_list, safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetSelfRecipes(request):
-
+ 
     # çalışması için user id olması lazım recipe modelinde
     ''' if not request.user.is_authenticated:
          return JsonResponse({'error': 'Authentication required'}, status=401)
@@ -109,7 +101,7 @@ def GetSelfRecipes(request):
     # EE id 1 değişmeli
     # id= request.user.id
     user_id = request.query_params.get('id', '1')
-
+ 
     queryset = blog.objects.filter(userid=user_id)
     serializer = blogSerializer(queryset, many=True)
     return Response(serializer.data)
@@ -123,8 +115,7 @@ def GetSelfRecipes(request):
         'metricunit': recipe.metricunit
     } for recipe in self_recipes]
     '''
-
-
+ 
 @api_view(['PUT'])
 def UpdateUser(request):
     user = User.objects.get(id=request.data.get('id'))
@@ -132,45 +123,41 @@ def UpdateUser(request):
     user.email = request.data.get('mail')
     user.save()
     return JsonResponse(True, safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetUser(request):
     return JsonResponse(model_to_dict(User.objects.get(id=request.GET.get('id'))), safe=False)
-
-
+ 
 @api_view(['GET'])
 def check_email(request):
     email = request.GET.get('email', None)
     user_id = request.GET.get('user_id', None)
     if not email:
         return JsonResponse({'error': 'No username provided'}, status=400)
-
+ 
     if user_id:
         exists = User.objects.filter(
             email=email).exclude(id=user_id).exists()
     else:
         exists = User.objects.filter(email=email).exists()
-
+ 
     return JsonResponse({'exists': exists})
-
-
+ 
 @api_view(['GET'])
 def check_username(request):
     username = request.GET.get('username', None)
     user_id = request.GET.get('user_id', None)
     if not username:
         return JsonResponse({'error': 'No username provided'}, status=400)
-
+ 
     if user_id:
         exists = User.objects.filter(
             username=username).exclude(id=user_id).exists()
     else:
         exists = User.objects.filter(username=username).exists()
-
+ 
     return JsonResponse({'exists': exists})
-
-
+ 
 @api_view(['PATCH'])
 def UpdateUserInfo(request):
     user_id = request.query_params.get('id', '1')
@@ -184,8 +171,7 @@ def UpdateUserInfo(request):
     userProfile = UserProfile.objects.get(user=user)
     serializer_class = UserProfileForFrontEndSerializer
     return Response(serializer_class(userProfile).data)
-
-
+ 
 @api_view(['PATCH'])
 def UpdateUserProfile(request):
     user_id = request.query_params.get('id')
@@ -193,19 +179,18 @@ def UpdateUserProfile(request):
         userProfile = UserProfile.objects.get(user=user_id)
     except UserProfile.DoesNotExist:
         return JsonResponse({'error': 'UserProfile not found.'}, status=404)
-
+ 
     fields_to_update = ['age', 'weight', 'height', 'description', 'image',
                         'experience', 'gender', 'graduated_from', 'cuisines_of_expertise', 'working_at']
     for field in fields_to_update:
         if field in request.data:
             setattr(userProfile, field, request.data[field])
-
+ 
     userProfile.save()
     serializer_class = UserProfileForFrontEndSerializer
     return Response(serializer_class(userProfile).data)
     # return JsonResponse(model_to_dict(userProfile), safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetCurrentUserProfile(request):
     # EE id=1'i değiştir
@@ -215,45 +200,84 @@ def GetCurrentUserProfile(request):
     serializer_class = UserProfileForFrontEndSerializer
     return Response(serializer_class(queryset).data)
     # return JsonResponse(model_to_dict(UserProfile.objects.get(id=request.GET.get('id'))), safe=False)
-
-
+ 
+@api_view(['GET'])
+def PopularPostsApiView(request):
+    all = blog.objects.all().values()
+    imagelist = image.objects.filter(id__in=all.values_list('image', flat=True))
+    response = []
+    for blog_ in all:
+        json = { 'base64' : None, 'image': None, 'type':None }
+        if blog_.get('image') is not None:
+            image_ = imagelist.filter(id=blog_.get('image')).first()
+            if image_ is not None:
+               json['base64'] = image_.data
+               json['image'] = image_.name
+               json['type'] = image_.type
+        json['id'] = blog_.get('id')
+        json['title'] = blog_.get('title')
+        json['slug'] = blog_.get('slug')
+        json['excerpt'] = blog_.get('excerpt')
+        json['content'] = blog_.get('content')
+        json['contentTwo'] = blog_.get('contentTwo')
+        json['ingredients'] = blog_.get('ingredients')
+        json['postlabel'] = blog_.get('postlabel')
+        json['category_id'] = blog_.get('category_id')
+        json['preparationtime'] = blog_.get('preparationtime')
+        json['cookingtime'] = blog_.get('cookingtime')
+        json['rate'] = blog_.get('rate')
+        json['bookmark'] = blog_.get('bookmark')
+        json['avg_rating'] = blog_.get('avg_rating')
+        json['userid'] = blog_.get('userid')
+        json['serving'] = blog_.get('serving')
+        response.append(json)
+    return JsonResponse(response, safe=False)
+ 
 @api_view(['GET'])
 def GetCategoryList(request):
-    all_users = category.objects.all().values("id", "name", "image")
-    user_list = list(all_users)
-    return JsonResponse(user_list, safe=False)
-
-
+    all = category.objects.all().values("id", "name", "image")
+    imagelist = image.objects.filter(id__in=all.values_list('image', flat=True))
+    response = []
+    for category_ in all:
+        json = { 'base64' : None, 'image': None, 'type':None }
+        if category_.get('image') is not None:
+            image_ = imagelist.filter(id=category_.get('image')).first()
+            if image_ is not None:
+               json['base64'] = image_.data
+               json['image'] = image_.name
+               json['type'] = image_.type
+        json['id'] = category_.get('id')
+        json['name'] = category_.get('name')
+        response.append(json)
+    
+    return JsonResponse(response, safe=False)
+ 
 @api_view(['POST'])
 def CreateCategory(request):
-    _id = request.data.get('id')
+    _id=request.data.get('id')
     if _id is None:
-        category.objects.create(name=request.data.get(
-            'name'), image=request.data.get('image'))
+        category.objects.create(name=request.data.get('name'), image=request.data.get('image'))
     else:
         _category = category.objects.filter(id=_id).first()
         if _category is None:
             return JsonResponse("id not found", safe=False)
-        _category.name = request.data.get('name')
-        _category.image = request.data.get('image')
+        _category.name=request.data.get('name')
+        _category.image=request.data.get('image')
         _category.save()
     return JsonResponse("OK", safe=False)
-
-
 @api_view(['POST'])
 def File(request):
     file = request.FILES['file']
-    file_name = default_storage.save('image\\' + file.name, file)
-    return JsonResponse(file_name, safe=False)
-
-
+    image_ = image.objects.create(name=file.name, data=base64.b64encode(file.read()), type=file.content_type)
+    print(image_.type)
+    return JsonResponse({'id': image_.id, 'name': image_.name}, safe=False)
 @api_view(['POST'])
 def CreateBlog(request):
     # EE user id None olarak sabitlendi
     # _id = request.data.get('id')
     _id = None
     if _id is None:
-
+ 
         _blog = blog.objects.create(category_id=request.data.get('category'), title=request.data.get('title'), slug=request.data.get('slug'), excerpt=request.data.get('excerpt'), content=request.data.get('content'), contentTwo=request.data.get('contentTwo'), avg_rating=request.data.get(
             'avg_rating'), serving=request.data.get('serving'), userid=request.data.get('userid'), preparationtime=request.data.get('preparationtime'), cookingtime=request.data.get('cookingtime'), image=request.data.get('image'), ingredients=request.data.get('ingredients'), postlabel=request.data.get('postlabel'))
     else:
@@ -274,13 +298,13 @@ def CreateBlog(request):
         _blog.postlabel = request.data.get('postlabel')
         _blog.userid = request.data.get('userid')
         _blog.serving = request.data.get('serving')
-
+ 
         _blog.save()
-
+ 
         list = recipe.objects.filter(blog=_id)
         for item in list:
             item.delete()
-
+ 
     list = request.data.get('list')
     conversion = unitconversion.objects.all()
     for item in list:
@@ -293,27 +317,23 @@ def CreateBlog(request):
         recipe.objects.create(food=item.get('food'), unit=item.get('unit'), amount=item.get(
             'amount'), blog=_blog.id, metricamount=metricamount, metricunit=metricunit)
     return JsonResponse(_blog.id, safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetBlogList(request):
     all_blog = blog.objects.all().values("id", "name", "image")
     blog_list = list(all_blog)
     return JsonResponse(blog_list, safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetBlog(request):
     all_blog = blog.objects.filter(blog=2).values("id", "name", "image")
     blog_list = list(all_blog)
     return JsonResponse(blog_list, safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetFood(request):
     return JsonResponse(model_to_dict(food.objects.get(id=request.GET.get('id'))), safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetFoodList(request):
     list = []
@@ -326,8 +346,7 @@ def GetFoodList(request):
         list.append({"id": item.id, "unitid": item.unit,
                     "unit": unit.get(id=item.unit), "name": item.name})
     return JsonResponse(list, safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetRecipeList(request):
     list = []
@@ -338,38 +357,31 @@ def GetRecipeList(request):
         list.append({"food": _food.get(id=item.food), "unit": _unit.get(id=item.unit), "unitid": item.unit, "amount": item.amount,
                     "metricamount": item.metricamount, "metricunit": _unit.get(id=item.metricunit), "metricunitid": item.metricunit})
     return JsonResponse(list, safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetUnitList(request):
     return JsonResponse(list(unit.objects.all().values("id", "name", "type")), safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetUnitType(request):
     return JsonResponse(model_to_dict(unittype.objects.get(id=request.GET.get('id'))), safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetUnitTypeList(request):
     return JsonResponse(list(unittype.objects.all().values("id", "name")), safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetUnitItem(request):
     return JsonResponse(model_to_dict(unititem.objects.get(id=request.GET.get('id'))), safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetUnitItemList(request):
     return JsonResponse(list(unititem.objects.filter(unit=request.GET.get('unit')).values("id", "imperial", "metric", "unit")), safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetUnitConversionList(request):
     return JsonResponse(list(unitconversion.objects.filter(unittype=request.GET.get('unit')).values("id", "imperial", "metric", "mvalue", "ivalue", "unittype")), safe=False)
-
-
+ 
 '''
 @api_view(['GET'])
 def GetGoals(request):
@@ -379,8 +391,7 @@ def GetGoals(request):
     serializer_class = UserProfileForFrontEndSerializer
     return Response(serializer_class(queryset).data)
 '''
-
-
+ 
 def CalculateGoals(userProfile):
     calorie = CalculateGoalCalorie()
     fat = CalculateGoalFat()
@@ -395,109 +406,96 @@ def CalculateGoals(userProfile):
     vitamina = CalculateGoalVitamina()
     vitaminb = CalculateGoalVitaminb()
     vitamind = CalculateGoalVitamind()
-
-
+ 
 def CalculateGoalCalorie():
     return 0
-
-
+ 
 def CalculateGoalFat():
     return 0
-
-
+ 
 def CalculateGoalSodium():
     return 0
-
-
+ 
 def CalculateGoalCalcium(age, gender):
-    # https://ods.od.nih.gov/factsheets/Calcium-HealthProfessionalnths*	200 mg	200 mg
+    # https://ods.od.nih.gov/factsheets/Calcium-HealthProfessionalnths* 200 mg  200 mg
     necessaryCalciumIntake = 0
     if (gender == "M" or "m"):
         if (age <= 1):
             necessaryCalciumIntake = 260
-
+ 
         elif (age > 1 and age <= 3):
-
+ 
             necessaryCalciumIntake = 700
-
+ 
         elif (age > 3 and age <= 8):
             necessaryCalciumIntake = 1000
-
+ 
         elif (age > 8 and age <= 13):
             necessaryCalciumIntake = 1300
-
+ 
         elif (age > 13 and age <= 18):
             necessaryCalciumIntake = 1300
-
+ 
         elif (age > 18 and age <= 50):
             necessaryCalciumIntake = 1000
-
+ 
         elif (age > 50 and age <= 70):
             necessaryCalciumIntake = 1000
-
+ 
         elif (age > 70):
             necessaryCalciumIntake = 1200
-
+ 
     elif (gender == "F" or "f"):
         if (age <= 1):
             necessaryCalciumIntake = 260
-
+ 
         elif (age > 1 and age <= 3):
-
+ 
             necessaryCalciumIntake = 700
-
+ 
         elif (age > 3 and age <= 8):
             necessaryCalciumIntake = 1000
-
+ 
         elif (age > 8 and age <= 13):
             necessaryCalciumIntake = 1300
-
+ 
         elif (age > 13 and age <= 18):
             necessaryCalciumIntake = 1300
-
+ 
         elif (age > 18 and age <= 50):
             necessaryCalciumIntake = 1000
-
+ 
         elif (age > 50 and age <= 70):
             necessaryCalciumIntake = 1200
-
+ 
         elif (age > 70):
             necessaryCalciumIntake = 1200
     return necessaryCalciumIntake
-
-
+ 
 def CalculateGoalProtein():
     return 0
-
-
+ 
 def CalculateGoalIron():
     return 0
-
-
+ 
 def CalculateGoalCarbonhydrates():
     return 0
-
-
+ 
 def CalculateGoalSugars():
     return 0
-
-
+ 
 def CalculateGoalFiber():
     return 0
-
-
+ 
 def CalculateGoalVitamina():
     return 0
-
-
+ 
 def CalculateGoalVitaminb():
     return 0
-
-
+ 
 def CalculateGoalVitamind():
     return 0
-
-
+ 
 @api_view(['GET'])
 def GetNutrition(request):
     _blog = blog.objects.get(id=request.GET.get('blog'))
@@ -531,8 +529,7 @@ def GetNutrition(request):
             vitaminb += __nutrition.vitaminb * i.metricamount
             vitamind += __nutrition.vitamind * i.metricamount
     return JsonResponse(json.loads('{"blog":"' + str(_blog.title) + '","blogid":' + str(_blog.id) + ',"calorie":' + str(calorie) + ',"vitamind":' + str(vitamind) + ',"vitaminb":' + str(vitaminb) + ',"vitamina":' + str(vitamina) + ',"fiber":' + str(fiber) + ',"sugars":' + str(sugars) + ',"fat":' + str(fat) + ',"sodium":' + str(sodium) + ',"calcium":' + str(calcium) + ',"protein":' + str(protein) + ',"iron":' + str(iron) + ',"carbonhydrates":' + str(carbonhydrates) + '}'), safe=False)
-
-
+ 
 @api_view(['GET'])
 def GetCommentList(request):
     list = []
@@ -543,8 +540,7 @@ def GetCommentList(request):
         list.append({"id": i.id, "name": __user.first_name, "lastname": __user.last_name,
                     "userid": __user.id, "blogid": i.blog, "text": i.text})
     return JsonResponse(list, safe=False)
-
-
+ 
 @api_view(['POST'])
 def CreateComment(request):
     _id = request.data.get('id')
@@ -560,10 +556,9 @@ def CreateComment(request):
         _comment.text = request.data.get('text')
         _comment.save()
         return JsonResponse(_comment.id, safe=False)
-
+ 
     return JsonResponse(_comment.id, safe=False)
-
-
+ 
 @api_view(['POST'])
 # @authentication_classes([])
 # @permission_classes([])
@@ -574,11 +569,10 @@ def Login(request):
     if user is not None:
         return JsonResponse(json.loads('{"token":"' + base64.b64encode(bytes(username + ":" + password, 'utf-8')).decode('utf-8') + '", "id":' + str(user.id) + ',"name":"' + user.username + '"}'), safe=False)
     return JsonResponse("Wrong User or Password", safe=False, status=401)
-
-
+ 
 # NEW VIEWS
 # ---------------------------------------------------------------------------------------
-
+ 
 @api_view(['POST'])
 def bookmark_toggle(request):
     try:
@@ -587,9 +581,9 @@ def bookmark_toggle(request):
         blog_id = request.data.get('id')
         blog_ = get_object_or_404(blog, pk=blog_id)
         print(blog_)
-
+ 
         user_bookmark = UserBookmark.objects.filter(user=user, blog=blog_)
-
+ 
         if user_bookmark.exists():
             user_bookmark.delete()
             is_bookmarked = False
@@ -598,7 +592,7 @@ def bookmark_toggle(request):
             UserBookmark.objects.create(user=user, blog=blog_)
             is_bookmarked = True
             message = "Bookmark created successfully"
-
+ 
         bookmark_data = {
             "success": True,
             "is_bookmarked": is_bookmarked,
@@ -608,16 +602,14 @@ def bookmark_toggle(request):
     except Exception as e:
         error_message = f"Error toggling bookmark: {str(e)}"
         return Response({"success": False, "error": error_message})
-
-
+ 
 @api_view(['GET'])
 def recommend_items(request):
     request.user = User.objects.get(id=3)
     recommendations = get_recommendations(request.user)
     recommendationSerializer = blogSerializer(recommendations, many=True)
     return Response(recommendationSerializer.data)
-
-
+ 
 @api_view(['POST'])
 def add_rating(request):
     try:
@@ -629,11 +621,11 @@ def add_rating(request):
         recipe_id = data.get('recipe_id')
         recipe = get_object_or_404(blog, pk=2)
         value = data.get('value')
-
+ 
         # Check if the user has already rated the recipe
         existing_rating = UserRating.objects.filter(
             user=user, recipe=recipe).first()
-
+ 
         if existing_rating:
             # Update the existing rating
             existing_rating.value = value
@@ -641,16 +633,15 @@ def add_rating(request):
         else:
             # Create a new rating
             UserRating.objects.create(user=user, recipe=recipe, value=value)
-
+ 
         # Recalculate the average rating
         recipe.calculate_avg_rating()
-
+ 
         return Response({'avg_rating': recipe.avg_rating, 'success': True})
     except Exception as e:
         print(f"Error submitting rating: {e}")
         return Response({"success": False, "error": str(e)})
-
-
+ 
 @api_view(['GET'])
 def GetNutritionDaily(request):
     today = timezone.now().date()
@@ -725,21 +716,18 @@ def GetNutritionDaily(request):
                                        ',"iron":' + str(_iron) +
                                        ',"carbonhydrates":' + str(_carbonhydrates) +
                                        '}'), safe=False)
-
-
+ 
 class UserProfileView(views.APIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-
-
+ 
 class InputFoodView(views.APIView):
     queryset = InputFood.objects.all()
     serializer_class = InputFoodSerializer
-
-
+ 
 class RegisterAPIView(APIView):
     permission_classes = [AllowAny]
-
+ 
     def post(self, request, format=None):
         fixed_data = {
             "username": request.data.get('user'),
@@ -748,7 +736,7 @@ class RegisterAPIView(APIView):
         }
         serializer = UserSerializer(data=fixed_data)
         print(request.data)
-
+ 
         if serializer.is_valid():
             user = serializer.save()
             if user:
@@ -756,21 +744,21 @@ class RegisterAPIView(APIView):
             else:
                 return Response({"message": "Kullanıcı oluşturulamadı"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
+ 
 class AllergyView(views.APIView):
     serializer_class = AllergySerializer
-
+ 
     def post(self, request, *args, **kwargs):
         user_id = request.data.get('user_id')
         food_ids = request.data.get('food_ids')
         user = User.objects.get(id=user_id)
-
+ 
         allergies = []
         for food_id in food_ids:
             foods = food.objects.get(id=food_id)
             allergy = Allergy(user=user, food=foods)
             allergies.append(allergy)
-
+ 
         Allergy.objects.bulk_create(allergies)
         return Response({"message": "Allergies saved successfully"}, status=status.HTTP_201_CREATED)
+ 
