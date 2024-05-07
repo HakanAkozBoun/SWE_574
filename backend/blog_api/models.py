@@ -251,7 +251,6 @@ class UserProfile(models.Model):
 
 
 class Eaten(models.Model):
-
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
     blogId = models.ForeignKey(blog, on_delete=models.CASCADE)
     eaten_serving = models.FloatField(null=True, default=1, blank=True)

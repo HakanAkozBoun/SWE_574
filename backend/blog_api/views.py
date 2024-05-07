@@ -690,7 +690,7 @@ def GetNutritionOfSingleRecipe(eaten_recipe_Id, eatenServing):
     vitamina = (vitamina/_recipe.servings)*eatenServing
     vitaminb = (vitaminb/_recipe.servings)*eatenServing
     vitamind = (vitamind/_recipe.servings)*eatenServing
-    return calorie, fat, sodium, calcium, protein, iron, carbonhydrates, sugars, fiber, vitamina, vitaminb, vitamind
+    return [calorie, fat, sodium, calcium, protein, iron, carbonhydrates, sugars, fiber, vitamina, vitaminb, vitamind]
 
 
 def GetNutritionsOfRecipeList(eaten):
@@ -707,8 +707,22 @@ def GetNutritionsOfRecipeList(eaten):
     vitaminb = 0
     vitamind = 0
     for recipe in eaten:
-        calorie, fat, sodium, calcium, protein, iron, carbonhydrates, sugars, fiber, vitamina, vitaminb, vitamind += GetNutritionOfSingleRecipe(recipe.blogId, recipe.eaten_serving)
-    return calorie, fat, sodium, calcium, protein, iron, carbonhydrates, sugars, fiber, vitamina, vitaminb, vitamind
+        nutritionList = GetNutritionOfSingleRecipe(
+            recipe.blogId, recipe.eaten_serving)
+        calorie += nutritionList[0]
+        fat += nutritionList[1]
+        sodium += nutritionList[2]
+        calcium += nutritionList[3]
+        protein += nutritionList[4]
+        iron += nutritionList[5]
+        carbonhydrates += nutritionList[6]
+        sugars += nutritionList[7]
+        fiber += nutritionList[8]
+        vitamina += nutritionList[9]
+        vitaminb += nutritionList[10]
+        vitamind += nutritionList[11]
+    return [calorie, fat, sodium, calcium, protein, iron, carbonhydrates, sugars, fiber, vitamina, vitaminb, vitamind]
+
 
 
 @api_view(['GET'])
@@ -716,10 +730,32 @@ def GetNutritionDaily(request):
     requestedDate = request.GET.get('date')
     user = request.GET.get('user')
     eaten = Eaten.objects.filter(userId=user, date=requestedDate)
-    calorie, fat, sodium, calcium, protein, iron, carbonhydrates, sugars, fiber, vitamina, vitaminb, vitamind = GetNutritionsOfRecipeList(
-        eaten)
-    return JsonResponse(json.loads('{"calorie":' + str(calorie) + ',"vitamind":' + str(vitamind) + ',"vitaminb":' + str(vitaminb) + ',"vitamina":' + str(vitamina) + ',"fiber":' + str(fiber) + ',"sugars":' + str(sugars) + ',"fat":' + str(fat) + ',"sodium":' + str(sodium) + ',"calcium":' + str(calcium) + ',"protein":' + str(protein) + ',"iron":' + str(iron) + ',"carbonhydrates":' + str(carbonhydrates) + '}'), safe=False)
-
+    calorie = 0
+    fat = 0
+    sodium = 0
+    calcium = 0
+    protein = 0
+    iron = 0
+    carbonhydrates = 0
+    sugars = 0
+    fiber = 0
+    vitamina = 0
+    vitaminb = 0
+    vitamind = 0
+    nutritionList = GetNutritionsOfRecipeList(eaten)
+    calorie += nutritionList[0]
+    fat += nutritionList[1]
+    sodium += nutritionList[2]
+    calcium += nutritionList[3]
+    protein += nutritionList[4]
+    iron += nutritionList[5]
+    carbonhydrates += nutritionList[6]
+    sugars += nutritionList[7]
+    fiber += nutritionList[8]
+    vitamina += nutritionList[9]
+    vitaminb += nutritionList[10]
+    vitamind += nutritionList[11]
+    return JsonResponse(json.loads('{"calorie":' + str(calorie) + ',"vitamind":' + str(vitamind) + ',"vitaminb":' + str(vitaminb) + ',"vitamina":' + str(vitamina) + ',"fiber":' + str(fiber) + ',"sugars":' + str(sugars) + ',"fat":' + str(fat) + ',"sodium":' + str(sodium) + ',"calcium":' + str(calcium) + ',"protein":' + str(protein) + ',"iron":' + str(iron) + ',"carbonhydrates":' + str(carbonhydrates) + '}'),safe=False)
 
 class UserProfileView(views.APIView):
     queryset = UserProfile.objects.all()
