@@ -7,14 +7,14 @@ import 'dart:io';
 
 import 'package:recipe/screen/home.dart';
 import 'package:recipe/constants/backend_url.dart';
+import 'package:recipe/screen/home2.dart';
 
 // http://10.0.2.2:8000/api
 
 Future<List<dynamic>> fetchData() async {
   const String categoryUrl = BackendUrl.apiUrl + 'CategoryList/';
-  
-  final response =
-      await http.get(Uri.parse(categoryUrl));
+
+  final response = await http.get(Uri.parse(categoryUrl));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -24,8 +24,7 @@ Future<List<dynamic>> fetchData() async {
 
 Future<List<dynamic>> fetchData2() async {
   const String foodListUrl = BackendUrl.apiUrl + 'FoodList/';
-  final response =
-      await http.get(Uri.parse(foodListUrl));
+  final response = await http.get(Uri.parse(foodListUrl));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -35,8 +34,7 @@ Future<List<dynamic>> fetchData2() async {
 
 Future<List<dynamic>> fetchData3() async {
   const String unitListUrl = BackendUrl.apiUrl + 'UnitList/';
-  final response =
-      await http.get(Uri.parse(unitListUrl));
+  final response = await http.get(Uri.parse(unitListUrl));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -46,8 +44,7 @@ Future<List<dynamic>> fetchData3() async {
 
 Future<List<dynamic>> fetchData4(id) async {
   const String recipeList = BackendUrl.apiUrl + 'RecipeList/?blog=';
-  final response = await http.get(
-      Uri.parse(recipeList + id.toString()));
+  final response = await http.get(Uri.parse(recipeList + id.toString()));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -61,39 +58,39 @@ Future<File?> pickImage() async {
   return File(image.path);
 }
 
-Future<void> uploadImage(File image) async {
-  const String imageFileUrl = BackendUrl.apiUrl + 'File';
+// Future<void> uploadImage(File image) async {
+//   const String imageFileUrl = BackendUrl.apiUrl + 'File';
 
-  final request = http.MultipartRequest(
-    'POST',
-    Uri.parse(imageFileUrl),
-  );
+//   final request = http.MultipartRequest(
+//     'POST',
+//     Uri.parse(imageFileUrl),
+//   );
 
-  // Handle potential errors during file reading
-  try {
-    final bytes = await image.readAsBytes();
-    request.files.add(http.MultipartFile.fromBytes(
-      'file',
-      bytes,
-      filename: image.path.split('/').last, // Set filename from path
-    ));
-  } on FileSystemException catch (e) {
-    print('Error reading file: $e');
-    return; // Handle error gracefully (e.g., show a user message)
-  }
+//   // Handle potential errors during file reading
+//   try {
+//     final bytes = await image.readAsBytes();
+//     request.files.add(http.MultipartFile.fromBytes(
+//       'file',
+//       bytes,
+//       filename: image.path.split('/').last, // Set filename from path
+//     ));
+//   } on FileSystemException catch (e) {
+//     print('Error reading file: $e');
+//     return; // Handle error gracefully (e.g., show a user message)
+//   }
 
-  final response = await request.send();
+//   final response = await request.send();
 
-  if (response.statusCode == 200) {
-    print("Yüklendi (Uploaded)"); // Use more descriptive message
-  } else {
-    print(
-        "Yükleme başarısız oldu (Upload failed). Status code: ${response.statusCode}"); // Provide error details
-  }
+//   if (response.statusCode == 200) {
+//     print("Yüklendi (Uploaded)"); // Use more descriptive message
+//   } else {
+//     print(
+//         "Yükleme başarısız oldu (Upload failed). Status code: ${response.statusCode}"); // Provide error details
+//   }
 
-  // Close the response stream to avoid resource leaks
-  await response.stream.drain();
-}
+//   // Close the response stream to avoid resource leaks
+//   await response.stream.drain();
+// }
 
 class Item {
   final int id;
@@ -197,7 +194,7 @@ class FoodItemList {
 }
 
 class _AddItemPageState extends State<AddItemPage> {
-  var image2;
+  var image2, imageID;
   Item? _selectedItem;
   FoodItem? _selectedItem2;
   UnitItem? _selectedItem3;
@@ -263,18 +260,41 @@ class _AddItemPageState extends State<AddItemPage> {
     }
   }
 
+  Future<void> uploadImage(File image) async {
+    var request =
+        http.MultipartRequest('POST', Uri.parse(BackendUrl.apiUrl + 'File/'));
+    final bytes = await image.readAsBytes();
+    request.files.add(http.MultipartFile.fromBytes(
+      'file',
+      bytes,
+      filename: image.path.split('/').last, // Set filename from path
+    ));
+
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      final responseData = await response.stream.transform(utf8.decoder).join();
+      final imageUploadResponse =
+          jsonDecode(responseData) as Map<String, dynamic>;
+      imageID = imageUploadResponse["id"];
+      print('Resim başarıyla yüklendi.');
+    } else {
+      print('Resim yükleme başarısız oldu. Hata kodu: ${response.statusCode}');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     if (widget.edit == 1 || widget.edit == 2) {
-      _inputController1.text = widget.item["title"];
+      _inputController1.text = widget.item["title"] ?? '';
       // _inputController2.text = widget.item["slug"];
       // _inputController3.text = widget.item["excerpt"];
-      _inputController4.text = widget.item["content"];
-      _inputController5.text = widget.item["contentTwo"];
+      _inputController4.text = widget.item["content"] ?? '';
+      _inputController5.text = widget.item["contentTwo"] ?? '';
       // _inputController6.text = widget.item["ingredients"];
-      _inputController7.text = widget.item["preparationtime"];
-      _inputController8.text = widget.item["cookingtime"];
+      _inputController7.text = widget.item["preparationtime"] ?? '';
+      _inputController8.text = widget.item["cookingtime"] ?? '';
       // _inputController9.text = widget.item["rate"];
       _inputController10.text = widget.item["serving"].toString();
 
@@ -318,10 +338,10 @@ class _AddItemPageState extends State<AddItemPage> {
   }
 
   Future<void> sendData(data) async {
-    const String createBlogUrl = BackendUrl.apiUrl + 'CreateBlog';
-    final url =
-        Uri.parse(createBlogUrl); // API'nin URL'si
+    const String createBlogUrl = BackendUrl.apiUrl + 'CreateBlog/';
+    final url = Uri.parse(createBlogUrl); // API'nin URL'si
 
+    print(url);
     try {
       final response = await http.post(
         url,
@@ -337,7 +357,7 @@ class _AddItemPageState extends State<AddItemPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Home(),
+            builder: (context) => Home2(),
           ),
         );
       } else {
@@ -595,8 +615,9 @@ class _AddItemPageState extends State<AddItemPage> {
                       "userid": 1,
                       "serving": _inputController10.text,
                       // "bookmark": _inputController10.text,
-                      "image": "image/" +
-                          image2.toString().split("/")[7].split("'")[0],
+                      "image": imageID,
+                      // "image": "image/" +
+                      //     image2.toString().split("/")[7].split("'")[0],
                       // "ingredients": _inputController6.text,
                       "postlabel": "POPULAR",
                       "list": FoodItemLists.map((item) {
@@ -629,10 +650,11 @@ class _AddItemPageState extends State<AddItemPage> {
                         "userid": 1,
                         "serving": _inputController10.text,
                         // "bookmark": _inputController10.text,
-                        "image": image2 != null
-                            ? "image/" +
-                                image2.toString().split("/")[7].split("'")[0]
-                            : widget.item["image"].split("media/")[1],
+                        "image": imageID,
+                        // "image": image2 != null
+                        //     ? "image/" +
+                        //         image2.toString().split("/")[7].split("'")[0]
+                        //     : widget.item["image"].split("media/")[1],
                         // "ingredients": _inputController6.text,
                         "postlabel": "POPULAR",
                         "list": FoodItemLists.map((item) {
@@ -661,8 +683,9 @@ class _AddItemPageState extends State<AddItemPage> {
                         "userid": 1,
                         "serving": _inputController10.text,
                         // "bookmark": _inputController10.text,
-                        "image": "image/" +
-                            image2.toString().split("/")[7].split("'")[0],
+                        "image": imageID,
+                        // "image": "image/" +
+                        //     image2.toString().split("/")[7].split("'")[0],
                         // "ingredients": _inputController6.text,
                         "postlabel": "POPULAR",
                         "list": FoodItemLists.map((item) {

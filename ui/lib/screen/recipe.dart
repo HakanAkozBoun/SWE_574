@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:recipe/consent/colors.dart';
 import 'package:recipe/helpers/userData.dart';
@@ -13,8 +15,10 @@ import 'package:recipe/constants/backend_url.dart';
 const String uri = BackendUrl.apiUrl;
 
 Future<List<dynamic>> fetchData(data) async {
-  final response = await http.get(Uri.parse(uri + '/blogs/?' + data));
+  final response =
+      await http.get(Uri.parse(uri + 'PopularPostsApiView/?' + data));
   if (response.statusCode == 200) {
+    print(response.body);
     return json.decode(response.body);
   } else {
     throw Exception('Failed to load data from API');
@@ -22,7 +26,7 @@ Future<List<dynamic>> fetchData(data) async {
 }
 
 Future<dynamic> nutrition(blog) async {
-  final response = await http.get(Uri.parse(uri + '/Nutrition/?blog=' + blog));
+  final response = await http.get(Uri.parse(uri + 'Nutrition/?blog=' + blog));
   if (response.statusCode == 200) {
     return json.decode(response.body);
   } else {
@@ -57,6 +61,7 @@ class _Recipe extends State<Recipe> {
     userId = user.getUserId();
     yorumlariYukle();
     fetchData(widget.slug).then((data) {
+      print(data);
       setState(() {
         var selectedItem =
             data.where((item) => item['id'] == widget.id).toList().first;
@@ -78,7 +83,7 @@ class _Recipe extends State<Recipe> {
     // API'den yorumları alın ve yorumlar listesine ekleyin
 
     var response = await http
-        .get(Uri.parse(uri + '/CommentList/?blog=' + widget.id.toString()));
+        .get(Uri.parse(uri + 'CommentList/?blog=' + widget.id.toString()));
     if (response.statusCode == 200) {
       print(response.body);
       setState(() {
@@ -103,7 +108,7 @@ class _Recipe extends State<Recipe> {
       "text": yeniYorum.toString()
     };
     print(jsonEncode(dataList));
-    var response = await http.post(Uri.parse(uri + '/CreateComment/'),
+    var response = await http.post(Uri.parse(uri + 'CreateComment/'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -139,6 +144,8 @@ class _Recipe extends State<Recipe> {
 
   @override
   Widget build(BuildContext context) {
+    var url = fetchedData['base64'];
+    Uint8List decodedImage = base64Decode(url);
     return Scaffold(
       appBar: AppBar2(),
       drawer: AppDrawer(),
@@ -151,12 +158,8 @@ class _Recipe extends State<Recipe> {
               backgroundColor: Colors.white,
               expandedHeight: 400,
               flexibleSpace: FlexibleSpaceBar(
-                background: fetchedData["image"] != null
-                    ? Image.network(
-                        fetchedData["image"],
-                        fit: BoxFit.cover,
-                        scale: 2,
-                      )
+                background: fetchedData["base64"] != null
+                    ? Image.memory(decodedImage)
                     : Image.asset(
                         'images/lunch1.jpg',
                         fit: BoxFit.cover,

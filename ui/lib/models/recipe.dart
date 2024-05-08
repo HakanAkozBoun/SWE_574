@@ -5,7 +5,7 @@ import '../constants/backend_url.dart';
 
 class Recipe {
   // Recipe url
-  static const String recipeUrl = BackendUrl.apiUrl + 'blogs/';
+  static const String recipeUrl = BackendUrl.apiUrl + 'PopularPostsApiView/';
 
   final int id;
   final String title;
@@ -19,7 +19,13 @@ class Recipe {
   final String image;
   final String ingredients;
   final String postLabel;
-  final int category;
+  final int userid;
+  final int serving;
+  final String base64;
+  final String type;
+  final int category_id;
+  final String rate;
+  final String bookmark;
 
   Recipe({
     required this.id,
@@ -34,7 +40,13 @@ class Recipe {
     required this.image,
     required this.ingredients,
     required this.postLabel,
-    required this.category,
+    required this.userid,
+    required this.serving,
+    required this.base64,
+    required this.type,
+    required this.category_id,
+    required this.rate,
+    required this.bookmark,
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
@@ -51,7 +63,13 @@ class Recipe {
       image: json['image'] ?? '',
       ingredients: json['ingredients'] ?? '',
       postLabel: json['postLabel'] ?? '',
-      category: json['category'] ?? 0,
+      userid: json['userid'] ?? 0,
+      serving: json['serving'] ?? 0,
+      base64: json['base64'] ?? '',
+      type: json['type'] ?? '',
+      category_id: json['category_id'] ?? 0,
+      rate: json['rate'] ?? '',
+      bookmark: json['bookmark'] ?? '',
     );
   }
 

@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 import 'package:recipe/models/category.dart';
@@ -36,10 +39,10 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
       child: Row(
         children: categories.map((category) {
           return buildCategory(
-            '../../images/1c.jpg',
+            category.base64,
             category.name,
             onTap: () {
-              print(category.name);
+              print(category.image);
             },
           );
         }).toList(),
@@ -50,6 +53,8 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
   Widget buildCategory(String imagePath, String label, {VoidCallback? onTap}) {
     final width = 70.0;
     final height = 70.0;
+    var url = imagePath;
+    Uint8List decodedImage = base64Decode(url);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
@@ -61,10 +66,7 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
               height: height,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.cover,
-                ),
+                child: Image.memory(decodedImage, fit: BoxFit.cover),
               ),
             ),
             const SizedBox(height: 10),
