@@ -92,6 +92,7 @@ class unitconversion(models.Model):
 class category(models.Model):
     name = models.CharField(max_length=255)
     image = models.IntegerField(null=True, blank=True)
+
     def _str_(self):
         return self.name
 
@@ -253,7 +254,7 @@ class Eaten(models.Model):
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
     blogId = models.ForeignKey(blog, on_delete=models.CASCADE)
     eaten_serving = models.FloatField(null=True, default=1, blank=True)
-    eatenDate = models.DateTimeField(default=timezone.datetime.today)
+    eatenDate = models.DateField(default=timezone.datetime.today)
     is_active = models.BooleanField(default=True)
 
 
@@ -261,10 +262,18 @@ class Allergy(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     food = models.ForeignKey(food, on_delete=models.CASCADE)
 
+
 class image(models.Model):
-    #id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255,null=True, blank=True)
-    data = models.TextField(max_length=255,null=True, blank=True)
-    type = models.CharField(max_length=255,null=True, blank=True)
+    # id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
+    data = models.TextField(max_length=255, null=True, blank=True)
+    type = models.CharField(max_length=255, null=True, blank=True)
+
     def __str__(self):
         return self.name
+
+
+class Goal(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    goal_nutrition = models.CharField(max_length=255, null=True, blank=True)
+    goal_amount = models.FloatField(null=True, blank=True)
