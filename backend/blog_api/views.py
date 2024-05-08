@@ -2,7 +2,7 @@ from django.utils import timezone
 import json
 
 from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood, Eaten, image, Goal
-from .serializers import UserForProfileFrontEndSerializer, blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer, UserSerializer, AllergySerializer, UserProfileForFrontEndSerializer
+from .serializers import GoalSerializer, UserForProfileFrontEndSerializer, blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer, UserSerializer, AllergySerializer, UserProfileForFrontEndSerializer
 
 from rest_framework import viewsets
 from rest_framework import mixins
@@ -26,6 +26,7 @@ from rest_framework.response import Response
 from .models import Allergy
 from django.contrib.auth.models import User
 from django.utils import timezone
+
 
 class blogApiView(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     queryset = blog.objects.all()
@@ -669,6 +670,27 @@ def add_rating(request):
         return Response({"success": False, "error": str(e)})
 
 
+@api_view(['PATCH'])
+def UpdateGoal(request):
+    user_id = request.GET.get('id', '1')
+    goalName = request.GET.get('goal_name')
+    amount = request.GET.get('amount')
+    goal = Goal.objects.get(user=user_id, goal_nutrition=goalName)
+    goal.goal_amount = amount
+    goal.save()
+    return JsonResponse(True, safe=False)
+
+
+@api_view(['POST'])
+def CreateGoal(request):
+    user_id = request.GET.get('id', '1')
+    goalName = request.GET.get('goal_name')
+    amount = request.GET.get('amount')
+    Goal.objects.create(
+        user=user_id, goal_nutrition=goalName, goal_amount=amount)
+    return JsonResponse(True, safe=False)
+
+
 @api_view(['GET'])
 def GetGoals(request):
     user_id = request.GET.get('user_id')
@@ -677,16 +699,8 @@ def GetGoals(request):
     if (not goals.exists()):
         return JsonResponse({"message": "No goals found."}, safe=False)
 
-    goals_list = []
-
-    for g in goals:
-        goal_info = {
-            "Nutrient": g.goal_nutrition,
-            "goalAmount": g.goal_amount
-        }
-        goals_list.append(goal_info)
-
-    return JsonResponse(goals_list, safe=False)
+    serializer = GoalSerializer(goals, many=True)
+    return Response(serializer.data)
 
 
 def Goals(userId):
@@ -799,6 +813,7 @@ def NutritionDaily(user, date):
     vitamind += nutritionList[11]
     return [calorie, fat, sodium, calcium, protein, iron, carbonhydrates, sugars, fiber, vitamina, vitaminb, vitamind]
 
+
 def NutritionDailyWithGoals(requestedDate, user):
     nutritionList = NutritionDaily(user, requestedDate)
     NutritionNameList = ["calorie", "fat", "sodium", "calcium", "protein", "iron",
@@ -841,36 +856,40 @@ def NutritionDailyWithGoals(requestedDate, user):
 
     return goals_list
 
-def NutritionWeeklyWithGoal(user,goalName,goalAmount):
-   current_datetime = timezone.now()
-   current_date = current_datetime.date()
-   last_week_date = current_date - timezone.timedelta(days=7)
-   NutritionNameList = ["calorie", "fat", "sodium", "calcium", "protein", "iron",
+
+def NutritionWeeklyWithGoal(user, goalName, goalAmount):
+    current_datetime = timezone.now()
+    current_date = current_datetime.date()
+    last_week_date = current_date - timezone.timedelta(days=7)
+    NutritionNameList = ["calorie", "fat", "sodium", "calcium", "protein", "iron",
                          "carbonhydrates", "sugars", "fiber", "vitamina", "vitaminb", "vitamind"]
-   goals_list = []
-   for i in range(7):
-       date = last_week_date + timezone.timedelta(days=i)
-       nutritionList = NutritionDaily(user, date)
-       if goalName in NutritionNameList:
+    goals_list = []
+    for i in range(7):
+        date = last_week_date + timezone.timedelta(days=i)
+        nutritionList = NutritionDaily(user, date)
+        if goalName in NutritionNameList:
             goal_info = {
                 "date": date,
                 "goal": goalAmount,
                 "currentIntake": nutritionList[NutritionNameList.index(goalName)]
-              }
+            }
             goals_list.append(goal_info)
-   return goals_list
+    return goals_list
+
 
 @api_view(['GET'])
 def GetNutritionWeeklyWithGoal(request):
     requestedGoal = request.query_params.get('selected_nutrition')
     user = request.GET.get('user')
-    goal=Goal.objects.get(user=user,goal_nutrition=requestedGoal)
-    goal_amount=goal.goal_amount
-    goals_list=NutritionWeeklyWithGoal(user=user,goalName=requestedGoal,goalAmount=goal_amount)
+    goal = Goal.objects.get(user=user, goal_nutrition=requestedGoal)
+    goal_amount = goal.goal_amount
+    goals_list = NutritionWeeklyWithGoal(
+        user=user, goalName=requestedGoal, goalAmount=goal_amount)
     if (not goals_list.exists()):
         return JsonResponse({"message": "No goals found."}, safe=False)
-    
+
     return JsonResponse(goals_list, safe=False)
+
 
 @api_view(['GET'])
 def GetNutritionDailyWithGoals(request):

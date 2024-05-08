@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from .views import GetGoals, GetNutritionDailyWithGoals, GetNutritionWeeklyWithGoal, UpdateUserInfo, UpdateUserProfile, add_rating, check_email, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserProfilesList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, check_username  # CreateUser
+from .views import UpdateGoal, CreateGoal, GetGoals, GetNutritionDailyWithGoals, GetNutritionWeeklyWithGoal, UpdateUserInfo, UpdateUserProfile, add_rating, check_email, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserProfilesList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, check_username  # CreateUser
 
 
 from rest_framework import routers
@@ -53,6 +53,8 @@ urlpatterns = [
     path('WeeklyNutritionWithGoal/', GetNutritionWeeklyWithGoal,
          name='WeeklyNutritionWithGoal'),
     path('Goals/', GetGoals, name='Goals'),
+    path('CreateGoal/', CreateGoal, name='CreateGoal'),
+    path('UpdateGoal/', UpdateGoal, name='UpdateGoal'),
     path('CheckUsername/', check_username, name='CheckUsername'),
     path('CheckEmail/', check_email, name='CheckEmail'),
     path('UpdateUserInfo/', UpdateUserInfo, name='UpdateUserInfo'),

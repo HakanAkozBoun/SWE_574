@@ -5,6 +5,7 @@ import 'package:recipe/widgets/home/PersonalPage.dart';
 import 'package:recipe/widgets/home/app_drawer.dart';
 import 'package:recipe/widgets/home/appbar2.dart';
 import 'package:recipe/widgets/home/faqs.dart';
+import 'package:recipe/widgets/home/goalsPage.dart';
 import 'package:recipe/widgets/home/logout.dart';
 import 'package:recipe/widgets/home/personal.dart';
 import 'package:recipe/widgets/home/nutritionalProfile.dart';
@@ -52,6 +53,7 @@ class _ProfileState extends State<Profile> {
     Icon(Icons.edit_document, color: maincolor),
     Icon(Icons.settings, color: maincolor),
     Icon(Icons.settings, color: maincolor),
+    Icon(Icons.settings, color: maincolor),
     Icon(Icons.chat, color: maincolor),
     Icon(Icons.login, color: maincolor),
   ];
@@ -65,6 +67,7 @@ class _ProfileState extends State<Profile> {
     'Nutritional Profile',
     'My Recipes',
     'My Allergies',
+    'My Goals',
     'Settings',
     'FAQs',
     'Logout'
@@ -79,6 +82,7 @@ class _ProfileState extends State<Profile> {
     Widget nutritionalProfile = NutritionalProfile();
     Widget myRecipes = MyRecipes(userId: finalUserId);
     Widget myAllergies = AllergyPage(userId: finalUserId);
+    Widget myGoals = GoalsPage(userId: finalUserId);
     Widget settings = Settings();
     Widget faqs = FAQs();
     Widget logout = Logout();
@@ -118,14 +122,18 @@ class _ProfileState extends State<Profile> {
         isFullPage = true;
         break;
       case 9:
-        toBeOpened = settings;
+        toBeOpened = myGoals;
         isFullPage = true;
         break;
       case 10:
+        toBeOpened = settings;
+        isFullPage = true;
+        break;
+      case 11:
         toBeOpened = faqs;
         isFullPage = false;
         break;
-      case 11:
+      case 12:
         toBeOpened = logout;
         isFullPage = false;
         break;
@@ -275,7 +283,7 @@ class _ProfileState extends State<Profile> {
                   Flexible(
                     child: ListView.builder(
                       shrinkWrap: true,
-                      itemCount: 12,
+                      itemCount: 13,
                       itemBuilder: (BuildContext context, int index) {
                         return ListTile(
                           leading: Container(

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import blog, category, UserProfile, InputFood
+from .models import Goal, blog, category, UserProfile, InputFood
 from .models import blog, category, UserProfile
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
@@ -79,4 +79,10 @@ class UserSerializer(serializers.ModelSerializer):
 class AllergySerializer(serializers.ModelSerializer):
     class Meta:
         model = Allergy
+        fields = '__all__'
+
+
+class GoalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Goal
         fields = '__all__'
