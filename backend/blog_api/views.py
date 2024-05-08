@@ -25,7 +25,7 @@ from rest_framework import serializers, views, status
 from rest_framework.response import Response
 from .models import Allergy
 from django.contrib.auth.models import User
-
+from django.utils import timezone
 
 class blogApiView(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     queryset = blog.objects.all()
@@ -842,27 +842,36 @@ def NutritionDailyWithGoals(requestedDate, user):
     return goals_list
 
 def NutritionWeeklyWithGoal(user,goalName,goalAmount):
-   lastWeek = timezone.now() - timezone.timedelta(days=7)
+   current_datetime = timezone.now()
+   current_date = current_datetime.date()
+   last_week_date = current_date - timezone.timedelta(days=7)
    NutritionNameList = ["calorie", "fat", "sodium", "calcium", "protein", "iron",
                          "carbonhydrates", "sugars", "fiber", "vitamina", "vitaminb", "vitamind"]
-   nutritionList[NutritionNameList.index(g.goal_nutrition)]
+   goals_list = []
    for i in range(7):
-       date = lastWeek + timezone.timedelta(days=i)
+       date = last_week_date + timezone.timedelta(days=i)
        nutritionList = NutritionDaily(user, date)
-       if nutritionList[NutritionNameList.index(goalName)] < goalAmount:
-           return False 
-
-
-    for g in goals:
-        if g.goal_nutrition in NutritionNameList:
+       if goalName in NutritionNameList:
             goal_info = {
-                "nutritionName": g.goal_nutrition,
-                "goal": g.goal_amount,
-                "currentIntake": nutritionList[NutritionNameList.index(g.goal_nutrition)]
-            }
-        goals_list.append(goal_info)
+                "date": date,
+                "goal": goalAmount,
+                "currentIntake": nutritionList[NutritionNameList.index(goalName)]
+              }
+            goals_list.append(goal_info)
+   return goals_list
 
-    return goals_list
+@api_view(['GET'])
+def GetNutritionWeeklyWithGoal(request):
+    requestedGoal = request.query_params.get('selected_nutrition')
+    user = request.GET.get('user')
+    goal=Goal.objects.get(user=user,goal_nutrition=requestedGoal)
+    goal_amount=goal.goal_amount
+    goals_list=NutritionWeeklyWithGoal(user=user,goalName=requestedGoal,goalAmount=goal_amount)
+    if (not goals_list.exists()):
+        return JsonResponse({"message": "No goals found."}, safe=False)
+    
+    return JsonResponse(goals_list, safe=False)
+
 @api_view(['GET'])
 def GetNutritionDailyWithGoals(request):
     requestedDate = request.query_params.get('selected_date')
