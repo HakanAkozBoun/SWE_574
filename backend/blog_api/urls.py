@@ -52,7 +52,7 @@ urlpatterns = [
          name='DailyNutritionWithGoals'),
     path('WeeklyNutritionWithGoal/', GetNutritionWeeklyWithGoal,
          name='WeeklyNutritionWithGoal'),
-    path('Goals', GetGoals, name='Goals'),
+    path('Goals/', GetGoals, name='Goals'),
     path('CheckUsername/', check_username, name='CheckUsername'),
     path('CheckEmail/', check_email, name='CheckEmail'),
     path('UpdateUserInfo/', UpdateUserInfo, name='UpdateUserInfo'),
