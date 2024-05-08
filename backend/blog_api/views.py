@@ -1,7 +1,7 @@
 from django.utils import timezone
 import json
 
-from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood, Eaten, image
+from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood, Eaten, image, Goal
 from .serializers import UserForProfileFrontEndSerializer, blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer, UserSerializer, AllergySerializer, UserProfileForFrontEndSerializer
 
 from rest_framework import viewsets
@@ -226,21 +226,23 @@ def GetCurrentUserProfile(request):
 @api_view(['GET'])
 def GetCategoryList(request):
     all = category.objects.all().values("id", "name", "image")
-    imagelist = image.objects.filter(id__in=all.values_list('image', flat=True))
+    imagelist = image.objects.filter(
+        id__in=all.values_list('image', flat=True))
     response = []
     for category_ in all:
-        json = { 'base64' : None, 'image': None, 'type':None }
+        json = {'base64': None, 'image': None, 'type': None}
         if category_.get('image') is not None:
             image_ = imagelist.filter(id=category_.get('image')).first()
             if image_ is not None:
-               json['base64'] = image_.data
-               json['image'] = image_.name
-               json['type'] = image_.type
+                json['base64'] = image_.data
+                json['image'] = image_.name
+                json['type'] = image_.type
         json['id'] = category_.get('id')
         json['name'] = category_.get('name')
         response.append(json)
-   
+
     return JsonResponse(response, safe=False)
+
 
 @api_view(['POST'])
 def CreateCategory(request):
@@ -261,7 +263,8 @@ def CreateCategory(request):
 @api_view(['POST'])
 def File(request):
     file = request.FILES['file']
-    image_ = image.objects.create(name=file.name, data=base64.b64encode(file.read()).decode('ascii'), type=file.content_type)
+    image_ = image.objects.create(name=file.name, data=base64.b64encode(
+        file.read()).decode('ascii'), type=file.content_type)
     return JsonResponse({'id': image_.id, 'name': image_.name}, safe=False)
 
 
@@ -666,6 +669,30 @@ def add_rating(request):
         return Response({"success": False, "error": str(e)})
 
 
+@api_view(['GET'])
+def GetGoals(request):
+    user_id = request.GET.get('user_id')
+    goals = Goals(user_id)
+
+    if (not goals.exists()):
+        return JsonResponse({"message": "No goals found."}, safe=False)
+
+    goals_list = []
+
+    for g in goals:
+        goal_info = {
+            "Nutrient": g.goal_nutrition,
+            "goalAmount": g.goal_amount
+        }
+        goals_list.append(goal_info)
+
+    return JsonResponse(goals_list, safe=False)
+
+
+def Goals(userId):
+    goals = Goal.objects.filter(user=userId)
+    return goals
+
 
 def GetNutritionOfSingleRecipe(eaten_recipe_Id, eatenServing):
     _nutrition = nutrition.objects.all()
@@ -743,12 +770,8 @@ def GetNutritionsOfRecipeList(eaten):
     return [calorie, fat, sodium, calcium, protein, iron, carbonhydrates, sugars, fiber, vitamina, vitaminb, vitamind]
 
 
-
-@api_view(['GET'])
-def GetNutritionDaily(request):
-    requestedDate = request.GET.get('date')
-    user = request.GET.get('user')
-    eaten = Eaten.objects.filter(userId=user, date=requestedDate)
+def NutritionDaily(user, date):
+    eaten = Eaten.objects.filter(userId=user, date=date)
     calorie = 0
     fat = 0
     sodium = 0
@@ -774,7 +797,113 @@ def GetNutritionDaily(request):
     vitamina += nutritionList[9]
     vitaminb += nutritionList[10]
     vitamind += nutritionList[11]
-    return JsonResponse(json.loads('{"calorie":' + str(calorie) + ',"vitamind":' + str(vitamind) + ',"vitaminb":' + str(vitaminb) + ',"vitamina":' + str(vitamina) + ',"fiber":' + str(fiber) + ',"sugars":' + str(sugars) + ',"fat":' + str(fat) + ',"sodium":' + str(sodium) + ',"calcium":' + str(calcium) + ',"protein":' + str(protein) + ',"iron":' + str(iron) + ',"carbonhydrates":' + str(carbonhydrates) + '}'),safe=False)
+    return [calorie, fat, sodium, calcium, protein, iron, carbonhydrates, sugars, fiber, vitamina, vitaminb, vitamind]
+
+def NutritionDailyWithGoals(requestedDate, user):
+    nutritionList = NutritionDaily(user, requestedDate)
+    NutritionNameList = ["calorie", "fat", "sodium", "calcium", "protein", "iron",
+                         "carbonhydrates", "sugars", "fiber", "vitamina", "vitaminb", "vitamind"]
+    calorie = 0
+    fat = 0
+    sodium = 0
+    calcium = 0
+    protein = 0
+    iron = 0
+    carbonhydrates = 0
+    sugars = 0
+    fiber = 0
+    vitamina = 0
+    vitaminb = 0
+    vitamind = 0
+    calorie += nutritionList[0]
+    fat += nutritionList[1]
+    sodium += nutritionList[2]
+    calcium += nutritionList[3]
+    protein += nutritionList[4]
+    iron += nutritionList[5]
+    carbonhydrates += nutritionList[6]
+    sugars += nutritionList[7]
+    fiber += nutritionList[8]
+    vitamina += nutritionList[9]
+    vitaminb += nutritionList[10]
+    vitamind += nutritionList[11]
+    goals = Goals(user)
+    goals_list = []
+
+    for g in goals:
+        if g.goal_nutrition in NutritionNameList:
+            goal_info = {
+                "nutritionName": g.goal_nutrition,
+                "goal": g.goal_amount,
+                "currentIntake": nutritionList[NutritionNameList.index(g.goal_nutrition)]
+            }
+        goals_list.append(goal_info)
+
+    return goals_list
+
+def NutritionWeeklyWithGoal(user,goalName,goalAmount):
+   lastWeek = timezone.now() - timezone.timedelta(days=7)
+   NutritionNameList = ["calorie", "fat", "sodium", "calcium", "protein", "iron",
+                         "carbonhydrates", "sugars", "fiber", "vitamina", "vitaminb", "vitamind"]
+   nutritionList[NutritionNameList.index(g.goal_nutrition)]
+   for i in range(7):
+       date = lastWeek + timezone.timedelta(days=i)
+       nutritionList = NutritionDaily(user, date)
+       if nutritionList[NutritionNameList.index(goalName)] < goalAmount:
+           return False 
+
+
+    for g in goals:
+        if g.goal_nutrition in NutritionNameList:
+            goal_info = {
+                "nutritionName": g.goal_nutrition,
+                "goal": g.goal_amount,
+                "currentIntake": nutritionList[NutritionNameList.index(g.goal_nutrition)]
+            }
+        goals_list.append(goal_info)
+
+    return goals_list
+@api_view(['GET'])
+def GetNutritionDailyWithGoals(request):
+    requestedDate = request.query_params.get('selected_date')
+    user = request.GET.get('user')
+    NutritionDailyWithGoals = NutritionDailyWithGoals(requestedDate, user)
+    if (not NutritionDailyWithGoals):
+        return JsonResponse({"message": "No goals found."}, safe=False)
+
+    return JsonResponse(NutritionDailyWithGoals, safe=False)
+
+
+@api_view(['GET'])
+def GetNutritionDaily(request):
+    requestedDate = request.query_params.get('selected_date')
+    user = request.GET.get('user')
+    nutritionList = NutritionDaily(user, requestedDate)
+    calorie = 0
+    fat = 0
+    sodium = 0
+    calcium = 0
+    protein = 0
+    iron = 0
+    carbonhydrates = 0
+    sugars = 0
+    fiber = 0
+    vitamina = 0
+    vitaminb = 0
+    vitamind = 0
+    calorie += nutritionList[0]
+    fat += nutritionList[1]
+    sodium += nutritionList[2]
+    calcium += nutritionList[3]
+    protein += nutritionList[4]
+    iron += nutritionList[5]
+    carbonhydrates += nutritionList[6]
+    sugars += nutritionList[7]
+    fiber += nutritionList[8]
+    vitamina += nutritionList[9]
+    vitaminb += nutritionList[10]
+    vitamind += nutritionList[11]
+    return JsonResponse(json.loads('{"calorie":' + str(calorie) + ',"vitamind":' + str(vitamind) + ',"vitaminb":' + str(vitaminb) + ',"vitamina":' + str(vitamina) + ',"fiber":' + str(fiber) + ',"sugars":' + str(sugars) + ',"fat":' + str(fat) + ',"sodium":' + str(sodium) + ',"calcium":' + str(calcium) + ',"protein":' + str(protein) + ',"iron":' + str(iron) + ',"carbonhydrates":' + str(carbonhydrates) + '}'), safe=False)
 
 
 class UserProfileView(views.APIView):
