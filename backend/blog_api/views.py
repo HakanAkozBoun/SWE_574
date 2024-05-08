@@ -46,13 +46,44 @@ class CategoryPostApiView(viewsets.ViewSet):
         return Response(serializer.data)
 
 
-class PopularPostsApiView(viewsets.ViewSet):
-    def list(self, request, pk=None):
-        queryset = blog.objects.filter(
-            postlabel__iexact='POPULAR').order_by('-id')[0:4]
-        serializer = blogSerializer(queryset, many=True)
-        return Response(serializer.data)
+# class PopularPostsApiView(viewsets.ViewSet):
+#     def list(self, request, pk=None):
+#         queryset = blog.objects.filter(
+#             postlabel__iexact='POPULAR').order_by('-id')[0:4]
+#         serializer = blogSerializer(queryset, many=True)
+#         return Response(serializer.data)
 
+@api_view(['GET'])
+def PopularPostsApiView(request):
+    all = blog.objects.all().values()
+    imagelist = image.objects.filter(id__in=all.values_list('image', flat=True))
+    response = []
+    for blog_ in all:
+        json = { 'base64' : None, 'image': None, 'type':None }
+        if blog_.get('image') is not None:
+            image_ = imagelist.filter(id=blog_.get('image')).first()
+            if image_ is not None:
+               json['base64'] = image_.data
+               json['image'] = image_.name
+               json['type'] = image_.type
+        json['id'] = blog_.get('id')
+        json['title'] = blog_.get('title')
+        json['slug'] = blog_.get('slug')
+        json['excerpt'] = blog_.get('excerpt')
+        json['content'] = blog_.get('content')
+        json['contentTwo'] = blog_.get('contentTwo')
+        json['ingredients'] = blog_.get('ingredients')
+        json['postlabel'] = blog_.get('postlabel')
+        json['category_id'] = blog_.get('category_id')
+        json['preparationtime'] = blog_.get('preparationtime')
+        json['cookingtime'] = blog_.get('cookingtime')
+        json['rate'] = blog_.get('rate')
+        json['bookmark'] = blog_.get('bookmark')
+        json['avg_rating'] = blog_.get('avg_rating')
+        json['userid'] = blog_.get('userid')
+        json['serving'] = blog_.get('serving')
+        response.append(json)
+    return JsonResponse(response, safe=False)
 
 @api_view(['GET'])
 def GetUserList(request):
