@@ -1,7 +1,7 @@
 from django.utils import timezone
 import json
 
-from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood, Eaten
+from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood, Eaten, image
 from .serializers import UserForProfileFrontEndSerializer, blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer, UserSerializer, AllergySerializer, UserProfileForFrontEndSerializer
 
 from rest_framework import viewsets
@@ -217,12 +217,30 @@ def GetCurrentUserProfile(request):
     # return JsonResponse(model_to_dict(UserProfile.objects.get(id=request.GET.get('id'))), safe=False)
 
 
+# @api_view(['GET'])
+# def GetCategoryList(request):
+#     all_users = category.objects.all().values("id", "name", "image")
+#     user_list = list(all_users)
+#     return JsonResponse(user_list, safe=False)
+
 @api_view(['GET'])
 def GetCategoryList(request):
-    all_users = category.objects.all().values("id", "name", "image")
-    user_list = list(all_users)
-    return JsonResponse(user_list, safe=False)
-
+    all = category.objects.all().values("id", "name", "image")
+    imagelist = image.objects.filter(id__in=all.values_list('image', flat=True))
+    response = []
+    for category_ in all:
+        json = { 'base64' : None, 'image': None, 'type':None }
+        if category_.get('image') is not None:
+            image_ = imagelist.filter(id=category_.get('image')).first()
+            if image_ is not None:
+               json['base64'] = image_.data
+               json['image'] = image_.name
+               json['type'] = image_.type
+        json['id'] = category_.get('id')
+        json['name'] = category_.get('name')
+        response.append(json)
+   
+    return JsonResponse(response, safe=False)
 
 @api_view(['POST'])
 def CreateCategory(request):
