@@ -85,7 +85,7 @@ def PopularPostsApiView(request):
         response.append(json)
     return JsonResponse(response, safe=False)
 
-@api_view(['GET'])
+@api_view(['GET']) 
 def GetUserList(request):
     all_users = User.objects.all().values("id", "username", "first_name",
                                           "last_name", 'email', 'is_active', 'last_login')
