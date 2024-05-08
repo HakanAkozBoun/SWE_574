@@ -9,11 +9,15 @@ class Category {
   final int id;
   final String name;
   final String image;
+  final String base64;
+  final String type;
 
   Category({
     required this.id,
     required this.name,
     required this.image,
+    required this.base64,
+    required this.type,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) {
@@ -21,6 +25,8 @@ class Category {
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
       image: json['image'] ?? '',
+      base64: json['base64'] ?? '',
+      type: json['type'] ?? '',
     );
   }
 
