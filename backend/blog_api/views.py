@@ -1,7 +1,7 @@
 from django.utils import timezone
 import json
 
-from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood, Eaten
+from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood, Eaten, image
 from .serializers import UserForProfileFrontEndSerializer, blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer, UserSerializer, AllergySerializer, UserProfileForFrontEndSerializer
 
 from rest_framework import viewsets
@@ -217,12 +217,30 @@ def GetCurrentUserProfile(request):
     # return JsonResponse(model_to_dict(UserProfile.objects.get(id=request.GET.get('id'))), safe=False)
 
 
+# @api_view(['GET'])
+# def GetCategoryList(request):
+#     all_users = category.objects.all().values("id", "name", "image")
+#     user_list = list(all_users)
+#     return JsonResponse(user_list, safe=False)
+
 @api_view(['GET'])
 def GetCategoryList(request):
-    all_users = category.objects.all().values("id", "name", "image")
-    user_list = list(all_users)
-    return JsonResponse(user_list, safe=False)
-
+    all = category.objects.all().values("id", "name", "image")
+    imagelist = image.objects.filter(id__in=all.values_list('image', flat=True))
+    response = []
+    for category_ in all:
+        json = { 'base64' : None, 'image': None, 'type':None }
+        if category_.get('image') is not None:
+            image_ = imagelist.filter(id=category_.get('image')).first()
+            if image_ is not None:
+               json['base64'] = image_.data
+               json['image'] = image_.name
+               json['type'] = image_.type
+        json['id'] = category_.get('id')
+        json['name'] = category_.get('name')
+        response.append(json)
+   
+    return JsonResponse(response, safe=False)
 
 @api_view(['POST'])
 def CreateCategory(request):
@@ -243,8 +261,8 @@ def CreateCategory(request):
 @api_view(['POST'])
 def File(request):
     file = request.FILES['file']
-    file_name = default_storage.save('image\\' + file.name, file)
-    return JsonResponse(file_name, safe=False)
+    image_ = image.objects.create(name=file.name, data=base64.b64encode(file.read()).decode('ascii'), type=file.content_type)
+    return JsonResponse({'id': image_.id, 'name': image_.name}, safe=False)
 
 
 @api_view(['POST'])
@@ -579,25 +597,24 @@ def Login(request):
 # NEW VIEWS
 # ---------------------------------------------------------------------------------------
 
-@api_view(['POST'])
+@api_view(['GET'])
 def bookmark_toggle(request):
     try:
-        # user = request.user
-        user = get_object_or_404(User, pk=3)
-        blog_id = request.data.get('id')
+        user_id = request.GET.get('user_id')
+        user = get_object_or_404(User, pk=user_id)
+        blog_id = request.GET.get('blog_id')
         blog_ = get_object_or_404(blog, pk=blog_id)
-        print(blog_)
 
         user_bookmark = UserBookmark.objects.filter(user=user, blog=blog_)
 
         if user_bookmark.exists():
             user_bookmark.delete()
             is_bookmarked = False
-            message = "Bookmark deleted successfully"
+            message = "Bookmark deleted"
         else:
             UserBookmark.objects.create(user=user, blog=blog_)
             is_bookmarked = True
-            message = "Bookmark created successfully"
+            message = "Bookmark created"
 
         bookmark_data = {
             "success": True,
@@ -612,23 +629,21 @@ def bookmark_toggle(request):
 
 @api_view(['GET'])
 def recommend_items(request):
-    request.user = User.objects.get(id=3)
+    user_id = request.GET.get('user_id')
+    request.user = User.objects.get(id=user_id)
     recommendations = get_recommendations(request.user)
     recommendationSerializer = blogSerializer(recommendations, many=True)
     return Response(recommendationSerializer.data)
 
 
-@api_view(['POST'])
+@api_view(['GET'])
 def add_rating(request):
     try:
-        # Load JSON data from the request body
-        data = json.loads(request.body.decode('utf-8'))
-        print("data", data)
-        user_id = request.user.id
-        user = get_object_or_404(User, pk=3)
-        recipe_id = data.get('recipe_id')
-        recipe = get_object_or_404(blog, pk=2)
-        value = data.get('value')
+        user_id = request.GET.get('user_id')
+        user = get_object_or_404(User, pk=user_id)
+        recipe_id = request.GET.get('recipe_id')
+        recipe = get_object_or_404(blog, pk=recipe_id)
+        value = request.GET.get('value')
 
         # Check if the user has already rated the recipe
         existing_rating = UserRating.objects.filter(
@@ -760,7 +775,6 @@ def GetNutritionDaily(request):
     vitaminb += nutritionList[10]
     vitamind += nutritionList[11]
     return JsonResponse(json.loads('{"calorie":' + str(calorie) + ',"vitamind":' + str(vitamind) + ',"vitaminb":' + str(vitaminb) + ',"vitamina":' + str(vitamina) + ',"fiber":' + str(fiber) + ',"sugars":' + str(sugars) + ',"fat":' + str(fat) + ',"sodium":' + str(sodium) + ',"calcium":' + str(calcium) + ',"protein":' + str(protein) + ',"iron":' + str(iron) + ',"carbonhydrates":' + str(carbonhydrates) + '}'),safe=False)
-
 
 
 class UserProfileView(views.APIView):

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/consent/colors.dart';
+import 'package:recipe/helpers/userData.dart';
 import 'package:recipe/screen/addPost.dart';
 import 'package:recipe/screen/home.dart';
 import 'package:http/http.dart' as http;
@@ -39,6 +40,10 @@ class Recipe extends StatefulWidget {
 }
 
 class _Recipe extends State<Recipe> {
+  UserData user = UserData();
+  var userId;
+  bool isBookmarked = false;
+
   Map<String, dynamic> fetchedData = {};
   Map<String, dynamic> nutritionData = {};
   // int avg_rating = 5;
@@ -49,6 +54,7 @@ class _Recipe extends State<Recipe> {
   @override
   void initState() {
     super.initState();
+    userId = user.getUserId();
     yorumlariYukle();
     fetchData(widget.slug).then((data) {
       setState(() {
@@ -91,7 +97,11 @@ class _Recipe extends State<Recipe> {
   Map<String, dynamic> dataList = {};
   void yeniYorumGonder() async {
     // Yeni yorumu API'ye gönderin
-    dataList = {"user": 13, "blog": widget.id, "text": yeniYorum.toString()};
+    dataList = {
+      "user": userId,
+      "blog": widget.id,
+      "text": yeniYorum.toString()
+    };
     print(jsonEncode(dataList));
     var response = await http.post(Uri.parse(uri + '/CreateComment/'),
         headers: <String, String>{
@@ -110,11 +120,28 @@ class _Recipe extends State<Recipe> {
     }
   }
 
+  void toggleUserBookmark(String userId, String blogId) async {
+    String url = uri + "bookmark?user_id=$userId&blog_id=$blogId";
+    await http.get(Uri.parse(url)).then((response) {
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+      if (jsonResponse['success'] && jsonResponse['is_bookmarked']) {
+        setState(() {
+          isBookmarked = true;
+        });
+      }
+    }).catchError((error) {
+      print('Error: $error');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar2(),
-      drawer: appDrawer(),
+      drawer: AppDrawer(),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: CustomScrollView(
@@ -162,13 +189,20 @@ class _Recipe extends State<Recipe> {
               actions: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: CircleAvatar(
-                    backgroundColor: Color.fromRGBO(250, 250, 250, 0.6),
-                    radius: 18,
-                    child: Icon(
-                      Icons.favorite_border,
-                      size: 25,
-                      color: font,
+                  child: GestureDetector(
+                    onTap: () {
+                      print("CLICKEDDDDDDDDDDDDDDDD");
+                      toggleUserBookmark(
+                          userId.toString(), widget.id.toString());
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: Color.fromRGBO(250, 250, 250, 0.6),
+                      radius: 18,
+                      child: Icon(
+                        isBookmarked ? Icons.favorite : Icons.favorite_border,
+                        size: 25,
+                        color: font,
+                      ),
                     ),
                   ),
                 ),
@@ -207,7 +241,8 @@ class _Recipe extends State<Recipe> {
   }
 
   Widget _getbody() {
-    int say = int.parse(fetchedData["avg_rating"].round().toString());
+    // int say = int.parse(fetchedData["avg_rating"].round().toString());
+    int say = 4;
 
     return Wrap(
       children: [

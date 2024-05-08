@@ -3,6 +3,7 @@ import 'package:recipe/consent/colors.dart';
 import 'package:recipe/consent/navigation.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:recipe/models/userProfile.dart';
 import 'package:recipe/screen/allergy.dart';
 import 'package:recipe/helpers/userData.dart';
 import 'package:recipe/screen/home.dart';
@@ -14,6 +15,7 @@ class Login extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
 }
+
 class _LoginState extends State<Login> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -27,7 +29,7 @@ class _LoginState extends State<Login> {
     String username = usernameSignUpController.text;
     String password = passwordSignUpController.text;
 
-    Uri apiUrl = Uri.parse(BackendUrl.apiUrl+'CreateUser/');
+    Uri apiUrl = Uri.parse(BackendUrl.apiUrl + 'CreateUser/');
 
     Map<String, dynamic> data = {
       'mail': email,
@@ -52,7 +54,7 @@ class _LoginState extends State<Login> {
     String username = usernameController.text;
     String password = passwordController.text;
 
-    Uri apiUrl = Uri.parse(BackendUrl.apiUrl+'Login/');
+    Uri apiUrl = Uri.parse(BackendUrl.apiUrl + 'Login/');
 
     Map<String, dynamic> data = {
       'user': username,
@@ -69,7 +71,7 @@ class _LoginState extends State<Login> {
       // Giriş başarılı
       print("Başarılı");
 
-      var jsonResponse = jsonDecode(response.body);    
+      var jsonResponse = jsonDecode(response.body);
       UserData userData = UserData();
       int userId = int.parse(jsonResponse['id'].toString());
       userData.setUserId(userId);
@@ -211,7 +213,8 @@ class _LoginState extends State<Login> {
                                 ),
                                 SizedBox(height: 40),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 30),
                                   child: Container(
                                     padding: EdgeInsets.only(left: 15),
                                     decoration: BoxDecoration(
@@ -225,7 +228,8 @@ class _LoginState extends State<Login> {
                                         hintText: 'Email',
                                         hintStyle: TextStyle(fontFamily: 'ro'),
                                         border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(15),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
                                           borderSide: BorderSide.none,
                                         ),
                                       ),
@@ -234,7 +238,8 @@ class _LoginState extends State<Login> {
                                 ),
                                 SizedBox(height: 20),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 30),
                                   child: Container(
                                     padding: EdgeInsets.only(left: 15),
                                     decoration: BoxDecoration(
@@ -248,7 +253,8 @@ class _LoginState extends State<Login> {
                                         hintText: 'User Name',
                                         hintStyle: TextStyle(fontFamily: 'ro'),
                                         border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(15),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
                                           borderSide: BorderSide.none,
                                         ),
                                       ),
@@ -257,7 +263,8 @@ class _LoginState extends State<Login> {
                                 ),
                                 SizedBox(height: 20),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 30),
                                   child: Container(
                                     padding: EdgeInsets.only(left: 15),
                                     decoration: BoxDecoration(
@@ -273,7 +280,8 @@ class _LoginState extends State<Login> {
                                         hintText: 'password',
                                         hintStyle: TextStyle(fontFamily: 'ro'),
                                         border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(15),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
                                           borderSide: BorderSide.none,
                                         ),
                                       ),
