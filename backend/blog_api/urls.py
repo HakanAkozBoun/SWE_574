@@ -9,9 +9,9 @@ router = routers.SimpleRouter()
 router.register('blogs', blogApiView, basename='blogs')
 router.register('category', categoryApiView, basename='category')
 router.register('categoryBasedBlogs', CategoryPostApiView,
-                basename='categoryBasedBlogs')
-router.register('PopularPostsApiView', PopularPostsApiView,
-                basename='PopularPostsApiView')
+                basename='categoryBasedBlogs'
+#router.register('PopularPostsApiView', PopularPostsApiView,basename='PopularPostsApiView'
+ )
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -58,5 +58,5 @@ urlpatterns = [
 
     path('CreateUser/', RegisterAPIView.as_view(), name='RegisterAPIView'),
     path('allergy/', AllergyView.as_view(), name='AllergyViewSet'),
-
+    path('PopularPostsApiView/', PopularPostsApiView, name='BlogList'),
 ]
