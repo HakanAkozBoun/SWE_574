@@ -666,6 +666,7 @@ def add_rating(request):
         return Response({"success": False, "error": str(e)})
 
 
+
 def GetNutritionOfSingleRecipe(eaten_recipe_Id, eatenServing):
     _nutrition = nutrition.objects.all()
     _recipe = recipe.objects.filter(blog=eaten_recipe_Id)
@@ -774,6 +775,7 @@ def GetNutritionDaily(request):
     vitaminb += nutritionList[10]
     vitamind += nutritionList[11]
     return JsonResponse(json.loads('{"calorie":' + str(calorie) + ',"vitamind":' + str(vitamind) + ',"vitaminb":' + str(vitaminb) + ',"vitamina":' + str(vitamina) + ',"fiber":' + str(fiber) + ',"sugars":' + str(sugars) + ',"fat":' + str(fat) + ',"sodium":' + str(sodium) + ',"calcium":' + str(calcium) + ',"protein":' + str(protein) + ',"iron":' + str(iron) + ',"carbonhydrates":' + str(carbonhydrates) + '}'),safe=False)
+
 
 class UserProfileView(views.APIView):
     queryset = UserProfile.objects.all()

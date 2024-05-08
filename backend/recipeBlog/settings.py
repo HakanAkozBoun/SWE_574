@@ -85,6 +85,7 @@ WSGI_APPLICATION = 'recipeBlog.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 
+
 # DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -95,6 +96,7 @@ WSGI_APPLICATION = 'recipeBlog.wsgi.application'
 #        'PORT': '5432',
 #    }
 # }
+
 
 # DATABASES = {
 
