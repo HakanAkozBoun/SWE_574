@@ -12,23 +12,31 @@ class TrackingDietGoals extends StatefulWidget {
 }
 
 class _TrackingDietGoalsState extends State<TrackingDietGoals> {
-  List<Map<String, dynamic>> _nutritionData = [];
+  DateTime _selectedDate = DateTime.now();
+  var nutrient_items = [
+    'Protein',
+    'Carbohydrates',
+    'Fats',
+    'Vitamin A',
+    'Vitamin C',
+  ];
+  late String nutrientName;
 
+  List<Map<String, dynamic>> _nutritionData = [];
   bool _showTable = true;
 
   @override
   void initState() {
     super.initState();
+    nutrientName = nutrient_items[0];
     loadNutritionData();
   }
 
   Future<void> loadNutritionData() async {
-    // Load JSON file
     String jsonString =
         await rootBundle.loadString('assets/nutrition_data.json');
     List<dynamic> jsonData = json.decode(jsonString);
 
-    // Calculate remaining value for each row
     for (var item in jsonData) {
       double goal = item['goal'];
       double currentIntake = item['currentIntake'];
@@ -46,16 +54,6 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> days = [
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-      'Sunday'
-    ];
-
     return Scaffold(
       appBar: appbar(),
       body: Column(
@@ -80,16 +78,16 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _showTable = true; // Show table view
+                    _showTable = true;
                   });
                 },
                 child: Text('Table'),
               ),
-              SizedBox(width: 20), // Add spacing between buttons
+              SizedBox(width: 20),
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _showTable = false; // Show chart view
+                    _showTable = false;
                   });
                 },
                 child: Text('Chart'),
@@ -99,16 +97,80 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
           SizedBox(
             height: 20,
           ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: _showTable ? days.map((day) => _buildDayCell(day)).toList() : [], 
+          if (_showTable)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _selectedDate = _selectedDate.subtract(Duration(days: 1));
+                    });
+                  },
+                  icon: Icon(Icons.arrow_left),
+                ),
+                Text(
+                  DateFormat('EEEE, MMMM dd, yyyy').format(_selectedDate),
+                  style: TextStyle(fontSize: 18),
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _selectedDate = _selectedDate.add(Duration(days: 1));
+                    });
+                  },
+                  icon: Icon(Icons.arrow_right),
+                ),
+              ],
             ),
-          ),
+          if (_showTable)
+            ElevatedButton(
+              onPressed: () {
+                _selectDate(context);
+              },
+              child: Text('Select Date'),
+            ),
+          if (!_showTable && nutrientName != "") ...[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DropdownButton(
+                value: nutrientName,
+                icon: const Icon(Icons.keyboard_arrow_down),
+                items: nutrient_items.map((String items) {
+                  return DropdownMenuItem(
+                    value: items,
+                    child: Text(items),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(
+                    () {
+                      nutrientName = newValue!;
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+          SizedBox(height: 20),
           _showTable ? _buildTable(_nutritionData) : _buildChart(),
         ],
       ),
     );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate != null && pickedDate != _selectedDate) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    }
   }
 }
 
@@ -120,38 +182,40 @@ class ChartData {
 
 Widget _buildChart() {
   final List<ChartData> chartData = [
-    ChartData("Monday", 35.0),
-    ChartData("Tuesday", 28.0),
-    ChartData("Wednesday", 34.0),
-    ChartData("Thursday", 32.0),
-    ChartData("Friday", 40.0),
-    ChartData("Saturday", 30.0),
-    ChartData("Sunday", 45.0),
+    ChartData("08/05/2024", 100.0),
+    ChartData("09/05/2024", 100.0),
+    ChartData("10/05/2024", 100.0),
+    ChartData("11/05/2024", 100.0),
+    ChartData("12/05/2024", 100.0),
+    ChartData("13/05/2024", 100.0),
+    ChartData("14/05/2024", 100.0),
   ];
 
-    final List<ChartData> chartData2 = [
-    ChartData("Monday", 23.0),
-    ChartData("Tuesday", 56.0),
-    ChartData("Wednesday", 21.0),
-    ChartData("Thursday", 54.0),
-    ChartData("Friday", 89.0),
-    ChartData("Saturday", 51.0),
-    ChartData("Sunday", 21.0),
+  final List<ChartData> chartData2 = [
+    ChartData("08/05/2024", 23.0),
+    ChartData("09/05/2024", 56.0),
+    ChartData("10/05/2024", 121.0),
+    ChartData("11/05/2024", 54.0),
+    ChartData("12/05/2024", 189.0),
+    ChartData("13/05/2024", 51.0),
+    ChartData("14/05/2024", 121.0),
   ];
-   return Container(
+  return Container(
     child: SfCartesianChart(
-      primaryXAxis: CategoryAxis(), // Use CategoryAxis for the x-axis
+      primaryXAxis: CategoryAxis(),
+      legend: Legend(isVisible: true),
       series: <CartesianSeries>[
-        // Renders line chart
         LineSeries<ChartData, String>(
           dataSource: chartData,
           xValueMapper: (ChartData data, _) => data.x,
           yValueMapper: (ChartData data, _) => data.y,
+          name: 'Goal',
         ),
         LineSeries<ChartData, String>(
           dataSource: chartData2,
           xValueMapper: (ChartData data, _) => data.x,
           yValueMapper: (ChartData data, _) => data.y,
+          name: 'Intake',
         ),
       ],
     ),
@@ -191,7 +255,6 @@ Widget _buildTable(List<Map<String, dynamic>> nutritionData) {
               ),
             ),
           ],
-          // Define rows with style
           rows: nutritionData.map((item) {
             print(item);
             return DataRow(
@@ -203,29 +266,6 @@ Widget _buildTable(List<Map<String, dynamic>> nutritionData) {
               ],
             );
           }).toList(),
-        ),
-      ),
-    ),
-  );
-}
-
-Widget _buildDayCell(String day) {
-  return Container(
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(8.0),
-    ),
-    child: TextButton(
-      onPressed: () {
-        // Handle button press here
-        String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-        print('Clicked on $day. Current date: $currentDate');
-      },
-      child: Text(
-        day,
-        style: TextStyle(
-          color: Colors.purple,
-          fontWeight: FontWeight.bold,
-          fontSize: 14.0,
         ),
       ),
     ),
