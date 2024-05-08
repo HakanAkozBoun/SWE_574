@@ -21,13 +21,15 @@ SECRET_KEY = 'django-insecure-$2ri))89tw!-$bd0#y2kh193*1)ms&y8l33mg@@q4+uf6mkd59
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-BACKEND_ALLOWED_HOSTS = env("BACKEND_ALLOWED_HOSTS", default="localhost,157.230.125.5").strip()
-BACKEND_CORS_ALLOWED_ORIGINS = env("BACKEND_CORS_ALLOWED_ORIGINS", default="http://localhost:3000,http://157.230.125.5:3000").strip()
+BACKEND_ALLOWED_HOSTS = env("BACKEND_ALLOWED_HOSTS",
+                            default="localhost,157.230.125.5").strip()
+BACKEND_CORS_ALLOWED_ORIGINS = env(
+    "BACKEND_CORS_ALLOWED_ORIGINS", default="http://localhost:3000,http://157.230.125.5:3000").strip()
 
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL = True
 
-#ALLOWED_HOSTS = BACKEND_ALLOWED_HOSTS.split(",")
+# ALLOWED_HOSTS = BACKEND_ALLOWED_HOSTS.split(",")
 # CORS_ALLOWED_ORIGINS = BACKEND_CORS_ALLOWED_ORIGINS.split(",")
 
 
@@ -40,12 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    #myapps
+
+    # myapps
     'blog_api',
-    #thirdparty
-      "corsheaders",
-      'rest_framework'
+    # thirdparty
+    "corsheaders",
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -84,15 +86,50 @@ WSGI_APPLICATION = 'recipeBlog.wsgi.application'
 
 
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.psycopg2',
-#         'NAME': 'cookPad',
-#         'USER': 'postgres',
-#         'PASSWORD': '1',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'xymziiwn',
+#        'USER': 'xymziiwn',
+#        'PASSWORD': 'dZgLKBzSeuds_yro0WckQnE47nJY9DVU',
+#        'HOST': 'lucky.db.elephantsql.com',
+#        'PORT': '5432',
+#    }
 # }
+
+# DATABASES = {
+
+#    'default': {
+#       'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'cookPad',
+#        'USER': 'postgres',
+#        'PASSWORD': '1',
+#        'HOST': 'localhost',
+#        'PORT': '5432',
+#    }
+# }
+
+# DATABASES = {
+
+#    'default': {
+#       'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'cookPad2',
+#        'USER': 'postgres',
+#        'PASSWORD': '1',
+#        'HOST': 'localhost',
+#        'PORT': '5432',
+#    }
+# }
+
+DATABASES = {
+   'default': {
+       'ENGINE': 'django.db.backends.postgresql_psycopg2',
+       'NAME': 'xymziiwn',
+       'USER': 'xymziiwn',
+       'PASSWORD': 'dZgLKBzSeuds_yro0WckQnE47nJY9DVU',
+       'HOST': 'lucky.db.elephantsql.com',
+       'PORT': '5432',
+   }
+}
 
 # DATABASES = {
 #     'default': {
@@ -105,7 +142,7 @@ WSGI_APPLICATION = 'recipeBlog.wsgi.application'
 #     #     'USER': 'postgres',
 #     #     'PASSWORD': '1',
 #     #     'HOST': 'localhost',
-#     #     'PORT': '5432',                
+#     #     'PORT': '5432',
 #     # }
 
 # }
@@ -166,11 +203,12 @@ MEDIA_ROOT = BASE_DIR/'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",
-#     "http://localhost:3001",
-#     "http://127.0.0.1:3000",
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8000",
+]
 
 # DATABASES = {
 #     'default': {
@@ -183,16 +221,39 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #     },
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'cookPad',
-        'USER': 'postgres',
-        'PASSWORD': '1',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+
+# DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': '574',
+#        'USER': 'postgres',
+#        'PASSWORD': 'postgres',
+#        'HOST': 'localhost',
+#        'PORT': '5432',
+#    }
+# }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'RecipeApp',
+#         'USER': 'postgres',
+#         'PASSWORD': '712GeE84',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
+# DATABASES = {
+#      'default': {
+#          'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#          'NAME': 'SWE574',
+#          'USER': 'postgres',
+#          'PASSWORD': 'postgres',
+#          'HOST': 'localhost',
+#          'PORT': '5432',
+#      }
+#  }
+
 
 # DATABASES = {
 #     'default': {
