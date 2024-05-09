@@ -816,7 +816,7 @@ def GetNutritionsOfRecipeList(eaten):
 
 
 def NutritionDaily(user, date):
-    eaten = Eaten.objects.filter(userId=user, date=date)
+    eaten = Eaten.objects.filter(userId=user, eatenDate=date)
     calorie = 0
     fat = 0
     sodium = 0
