@@ -1,7 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class SearchBarWidget extends StatelessWidget {
-  const SearchBarWidget({super.key});
+class SearchBarWidget extends StatefulWidget {
+  const SearchBarWidget({Key? key}) : super(key: key);
+
+  @override
+  _SearchBarWidgetState createState() => _SearchBarWidgetState();
+}
+
+class _SearchBarWidgetState extends State<SearchBarWidget> {
+  final TextEditingController _searchController = TextEditingController();
+
+  Future<void> performSearch() async {
+    var response = await http.get(Uri.parse('http://167.172.171.174:8000/search?query=${_searchController.text}'));
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      // Bu kısım sonuçları kullanıcıya göstermek için UI güncellemesi yapılacak yerdir
+      print(data);
+    } else {
+      // Arama başarısız olursa hata mesajı göster
+      print('Search failed with status: ${response.statusCode}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,16 +42,20 @@ class SearchBarWidget extends StatelessWidget {
             )
           ],
         ),
-        child: const Row(
+        child: Row(
           children: [
-            Icon(Icons.search),
-            SizedBox(width: 10),
+            const Icon(Icons.search),
+            const SizedBox(width: 10),
             Expanded(
               child: TextField(
-                decoration: InputDecoration(
+                controller: _searchController,
+                decoration: const InputDecoration(
                   border: InputBorder.none,
                   hintText: 'Search for recipes',
                 ),
+                onSubmitted: (value) {
+                  performSearch();
+                },
               ),
             ),
           ],
