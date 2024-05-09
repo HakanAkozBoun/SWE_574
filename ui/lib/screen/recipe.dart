@@ -10,6 +10,8 @@ import 'package:recipe/widgets/home/app_drawer.dart';
 import 'package:recipe/widgets/home/appbar2.dart';
 import 'package:recipe/constants/backend_url.dart';
 
+import 'package:flutter_svg/flutter_svg.dart';
+
 const String uri = BackendUrl.apiUrl;
 
 Future<List<dynamic>> fetchData(data) async {
@@ -43,6 +45,7 @@ class _Recipe extends State<Recipe> {
   UserData user = UserData();
   var userId;
   bool isBookmarked = false;
+  bool isEaten = false;
 
   Map<String, dynamic> fetchedData = {};
   Map<String, dynamic> nutritionData = {};
@@ -137,6 +140,23 @@ class _Recipe extends State<Recipe> {
     });
   }
 
+  void toggleEaten(String userId, String blogId, String serving) async {
+    String url = uri + "eaten?user_id=$userId&blog_id=$blogId&serving=$serving";
+    await http.get(Uri.parse(url)).then((response) {
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+      if (jsonResponse['success'] && jsonResponse['is_eaten']) {
+        setState(() {
+          isEaten = true;
+        });
+      }
+    }).catchError((error) {
+      print('Error: $error');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -191,7 +211,6 @@ class _Recipe extends State<Recipe> {
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: GestureDetector(
                     onTap: () {
-                      print("CLICKEDDDDDDDDDDDDDDDD");
                       toggleUserBookmark(
                           userId.toString(), widget.id.toString());
                     },
@@ -251,17 +270,40 @@ class _Recipe extends State<Recipe> {
           color: Colors.white,
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 15),
-                child: Row(
-                  children: [
-                    for (int i = 0; i < say; i++)
-                      Icon(
-                        Icons.star,
-                        color: say >= i + 1 ? Colors.yellow : Colors.grey,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15),
+                    child: Row(
+                      children: [
+                        for (int i = 0; i < say; i++)
+                          Icon(
+                            Icons.star,
+                            color: say >= i + 1 ? Colors.yellow : Colors.grey,
+                          ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 50),
+                    child: GestureDetector(
+                      onTap: () {
+                        toggleEaten(
+                            userId.toString(), widget.id.toString(), "1");
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: Color.fromRGBO(250, 250, 250, 0.6),
+                        radius: 18,
+                        child: isEaten
+                            ? SvgPicture.asset("icons/eat.svg",
+                                width: 25, height: 25)
+                            : SvgPicture.asset("icons/noteat.svg",
+                                width: 25, height: 25),
                       ),
-                  ],
-                ),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 20),
               Padding(

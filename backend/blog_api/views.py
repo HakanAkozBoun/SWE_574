@@ -626,6 +626,30 @@ def bookmark_toggle(request):
         error_message = f"Error toggling bookmark: {str(e)}"
         return Response({"success": False, "error": error_message})
 
+@api_view(['GET'])
+def eaten_toggle(request):
+    try:
+        user_id = request.GET.get('user_id')
+        user = get_object_or_404(User, pk=user_id)
+        blog_id = request.GET.get('blog_id')
+        blog_ = get_object_or_404(blog, pk=blog_id)
+        serving = request.GET.get('serving')
+        user_eaten = Eaten.objects.filter(user=user, blog=blog_, serving=serving)
+        if user_eaten.exists():
+            user_eaten.delete()
+            is_eaten = False
+        else:
+            Eaten.objects.create(user=user, blog=blog_)
+            is_eaten = True
+
+        bookmark_data = {
+            "success": True,
+            "is_eaten": is_eaten,
+        }
+        return Response(bookmark_data)
+    except Exception as e:
+        error_message = f"Error toggling bookmark: {str(e)}"
+        return Response({"success": False, "error": error_message})
 
 @api_view(['GET'])
 def recommend_items(request):

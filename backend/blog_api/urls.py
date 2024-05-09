@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from .views import UpdateUserInfo, UpdateUserProfile, add_rating, check_email, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserProfilesList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, check_username  # CreateUser
+from .views import UpdateUserInfo, UpdateUserProfile, add_rating, check_email, eaten_toggle, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserProfilesList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, check_username  # CreateUser
 
 
 from rest_framework import routers
@@ -40,6 +40,7 @@ urlpatterns = [
 
     # NEW URLS
     path('bookmark/', bookmark_toggle, name='bookmark_toggle'),
+    path('eaten/', eaten_toggle, name='bookmark_toggle'),
     path('recommend/', recommend_items, name='recommend_items'),
 
     path('Following/', GetFollowingUserProfilesList, name='FollowingUserList'),
