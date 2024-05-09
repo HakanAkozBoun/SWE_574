@@ -52,8 +52,10 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                   ),
                 );
               },
+
               child: buildRecipeCard(recipe.title, recipe.excerpt,
                   "recipe.duration", recipe.base64),
+
             );
           }).toList(),
         ),

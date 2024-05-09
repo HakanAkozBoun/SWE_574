@@ -16,7 +16,7 @@ class Recipe {
   final String preparationtime;
   final String cookingtime;
   final double avg_rating;
-  final String image;
+  final int image;
   final String ingredients;
   final String postLabel;
   final int userid;
@@ -60,7 +60,7 @@ class Recipe {
       preparationtime: json['preparationtime'] ?? '',
       cookingtime: json['cookingtime'] ?? '',
       avg_rating: json['avg_rating'] ?? 0.0,
-      image: json['image'] ?? '',
+      image: json['image'] ?? 0,
       ingredients: json['ingredients'] ?? '',
       postLabel: json['postLabel'] ?? '',
       userid: json['userid'] ?? 0,
