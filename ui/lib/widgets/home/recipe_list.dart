@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:recipe/models/recipe.dart';
 import 'package:recipe/screen/recipe.dart' as RecipeScreen;
@@ -43,14 +46,16 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (BuildContext context) => RecipeScreen.Recipe(
-                      slug: "Recipe",
+                      slug: recipe.slug.toString(),
                       id: recipe.id,
                     ),
                   ),
                 );
               },
-              child: buildRecipeCard(
-                  "recipe.title", "recipe.excerpt", "recipe.cookingtime", ""),
+
+              child: buildRecipeCard(recipe.title, recipe.excerpt,
+                  "recipe.duration", recipe.base64),
+
             );
           }).toList(),
         ),
@@ -64,6 +69,8 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
     String duration,
     String imagePath,
   ) {
+    var url = imagePath;
+    Uint8List decodedImage = base64Decode(url);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Container(
@@ -89,12 +96,7 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
               child: InkWell(
                 child: Container(
                   alignment: Alignment.center,
-                  child: Image.asset(
-                    imagePath,
-                    height: 100,
-                    width: 100,
-                    fit: BoxFit.cover,
-                  ),
+                  child: Image.memory(decodedImage),
                 ),
               ),
             ),

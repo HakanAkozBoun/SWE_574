@@ -1,6 +1,8 @@
 from django.urls import path, include
 
-from .views import UpdateUserInfo, UpdateUserProfile, add_rating, check_email, eaten_toggle, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserProfilesList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, check_username  # CreateUser
+
+from .views import UpdateGoal, CreateGoal, GetGoals, GetNutritionDailyWithGoals, GetNutritionWeeklyWithGoal, UpdateUserInfo, UpdateUserProfile, add_rating, check_email, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserProfilesList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, check_username  # CreateUser
+
 
 
 from rest_framework import routers
@@ -9,9 +11,9 @@ router = routers.SimpleRouter()
 router.register('blogs', blogApiView, basename='blogs')
 router.register('category', categoryApiView, basename='category')
 router.register('categoryBasedBlogs', CategoryPostApiView,
-                basename='categoryBasedBlogs')
-router.register('PopularPostsApiView', PopularPostsApiView,
-                basename='PopularPostsApiView')
+                basename='categoryBasedBlogs'
+#router.register('PopularPostsApiView', PopularPostsApiView,basename='PopularPostsApiView'
+ )
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -49,6 +51,13 @@ urlpatterns = [
     path('MyProfile/', GetCurrentUserProfile, name='SelfProfile'),
     path('UpdateMyProfile/', UpdateUserProfile, name='UpdateProfile'),
     path('DailyNutrition/', GetNutritionDaily, name='DailyNutrition'),
+    path('DailyNutritionWithGoals/', GetNutritionDailyWithGoals,
+         name='DailyNutritionWithGoals'),
+    path('WeeklyNutritionWithGoal/', GetNutritionWeeklyWithGoal,
+         name='WeeklyNutritionWithGoal'),
+    path('Goals/', GetGoals, name='Goals'),
+    path('CreateGoal/', CreateGoal, name='CreateGoal'),
+    path('UpdateGoal/', UpdateGoal, name='UpdateGoal'),
     path('CheckUsername/', check_username, name='CheckUsername'),
     path('CheckEmail/', check_email, name='CheckEmail'),
     path('UpdateUserInfo/', UpdateUserInfo, name='UpdateUserInfo'),
@@ -59,5 +68,5 @@ urlpatterns = [
 
     path('CreateUser/', RegisterAPIView.as_view(), name='RegisterAPIView'),
     path('allergy/', AllergyView.as_view(), name='AllergyViewSet'),
-
+    path('PopularPostsApiView/', PopularPostsApiView, name='BlogList'),
 ]
