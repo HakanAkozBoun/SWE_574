@@ -133,15 +133,16 @@ class _GoalsPageState extends State<GoalsPage> {
         print(success);
       }
       if (success) {
+        Navigator.pop(context);
         showAlertDialog(context, "Goal updated successfully");
       } else {
         showAlertDialog(context, "Failed to update goal");
       }
+
       List<Goal> updatedGoals = await Goal.fetchGoals(widget.userId);
       setState(() {
         userGoals = Future.value(updatedGoals);
       });
-      Navigator.pop(context);
     }
   }
 
@@ -185,7 +186,7 @@ class _GoalsPageState extends State<GoalsPage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          CorrespondingTile("Calories (mg)", "calorie", null, false, context),
+          CorrespondingTile("Calories (Kcal)", "calorie", null, false, context),
           CorrespondingTile("Fat (mg)", "fat", null, false, context),
           CorrespondingTile("Sodium (mg)", "sodium", null, false, context),
           CorrespondingTile("Calcium (mg)", "calcium", null, false, context),
@@ -273,6 +274,7 @@ class _GoalsPageState extends State<GoalsPage> {
             tileTitle,
             style: TextStyle(fontSize: 16),
           ),
+          SizedBox(width: 10),
           Text(
             goalAmountStr,
             style: TextStyle(fontSize: 16, color: Colors.grey),
