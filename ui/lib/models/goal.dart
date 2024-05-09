@@ -28,7 +28,10 @@ class Goal {
     }
   }
 
-  Future<bool> createGoal(int userId) async {
+  Future<bool> createGoal(
+      int userId, String goalName, double goal_Amount) async {
+    print(goalName);
+    print(goal_Amount);
     var url = Uri.parse('${BackendUrl.createGoal}?id=$userId');
     try {
       var response = await http.post(
@@ -38,8 +41,8 @@ class Goal {
           'Accept': 'application/json',
         },
         body: json.encode({
-          'goal_name': goalNutrition,
-          'amount': goalAmount,
+          'goal_name': goalName,
+          'amount': goal_Amount,
         }),
       );
 
@@ -53,7 +56,8 @@ class Goal {
     }
   }
 
-  Future<bool> updateGoal(int userId) async {
+  Future<bool> updateGoal(
+      int userId, String goalName, double goal_Amount) async {
     var url = Uri.parse('${BackendUrl.updateGoal}?id=$userId');
 
     try {
@@ -64,8 +68,8 @@ class Goal {
           'Accept': 'application/json',
         },
         body: json.encode({
-          'goal_name': goalNutrition,
-          'amount': goalAmount,
+          'goal_name': goalName,
+          'amount': goal_Amount,
         }),
       );
 
