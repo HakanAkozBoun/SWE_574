@@ -39,7 +39,7 @@ class _GoalsPageState extends State<GoalsPage> {
               return Scaffold(
                 backgroundColor: background,
                 body: Center(
-                  child: Text('Error: ${snapshot.error}'),
+                  child: NoGoalsFlow(context),
                 ),
               );
             } else if (snapshot.hasData) {
@@ -119,15 +119,18 @@ class _GoalsPageState extends State<GoalsPage> {
   UpdateShownInfo(
       String goalName, String goalAmountStr, bool goalExists) async {
     double? goalAmount = double.tryParse(goalAmountStr);
-    bool success;
+    var success;
     if (goalAmount == null) {
       showAlertDialog(context, "Please enter a valid number");
     } else {
       Goal goal = Goal(goalNutrition: goalName, goalAmount: goalAmount);
       if (goalExists) {
-        success = await goal.updateGoal(widget.userId);
+        print("updateGoal called");
+        success = await goal.updateGoal(widget.userId, goalName, goalAmount);
       } else {
-        success = await goal.createGoal(widget.userId);
+        print("createGoal called");
+        success = await goal.createGoal(widget.userId, goalName, goalAmount);
+        print(success);
       }
       if (success) {
         showAlertDialog(context, "Goal updated successfully");
@@ -176,6 +179,28 @@ class _GoalsPageState extends State<GoalsPage> {
       }
     }
     return null;
+  }
+
+  Widget NoGoalsFlow(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          CorrespondingTile("Calories (mg)", "calorie", null, false, context),
+          CorrespondingTile("Fat (mg)", "fat", null, false, context),
+          CorrespondingTile("Sodium (mg)", "sodium", null, false, context),
+          CorrespondingTile("Calcium (mg)", "calcium", null, false, context),
+          CorrespondingTile("Protein (mg)", "protein", null, false, context),
+          CorrespondingTile("Iron (mg)", "iron", null, false, context),
+          CorrespondingTile(
+              "Carbonhydrates (mg)", "carbonhydrates", null, false, context),
+          CorrespondingTile("Sugars (mg)", "sugars", null, false, context),
+          CorrespondingTile("Fiber (mg)", "fiber", null, false, context),
+          CorrespondingTile("Vitamin A (mg)", "vitamina", null, false, context),
+          CorrespondingTile("Vitamin B (mg)", "vitaminb", null, false, context),
+          CorrespondingTile("Vitamin D (mg)", "vitamind", null, false, context),
+        ],
+      ),
+    );
   }
 
   Widget GoalsList(BuildContext context, List<Goal> goals) {

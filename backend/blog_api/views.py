@@ -673,9 +673,10 @@ def add_rating(request):
 @api_view(['PATCH'])
 def UpdateGoal(request):
     user_id = request.GET.get('id', '1')
-    goalName = request.GET.get('goal_name')
-    amount = request.GET.get('amount')
-    goal = Goal.objects.get(user=user_id, goal_nutrition=goalName)
+    goalName = request.data.get('goal_name')
+    amount = request.data.get('amount')
+    user = User.objects.get(id=user_id)
+    goal = Goal.objects.get(user=user, goal_nutrition=goalName)
     goal.goal_amount = amount
     goal.save()
     return JsonResponse(True, safe=False)
@@ -684,10 +685,12 @@ def UpdateGoal(request):
 @api_view(['POST'])
 def CreateGoal(request):
     user_id = request.GET.get('id', '1')
-    goalName = request.GET.get('goal_name')
-    amount = request.GET.get('amount')
-    Goal.objects.create(
-        user=user_id, goal_nutrition=goalName, goal_amount=amount)
+    user = User.objects.get(id=user_id)
+    goalName = request.data.get('goal_name')
+    amount = request.data.get('amount')
+    goal = Goal.objects.create(
+        user=user, goal_nutrition=goalName, goal_amount=amount)
+    goal.save()
     return JsonResponse(True, safe=False)
 
 
@@ -695,7 +698,6 @@ def CreateGoal(request):
 def GetGoals(request):
     user_id = request.GET.get('user_id')
     goals = Goals(user_id)
-
     if (not goals.exists()):
         return JsonResponse({"message": "No goals found."}, safe=False)
 
@@ -704,7 +706,8 @@ def GetGoals(request):
 
 
 def Goals(userId):
-    goals = Goal.objects.filter(user=userId)
+    user = User.objects.get(id=userId)
+    goals = Goal.objects.filter(user=user)
     return goals
 
 
