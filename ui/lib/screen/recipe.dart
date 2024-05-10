@@ -64,7 +64,7 @@ class _Recipe extends State<Recipe> {
     userId = user.getUserId();
     yorumlariYukle();
     fetchData(widget.slug).then((data) {
-      print(data);
+      // print(data);
       setState(() {
         var selectedItem =
             data.where((item) => item['id'] == widget.id).toList().first;
@@ -110,7 +110,7 @@ class _Recipe extends State<Recipe> {
       "blog": widget.id,
       "text": yeniYorum.toString()
     };
-    print(jsonEncode(dataList));
+    // print(jsonEncode(dataList));
     var response = await http.post(Uri.parse(uri + 'CreateComment/'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -135,9 +135,13 @@ class _Recipe extends State<Recipe> {
       print('Response body: ${response.body}');
       Map<String, dynamic> jsonResponse = json.decode(response.body);
 
-      if (jsonResponse['success'] && jsonResponse['is_bookmarked']) {
+      if (jsonResponse['is_bookmarked'] == true) {
         setState(() {
           isBookmarked = true;
+        });
+      }else if(jsonResponse['is_bookmarked'] == false){
+        setState(() {
+          isBookmarked = false;
         });
       }
     }).catchError((error) {
@@ -152,9 +156,15 @@ class _Recipe extends State<Recipe> {
       print('Response body: ${response.body}');
       Map<String, dynamic> jsonResponse = json.decode(response.body);
 
-      if (jsonResponse['success'] && jsonResponse['is_eaten']) {
+      if (jsonResponse['is_eaten'] == true) {
         setState(() {
           isEaten = true;
+          print(isEaten);
+        });
+      } else if (jsonResponse['is_eaten'] == false) {
+        setState(() {
+          isEaten = false;
+          print(isEaten);
         });
       }
     }).catchError((error) {
@@ -292,17 +302,38 @@ class _Recipe extends State<Recipe> {
                     padding: const EdgeInsets.symmetric(horizontal: 50),
                     child: GestureDetector(
                       onTap: () {
-                        toggleEaten(
-                            userId.toString(), widget.id.toString(), "1");
+                        // toggleEaten("23", widget.id.toString(), "1");
+                        toggleEaten(userId.toString(), widget.id.toString(), "1");
                       },
-                      child: CircleAvatar(
-                        backgroundColor: Color.fromRGBO(250, 250, 250, 0.6),
-                        radius: 18,
-                        child: isEaten
-                            ? SvgPicture.asset("icons/eat.svg",
-                                width: 25, height: 25)
-                            : SvgPicture.asset("icons/noteat.svg",
-                                width: 25, height: 25),
+                      child: Column(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Color.fromRGBO(250, 250, 250, 0.6),
+                            radius: 18,
+                            child: isEaten
+                                ? SvgPicture.asset(
+                                    "icons/eat.svg",
+                                    width: 50,
+                                    height: 50,
+                                  )
+                                : SvgPicture.asset(
+                                    "icons/noteat.svg",
+                                    width: 50,
+                                    height: 50,
+                                  ),
+                          ),
+                          SizedBox(
+                              height:
+                                  8), // Adjust as needed for spacing between icon and text
+                          Text(
+                            isEaten ? "Eaten" : "Not Eaten",
+                            style: TextStyle(
+                              fontSize: 14, // Adjust as needed for text size
+                              color: Colors
+                                  .black, // Adjust as needed for text color
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

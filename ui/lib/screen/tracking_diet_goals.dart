@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:recipe/consent/appbar.dart';
+import 'package:recipe/constants/backend_url.dart';
+import 'package:recipe/helpers/userData.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
-
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/http.dart' as http;
 
 class TrackingDietGoals extends StatefulWidget {
   @override
@@ -12,6 +13,9 @@ class TrackingDietGoals extends StatefulWidget {
 }
 
 class _TrackingDietGoalsState extends State<TrackingDietGoals> {
+  UserData user = UserData();
+  var userId;
+
   DateTime _selectedDate = DateTime.now();
   var nutrient_items = [
     'Protein',
@@ -29,28 +33,67 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
   void initState() {
     super.initState();
     nutrientName = nutrient_items[0];
-    loadNutritionData();
+    // userId = user.getUserId();
+    userId = "23";
+    loadNutritionData(_selectedDate);
   }
 
-  Future<void> loadNutritionData() async {
-    String jsonString =
-        await rootBundle.loadString('assets/nutrition_data.json');
-    List<dynamic> jsonData = json.decode(jsonString);
+  Future<void> loadNutritionData(DateTime selectedDate) async {
+    String url = BackendUrl.apiUrl +
+        "DailyNutritionWithGoals?user=$userId&selected_date=${DateFormat('yyyy-MM-dd').format(selectedDate)}";
+    try {
+      final response = await http.get(Uri.parse(url));
 
-    for (var item in jsonData) {
-      double goal = item['goal'];
-      double currentIntake = item['currentIntake'];
-      double remaining = goal - currentIntake;
-      remaining = double.parse(remaining.toStringAsFixed(2));
-      item['remaining'] = remaining;
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+
+        if (jsonResponse is List) {
+          List<dynamic> data = jsonResponse;
+
+          data.forEach((item) {
+            double goal = item['goal'].toDouble();
+            double currentIntake = item['currentIntake'].toDouble();
+            double remaining = goal - currentIntake;
+            remaining = double.parse(remaining.toStringAsFixed(2));
+            item['remaining'] = remaining;
+          });
+
+          // Sorting by 'nutritionName'
+          data.sort((a, b) => a['nutritionName'].compareTo(b['nutritionName']));
+
+          setState(() {
+            _nutritionData = List<Map<String, dynamic>>.from(data);
+          });
+        } else {
+          print('Invalid response format: $jsonResponse');
+        }
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
     }
-
-    jsonData.sort((a, b) => a['nutritionName'].compareTo(b['nutritionName']));
-
-    setState(() {
-      _nutritionData = List<Map<String, dynamic>>.from(jsonData);
-    });
   }
+
+  // Future<void> loadNutritionData() async {
+  //   String jsonString =
+  //       await rootBundle.loadString('assets/nutrition_data.json');
+  //   List<dynamic> jsonData = json.decode(jsonString);
+
+  //   for (var item in jsonData) {
+  //     double goal = item['goal'];
+  //     double currentIntake = item['currentIntake'];
+  //     double remaining = goal - currentIntake;
+  //     remaining = double.parse(remaining.toStringAsFixed(2));
+  //     item['remaining'] = remaining;
+  //   }
+
+  //   jsonData.sort((a, b) => a['nutritionName'].compareTo(b['nutritionName']));
+
+  //   setState(() {
+  //     _nutritionData = List<Map<String, dynamic>>.from(jsonData);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +148,7 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
                   onPressed: () {
                     setState(() {
                       _selectedDate = _selectedDate.subtract(Duration(days: 1));
+                      loadNutritionData(_selectedDate);
                     });
                   },
                   icon: Icon(Icons.arrow_left),
@@ -117,6 +161,7 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
                   onPressed: () {
                     setState(() {
                       _selectedDate = _selectedDate.add(Duration(days: 1));
+                      loadNutritionData(_selectedDate);
                     });
                   },
                   icon: Icon(Icons.arrow_right),

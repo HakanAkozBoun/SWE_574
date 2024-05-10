@@ -674,7 +674,7 @@ def eaten_toggle(request):
         serving = request.GET.get('serving')
 
         user_eaten = Eaten.objects.filter(
-            user=user, blog=blog_, serving=serving)
+            userId=user, blogId=blog_, eaten_serving=serving)
 
         if user_eaten.exists():
             user_eaten.delete()
@@ -684,11 +684,11 @@ def eaten_toggle(request):
                                  eaten_serving=serving)
             is_eaten = True
 
-        bookmark_data = {
+        eaten_data = {
             "success": True,
             "is_eaten": is_eaten,
         }
-        return Response(bookmark_data)
+        return Response(eaten_data)
     except Exception as e:
         error_message = f"Error toggling eaten: {str(e)}"
         return Response({"success": False, "error": error_message})
