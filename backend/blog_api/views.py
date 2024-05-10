@@ -57,16 +57,17 @@ class CategoryPostApiView(viewsets.ViewSet):
 @api_view(['GET'])
 def PopularPostsApiView(request):
     all = blog.objects.all().values()
-    imagelist = image.objects.filter(id__in=all.values_list('image', flat=True))
+    imagelist = image.objects.filter(
+        id__in=all.values_list('image', flat=True))
     response = []
     for blog_ in all:
-        json = { 'base64' : None, 'image': None, 'type':None }
+        json = {'base64': None, 'image': None, 'type': None}
         if blog_.get('image') is not None:
             image_ = imagelist.filter(id=blog_.get('image')).first()
             if image_ is not None:
-               json['base64'] = image_.data
-               json['image'] = image_.name
-               json['type'] = image_.type
+                json['base64'] = image_.data
+                json['image'] = image_.name
+                json['type'] = image_.type
         json['id'] = blog_.get('id')
         json['title'] = blog_.get('title')
         json['slug'] = blog_.get('slug')
@@ -86,7 +87,8 @@ def PopularPostsApiView(request):
         response.append(json)
     return JsonResponse(response, safe=False)
 
-@api_view(['GET']) 
+
+@api_view(['GET'])
 def GetUserList(request):
     all_users = User.objects.all().values("id", "username", "first_name",
                                           "last_name", 'email', 'is_active', 'last_login')
@@ -661,6 +663,7 @@ def bookmark_toggle(request):
         error_message = f"Error toggling bookmark: {str(e)}"
         return Response({"success": False, "error": error_message})
 
+
 @api_view(['GET'])
 def eaten_toggle(request):
     try:
@@ -669,7 +672,8 @@ def eaten_toggle(request):
         blog_id = request.GET.get('blog_id')
         blog_ = get_object_or_404(blog, pk=blog_id)
         serving = request.GET.get('serving')
-        user_eaten = Eaten.objects.filter(user=user, blog=blog_, serving=serving)
+        user_eaten = Eaten.objects.filter(
+            user=user, blog=blog_, serving=serving)
         if user_eaten.exists():
             user_eaten.delete()
             is_eaten = False
@@ -685,6 +689,7 @@ def eaten_toggle(request):
     except Exception as e:
         error_message = f"Error toggling bookmark: {str(e)}"
         return Response({"success": False, "error": error_message})
+
 
 @api_view(['GET'])
 def recommend_items(request):
@@ -769,6 +774,7 @@ def Goals(userId):
 def GetNutritionOfSingleRecipe(eaten_recipe_Id, eatenServing):
     _nutrition = nutrition.objects.all()
     _recipe = recipe.objects.filter(blog=eaten_recipe_Id)
+    _blog = blog.objects.get(id=eaten_recipe_Id)
     calorie = 0
     fat = 0
     sodium = 0
@@ -796,18 +802,18 @@ def GetNutritionOfSingleRecipe(eaten_recipe_Id, eatenServing):
             vitamina += __nutrition.vitamina * i.metricamount
             vitaminb += __nutrition.vitaminb * i.metricamount
             vitamind += __nutrition.vitamind * i.metricamount
-    calorie = (calorie/_recipe.servings)*eatenServing
-    fat = (fat/_recipe.servings)*eatenServing
-    sodium = (sodium/_recipe.servings)*eatenServing
-    calcium = (calcium/_recipe.servings)*eatenServing
-    protein = (protein/_recipe.servings)*eatenServing
-    iron = (iron/_recipe.servings)*eatenServing
-    carbonhydrates = (carbonhydrates/_recipe.servings)*eatenServing
-    sugars = (sugars/_recipe.servings)*eatenServing
-    fiber = (fiber/_recipe.servings)*eatenServing
-    vitamina = (vitamina/_recipe.servings)*eatenServing
-    vitaminb = (vitaminb/_recipe.servings)*eatenServing
-    vitamind = (vitamind/_recipe.servings)*eatenServing
+    calorie = (calorie/_blog.serving)*eatenServing
+    fat = (fat/_blog.serving)*eatenServing
+    sodium = (sodium/_blog.serving)*eatenServing
+    calcium = (calcium/_blog.serving)*eatenServing
+    protein = (protein/_blog.serving)*eatenServing
+    iron = (iron/_blog.serving)*eatenServing
+    carbonhydrates = (carbonhydrates/_blog.serving)*eatenServing
+    sugars = (sugars/_blog.serving)*eatenServing
+    fiber = (fiber/_blog.serving)*eatenServing
+    vitamina = (vitamina/_blog.serving)*eatenServing
+    vitaminb = (vitaminb/_blog.serving)*eatenServing
+    vitamind = (vitamind/_blog.serving)*eatenServing
     return [calorie, fat, sodium, calcium, protein, iron, carbonhydrates, sugars, fiber, vitamina, vitaminb, vitamind]
 
 
@@ -826,7 +832,7 @@ def GetNutritionsOfRecipeList(eaten):
     vitamind = 0
     for recipe in eaten:
         nutritionList = GetNutritionOfSingleRecipe(
-            recipe.blogId, recipe.eaten_serving)
+            recipe.blogId_id, recipe.eaten_serving)
         calorie += nutritionList[0]
         fat += nutritionList[1]
         sodium += nutritionList[2]
@@ -923,14 +929,15 @@ def NutritionWeeklyWithGoal(user, goalName, goalAmount):
                          "carbonhydrates", "sugars", "fiber", "vitamina", "vitaminb", "vitamind"]
     goals_list = []
     for i in range(7):
-        date = last_week_date + timezone.timedelta(days=i)
-        nutritionList = NutritionDaily(user, date)
+        eaten_date = last_week_date + timezone.timedelta(days=i)
+        nutritionList = NutritionDaily(user, eaten_date)
         if goalName in NutritionNameList:
             goal_info = {
-                "date": date,
+                "date": eaten_date.isoformat(),
                 "goal": goalAmount,
                 "currentIntake": nutritionList[NutritionNameList.index(goalName)]
             }
+
             goals_list.append(goal_info)
     return goals_list
 
@@ -943,7 +950,7 @@ def GetNutritionWeeklyWithGoal(request):
     goal_amount = goal.goal_amount
     goals_list = NutritionWeeklyWithGoal(
         user=user, goalName=requestedGoal, goalAmount=goal_amount)
-    if (not goals_list.exists()):
+    if (goals_list == []):
         return JsonResponse({"message": "No goals found."}, safe=False)
 
     return JsonResponse(goals_list, safe=False)
@@ -953,11 +960,11 @@ def GetNutritionWeeklyWithGoal(request):
 def GetNutritionDailyWithGoals(request):
     requestedDate = request.query_params.get('selected_date')
     user = request.GET.get('user')
-    NutritionDailyWithGoals = NutritionDailyWithGoals(requestedDate, user)
-    if (not NutritionDailyWithGoals):
+    _nutritionDailyWithGoals = NutritionDailyWithGoals(requestedDate, user)
+    if (not _nutritionDailyWithGoals):
         return JsonResponse({"message": "No goals found."}, safe=False)
 
-    return JsonResponse(NutritionDailyWithGoals, safe=False)
+    return JsonResponse(_nutritionDailyWithGoals, safe=False)
 
 
 @api_view(['GET'])
