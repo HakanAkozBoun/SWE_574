@@ -1,5 +1,7 @@
 from django.urls import path, include
-from .views import eaten_toggle, UpdateGoal, CreateGoal, GetGoals, GetNutritionDailyWithGoals, GetNutritionWeeklyWithGoal, UpdateUserInfo, UpdateUserProfile, add_rating, check_email, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserProfilesList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, check_username, search_recipes  # CreateUser
+
+from .views import GetWeeklyNutritions, eaten_toggle, UpdateGoal, CreateGoal, GetGoals, GetNutritionDailyWithGoals, GetNutritionWeeklyWithGoal, UpdateUserInfo, UpdateUserProfile, add_rating, check_email, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserProfilesList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, check_username, search_recipes  # CreateUser
+
 from rest_framework import routers
 
 router = routers.SimpleRouter()
@@ -50,6 +52,7 @@ urlpatterns = [
          name='DailyNutritionWithGoals'),
     path('WeeklyNutritionWithGoal/', GetNutritionWeeklyWithGoal,
          name='WeeklyNutritionWithGoal'),
+    path('WeeklyNutritions/', GetWeeklyNutritions, name='WeeklyNutritions'),
     path('Goals/', GetGoals, name='Goals'),
     path('CreateGoal/', CreateGoal, name='CreateGoal'),
     path('UpdateGoal/', UpdateGoal, name='UpdateGoal'),

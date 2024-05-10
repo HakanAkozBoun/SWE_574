@@ -187,18 +187,18 @@ class _GoalsPageState extends State<GoalsPage> {
       child: Column(
         children: [
           CorrespondingTile("Calories (Kcal)", "calorie", null, false, context),
-          CorrespondingTile("Fat (mg)", "fat", null, false, context),
-          CorrespondingTile("Sodium (mg)", "sodium", null, false, context),
-          CorrespondingTile("Calcium (mg)", "calcium", null, false, context),
-          CorrespondingTile("Protein (mg)", "protein", null, false, context),
-          CorrespondingTile("Iron (mg)", "iron", null, false, context),
+          CorrespondingTile("Fat (g)", "fat", null, false, context),
+          CorrespondingTile("Sodium (g)", "sodium", null, false, context),
+          CorrespondingTile("Calcium (g)", "calcium", null, false, context),
+          CorrespondingTile("Protein (g)", "protein", null, false, context),
+          CorrespondingTile("Iron (g)", "iron", null, false, context),
           CorrespondingTile(
-              "Carbonhydrates (mg)", "carbonhydrates", null, false, context),
-          CorrespondingTile("Sugars (mg)", "sugars", null, false, context),
-          CorrespondingTile("Fiber (mg)", "fiber", null, false, context),
-          CorrespondingTile("Vitamin A (mg)", "vitamina", null, false, context),
-          CorrespondingTile("Vitamin B (mg)", "vitaminb", null, false, context),
-          CorrespondingTile("Vitamin D (mg)", "vitamind", null, false, context),
+              "Carbonhydrates (g)", "carbonhydrates", null, false, context),
+          CorrespondingTile("Sugars (g)", "sugars", null, false, context),
+          CorrespondingTile("Fiber (g)", "fiber", null, false, context),
+          CorrespondingTile("Vitamin A (g)", "vitamina", null, false, context),
+          CorrespondingTile("Vitamin B (g)", "vitaminb", null, false, context),
+          CorrespondingTile("Vitamin D (g)", "vitamind", null, false, context),
         ],
       ),
     );
@@ -232,28 +232,28 @@ class _GoalsPageState extends State<GoalsPage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          CorrespondingTile("Calories (mg)", "calorie", calorieAmount,
+          CorrespondingTile("Calories (Kcal)", "calorie", calorieAmount,
               calorieExists, context),
-          CorrespondingTile("Fat (mg)", "fat", fatAmount, fatExists, context),
+          CorrespondingTile("Fat (g)", "fat", fatAmount, fatExists, context),
           CorrespondingTile(
-              "Sodium (mg)", "sodium", sodiumAmount, sodiumExists, context),
+              "Sodium (g)", "sodium", sodiumAmount, sodiumExists, context),
           CorrespondingTile(
-              "Calcium (mg)", "calcium", calciumAmount, calciumExists, context),
+              "Calcium (g)", "calcium", calciumAmount, calciumExists, context),
           CorrespondingTile(
-              "Protein (mg)", "protein", proteinAmount, proteinExists, context),
+              "Protein (g)", "protein", proteinAmount, proteinExists, context),
           CorrespondingTile(
-              "Iron (mg)", "iron", ironAmount, ironExists, context),
-          CorrespondingTile("Carbonhydrates (mg)", "carbonhydrates",
+              "Iron (g)", "iron", ironAmount, ironExists, context),
+          CorrespondingTile("Carbonhydrates (g)", "carbonhydrates",
               carbonhydratesAmount, carbonhydratesExists, context),
           CorrespondingTile(
-              "Sugars (mg)", "sugars", sugarsAmount, sugarsExists, context),
+              "Sugars (g)", "sugars", sugarsAmount, sugarsExists, context),
           CorrespondingTile(
-              "Fiber (mg)", "fiber", fiberAmount, fiberExists, context),
-          CorrespondingTile("Vitamin A (mg)", "vitamina", vitaminaAmount,
+              "Fiber (g)", "fiber", fiberAmount, fiberExists, context),
+          CorrespondingTile("Vitamin A (g)", "vitamina", vitaminaAmount,
               vitaminaExists, context),
-          CorrespondingTile("Vitamin B (mg)", "vitaminb", vitaminbAmount,
+          CorrespondingTile("Vitamin B (g)", "vitaminb", vitaminbAmount,
               vitaminbExists, context),
-          CorrespondingTile("Vitamin D (mg)", "vitamind", vitamindAmount,
+          CorrespondingTile("Vitamin D (g)", "vitamind", vitamindAmount,
               vitamindExists, context),
         ],
       ),

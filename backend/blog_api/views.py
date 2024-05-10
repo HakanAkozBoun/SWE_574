@@ -885,8 +885,8 @@ def NutritionDailyWithGoals(requestedDate, user):
     nutritionList = NutritionDaily(user, requestedDate)
     NutritionNameList = ["calorie", "fat", "sodium", "calcium", "protein", "iron",
                          "carbonhydrates", "sugars", "fiber", "vitamina", "vitaminb", "vitamind"]
-    nutritionUnitList = ["(kcal)", "(mg)",  "(mg)", "(mg)", "(mg)",
-                         "(mg)", "(mg)", "(mg)", "(mg)", "(mg)", "(mg)", "(mg)"]
+    nutritionUnitList = ["(kcal)", "(g)",  "(g)", "(g)", "(g)",
+                         "(g)", "(g)", "(g)", "(g)", "(g)", "(g)", "(g)"]
     calorie = 0
     fat = 0
     sodium = 0
@@ -928,6 +928,41 @@ def NutritionDailyWithGoals(requestedDate, user):
     return goals_list
 
 
+@api_view(['GET'])
+def GetWeeklyNutritions(request):
+    user = request.GET.get('user')
+    eatenNutritionsNameSet = WeeklyNutritionNames(user)
+    eatenNutritionsNameList = list(eatenNutritionsNameSet)
+
+    return JsonResponse(eatenNutritionsNameList, safe=False)
+
+
+def WeeklyNutritionNames(user):
+    current_datetime = timezone.now()
+    current_date = current_datetime.date()
+    last_week_date = current_date - timezone.timedelta(days=7)
+    eatenNutritionsNameList = []
+    for i in range(7):
+        eaten_date = last_week_date + timezone.timedelta(days=i)
+        singleDayNutritionList = DailyNutritionNames(user, eaten_date)
+        eatenNutritionsNameList.extend(singleDayNutritionList)
+    eatenNutritionsNameSet = set(eatenNutritionsNameList)
+    return eatenNutritionsNameSet
+
+
+def DailyNutritionNames(user, date):
+    nutritionNamesList = ['calorie', 'fat', 'sodium', 'calcium', 'protein', 'iron',
+                          'carbonhydrates', 'sugars', 'fiber', 'vitamina', 'vitaminb', 'vitamind']
+    nutritionAmountList = NutritionDaily(user, date)
+    print(nutritionAmountList)
+    eatenNutritionList = []
+    for index, eatenNutrition in enumerate(nutritionAmountList):
+        if eatenNutrition > 0:
+            nutritionName = nutritionNamesList[index]
+            eatenNutritionList.append(nutritionName)
+    return eatenNutritionList
+
+
 def NutritionWeeklyWithGoal(user, goalName, goalAmount):
     current_datetime = timezone.now()
     current_date = current_datetime.date()
@@ -939,7 +974,8 @@ def NutritionWeeklyWithGoal(user, goalName, goalAmount):
         eaten_date = last_week_date + timezone.timedelta(days=i)
         nutritionList = NutritionDaily(user, eaten_date)
         if goalName in NutritionNameList:
-            rounded_intake = round(nutritionList[NutritionNameList.index(goalName)], 2)
+            rounded_intake = round(
+                nutritionList[NutritionNameList.index(goalName)], 2)
             goal_info = {
                 "date": eaten_date.isoformat(),
                 "goal": goalAmount,
