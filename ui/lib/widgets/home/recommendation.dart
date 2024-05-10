@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipe/helpers/userData.dart';
 import 'package:recipe/models/recipe.dart';
 import 'package:recipe/screen/recipe.dart' as RecipeScreen;
 
@@ -11,16 +12,18 @@ class RecommendationWidget extends StatefulWidget {
 
 class _RecommendationWidgetState extends State<RecommendationWidget> {
   late List<Recommendation> recommendations = [];
-
+  UserData user = UserData();
+  var userId;
   @override
   void initState() {
     super.initState();
+    userId = user.getUserId();
     loadRecommendations();
   }
 
   Future<void> loadRecommendations() async {
     try {
-      final fetchedRecommendations = await Recommendation.fetchRecommendation();
+      final fetchedRecommendations = await Recommendation.fetchRecommendation(userId);
       setState(() {
         recommendations = fetchedRecommendations;
       });
