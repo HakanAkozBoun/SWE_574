@@ -115,9 +115,9 @@ class Recommendation {
     );
   }
 
-  static Future<List<Recommendation>> fetchRecommendation() async {
+  static Future<List<Recommendation>> fetchRecommendation(String userId) async {
     try {
-      final response = await http.get(Uri.parse(recipeUrl));
+      final response = await http.get(Uri.parse('$recipeUrl?user_id=$userId'));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((json) => Recommendation.fromJson(json)).toList();
