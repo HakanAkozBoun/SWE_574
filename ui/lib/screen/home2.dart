@@ -4,7 +4,6 @@ import 'package:recipe/widgets/home/appbar2.dart';
 import 'package:recipe/widgets/home/categories.dart';
 import 'package:recipe/widgets/home/recipe_list.dart';
 import 'package:recipe/widgets/home/recommendation.dart';
-import 'package:recipe/widgets/home/search_bar.dart';
 
 class Home2 extends StatefulWidget {
   const Home2({Key? key}) : super(key: key);
@@ -14,7 +13,14 @@ class Home2 extends StatefulWidget {
 }
 
 class _Home2State extends State<Home2> {
-  String searchResults = '';
+  int selectedCategoryId = -1;
+  
+  void updateSelectedCategory(int categoryId) {
+    setState(() {
+      selectedCategoryId = categoryId;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,19 +31,20 @@ class _Home2State extends State<Home2> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Search Bar
-            const SearchBarWidget(),
+            // const SearchBarWidget(),
 
-            // Category
             buildSectionTitle('Category'),
-            // CategoriesWidget(),
+            CategoriesWidget(
+              onCategorySelected: updateSelectedCategory,
+            ),
 
-            // Recommendations
-            buildSectionTitle('Recommendations'),
-            // RecommendationWidget(),
+            buildSectionTitle("Recommendations"),
+            RecommendationWidget(),
 
-            // Recipes List
             buildSectionTitle('Recipes List'),
-            RecipeListWidget(),
+            RecipeListWidget(
+              selectedCategoryId: selectedCategoryId,
+            ),
           ],
         ),
       ),

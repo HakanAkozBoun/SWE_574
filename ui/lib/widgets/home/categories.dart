@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-
 import 'package:recipe/models/category.dart';
 
 class CategoriesWidget extends StatefulWidget {
-  const CategoriesWidget({super.key});
+  final Function(int) onCategorySelected;
+  const CategoriesWidget({Key? key, required this.onCategorySelected})
+      : super(key: key);
 
   @override
   _CategoriesWidgetState createState() => _CategoriesWidgetState();
@@ -14,7 +15,6 @@ class CategoriesWidget extends StatefulWidget {
 
 class _CategoriesWidgetState extends State<CategoriesWidget> {
   late List<Category> categories = [];
-
   @override
   void initState() {
     super.initState();
@@ -39,10 +39,13 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
       child: Row(
         children: categories.map((category) {
           return buildCategory(
+            category.id,
             category.base64,
             category.name,
             onTap: () {
-              print(category.image);
+              setState(() {
+                widget.onCategorySelected(category.id);
+              });
             },
           );
         }).toList(),
@@ -50,7 +53,8 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
     );
   }
 
-  Widget buildCategory(String imagePath, String label, {VoidCallback? onTap}) {
+  Widget buildCategory(int categoryId, String imagePath, String label,
+      {VoidCallback? onTap}) {
     final width = 70.0;
     final height = 70.0;
     var url = imagePath;
