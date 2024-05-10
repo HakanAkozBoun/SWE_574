@@ -672,13 +672,15 @@ def eaten_toggle(request):
         blog_id = request.GET.get('blog_id')
         blog_ = get_object_or_404(blog, pk=blog_id)
         serving = request.GET.get('serving')
+
         user_eaten = Eaten.objects.filter(
             user=user, blog=blog_, serving=serving)
+
         if user_eaten.exists():
             user_eaten.delete()
             is_eaten = False
         else:
-            Eaten.objects.create(user=user, blog=blog_)
+            Eaten.objects.create(userId=user, blogId=blog_, eaten_serving=serving)
             is_eaten = True
 
         bookmark_data = {
@@ -687,7 +689,7 @@ def eaten_toggle(request):
         }
         return Response(bookmark_data)
     except Exception as e:
-        error_message = f"Error toggling bookmark: {str(e)}"
+        error_message = f"Error toggling eaten: {str(e)}"
         return Response({"success": False, "error": error_message})
 
 
