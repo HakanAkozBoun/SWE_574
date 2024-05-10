@@ -2,7 +2,7 @@ from django.utils import timezone
 import json
 
 from .models import blog, category, food, recipe, unit, unittype, unititem, unitconversion, nutrition, Follower, comment, UserBookmark, UserRating, UserProfile, InputFood, Eaten, image, Goal
-from .serializers import GoalSerializer, UserForProfileFrontEndSerializer, blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer, UserSerializer, AllergySerializer, UserProfileForFrontEndSerializer
+from .serializers import GoalSerializer, UserForProfileFrontEndSerializer, blogSerializer, categorySerializer, UserProfileSerializer, InputFoodSerializer, UserSerializer, AllergySerializer, UserProfileForFrontEndSerializer, SearchSerializer
 
 from rest_framework import viewsets
 from rest_framework import mixins
@@ -1052,6 +1052,8 @@ class AllergyView(views.APIView):
 def search_recipes(request):
     query = request.GET.get('query', '')
     user_id = request.user.id
+    print(user_id)
+    print(query)
 
     allergic_foods = Allergy.objects.filter(user_id=user_id).values_list('food_id', flat=True)
     allergic_blogs = recipe.objects.filter(food__in=allergic_foods).values_list('blog', flat=True)
@@ -1059,5 +1061,6 @@ def search_recipes(request):
     blogs = blog.objects \
         .filter(title__icontains=query) \
         .exclude(id__in=allergic_blogs)
-
-    return JsonResponse(blogs, safe=False)
+    print(blogs)
+    serializer = SearchSerializer(blogs, many=True)
+    return JsonResponse(serializer.data, safe=False)
