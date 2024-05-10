@@ -24,15 +24,15 @@ class _Home2State extends State<Home2> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Search Bar
-            const SearchBarWidget(),
+            // SearchBarWidget(),
 
             // Category
             buildSectionTitle('Category'),
-            CategoriesWidget(),
+            // CategoriesWidget(),
 
             // Recommendations
             buildSectionTitle('Recommendations'),
-            RecommendationWidget(),
+            // RecommendationWidget(),
 
             // Recipes List
             buildSectionTitle('Recipes List'),
