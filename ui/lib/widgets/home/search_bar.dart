@@ -1,47 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:recipe/constants/backend_url.dart';
+import 'package:http/http.dart' as http;
+import 'package:recipe/screen/recipe.dart' as RecipeScreen;
 
 class SearchBarWidget extends StatefulWidget {
-  const SearchBarWidget({Key? key}) : super(key: key);
+  final Function(String) onSearchResult;
+
+  const SearchBarWidget({Key? key, required this.onSearchResult}) : super(key: key);
 
   @override
-  State<SearchBarWidget> createState() => _SearchBarWidgetState();
+  _SearchBarWidgetState createState() => _SearchBarWidgetState();
 }
 
 class _SearchBarWidgetState extends State<SearchBarWidget> {
-  final TextEditingController _searchController = TextEditingController();
-  bool _isLoading = false;
-  List<dynamic> _searchResults = [];
+  late TextEditingController controller;
+  List data = [];
 
-  Future<void> performSearch() async {
-    setState(() {
-      _isLoading = true;
-    });
+  @override 
+  void initState() {
+    super.initState();
+    controller = TextEditingController();
+  }
 
-    try {
-      var response = await http.get(
-        Uri.parse('${BackendUrl.apiUrl}search?query=${_searchController.text}'),
-      );
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
-      if (response.statusCode == 200) {
-        setState(() {
-          _searchResults = json.decode(response.body);
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Search failed with status: ${response.statusCode}')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred: $e')),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+  Future<void> searchRecipes(String query) async {
+    var url = Uri.parse('http://127.0.0.1:8000/api/search/?user_id=&query=$query');
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      this.data = json.decode(response.body);
+      widget.onSearchResult(response.body);
+    } else {
+      widget.onSearchResult('Failed to load search results');
     }
   }
 
@@ -49,60 +45,58 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE5E5E5),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 10,
-                  offset: const Offset(0, 3),
-                )
-              ],
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.search),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Search for recipes',
-                    ),
-                    onSubmitted: (value) {
-                      performSearch();
-                    },
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                  },
-                ),
-              ],
-            ),
-          ),
-          if (_isLoading)
-            const CircularProgressIndicator(),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _searchResults.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_searchResults[index]['title']),
-                );
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        decoration: BoxDecoration(
+          color: const Color(0xFFE5E5E5),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            )
+          ],
+        ),
+        child: SearchAnchor(
+            builder: (BuildContext context, SearchController controller) {
+            return SearchBar(
+              controller: controller,
+              padding: const MaterialStatePropertyAll<EdgeInsets>(
+                  EdgeInsets.symmetric(horizontal: 16.0)),
+              onTap: () {
+                this.searchRecipes('');
+                controller.openView();
               },
-            ),
-          ),
-        ],
+              onSubmitted: (input) {
+                print('LOG');
+                print(input);
+                controller.openView();
+              },
+              leading: const Icon(Icons.search),          
+            );
+          }, suggestionsBuilder:
+                  (BuildContext innercontext, SearchController controller) {
+            return this.data.map((item) {
+              return ListTile(
+                title: Text(item['title']),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => RecipeScreen.Recipe(
+                        slug: item['slug'],
+                        id: item['id'],
+                      ),
+                    ),
+                  );
+                  setState(() {
+                    controller.closeView(item['title']);
+                  });
+                },
+              );
+            });
+          })
       ),
     );
   }
