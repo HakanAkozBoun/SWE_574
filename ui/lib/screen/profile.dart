@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/consent/colors.dart';
 import 'package:recipe/models/userProfile.dart';
+import 'package:recipe/screen/tracking_diet_goals.dart';
 import 'package:recipe/widgets/home/PersonalPage.dart';
 import 'package:recipe/widgets/home/app_drawer.dart';
 import 'package:recipe/widgets/home/appbar2.dart';
@@ -53,6 +54,7 @@ class _ProfileState extends State<Profile> {
     Icon(Icons.edit_document, color: maincolor),
     Icon(Icons.settings, color: maincolor),
     Icon(Icons.settings, color: maincolor),
+    Icon(Icons.person, color: maincolor),
     Icon(Icons.settings, color: maincolor),
     Icon(Icons.chat, color: maincolor),
     Icon(Icons.login, color: maincolor),
@@ -68,6 +70,7 @@ class _ProfileState extends State<Profile> {
     'My Recipes',
     'My Allergies',
     'My Goals',
+    'Track My Goals',
     'Settings',
     'FAQs',
     'Logout'
@@ -83,6 +86,7 @@ class _ProfileState extends State<Profile> {
     Widget myRecipes = MyRecipes(userId: finalUserId);
     Widget myAllergies = AllergyPage(userId: finalUserId);
     Widget myGoals = GoalsPage(userId: finalUserId);
+    Widget trackMyGoals = TrackingDietGoals();
     Widget settings = Settings();
     Widget faqs = FAQs();
     Widget logout = Logout();
@@ -126,14 +130,18 @@ class _ProfileState extends State<Profile> {
         isFullPage = true;
         break;
       case 10:
-        toBeOpened = settings;
+        toBeOpened = trackMyGoals;
         isFullPage = true;
         break;
       case 11:
+        toBeOpened = settings;
+        isFullPage = true;
+        break;
+      case 12:
         toBeOpened = faqs;
         isFullPage = false;
         break;
-      case 12:
+      case 13:
         toBeOpened = logout;
         isFullPage = false;
         break;
@@ -283,7 +291,7 @@ class _ProfileState extends State<Profile> {
                   Flexible(
                     child: ListView.builder(
                       shrinkWrap: true,
-                      itemCount: 13,
+                      itemCount: 14,
                       itemBuilder: (BuildContext context, int index) {
                         return ListTile(
                           leading: Container(
