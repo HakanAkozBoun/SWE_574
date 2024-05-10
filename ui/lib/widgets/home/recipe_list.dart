@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:recipe/models/recipe.dart';
 import 'package:recipe/screen/recipe.dart' as RecipeScreen;
 
 class RecipeListWidget extends StatefulWidget {
-  const RecipeListWidget({Key? key}) : super(key: key);
+  final int selectedCategoryId;
+
+  const RecipeListWidget({Key? key, required this.selectedCategoryId})
+      : super(key: key);
 
   @override
   _RecipeListWidgetState createState() => _RecipeListWidgetState();
@@ -14,10 +16,12 @@ class RecipeListWidget extends StatefulWidget {
 
 class _RecipeListWidgetState extends State<RecipeListWidget> {
   late List<Recipe> recipes = [];
+  List<Recipe> filteredRecipes = [];
 
   @override
   void initState() {
     super.initState();
+    print("Selected Category ID: ${widget.selectedCategoryId}");
     loadRecipes();
   }
 
@@ -26,10 +30,25 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
       final fetchedRecipes = await Recipe.fetchRecipes();
       setState(() {
         recipes = fetchedRecipes;
+        filterRecipesByCategory(widget.selectedCategoryId);
       });
     } catch (e) {
       print('Error loading recipes: $e');
     }
+  }
+
+  void filterRecipesByCategory(int categoryId) {
+    setState(() {
+      if (categoryId == -1) {
+        filteredRecipes = List.from(recipes);
+      } else {
+        print("categoryIDDDDDDDD" + categoryId.toString());
+        filteredRecipes = recipes
+            .where((recipe) => recipe.category_id == categoryId)
+            .toList();
+      }
+      loadRecipes();
+    });
   }
 
   @override
@@ -38,7 +57,7 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         child: Column(
-          children: recipes.map((recipe) {
+          children: filteredRecipes.map((recipe) {
             return GestureDetector(
               onTap: () {
                 // Handle tap event here
@@ -52,8 +71,14 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                   ),
                 );
               },
-              child: buildRecipeCard(recipe.title, recipe.excerpt,
-                  "recipe.duration", recipe.base64),
+              child: buildRecipeCard(
+                recipe.title,
+                recipe.excerpt,
+                recipe.preparationtime,
+                recipe.cookingtime,
+                recipe.avg_rating.toString(),
+                recipe.base64,
+              ),
             );
           }).toList(),
         ),
@@ -64,7 +89,9 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
   Widget buildRecipeCard(
     String title,
     String description,
-    String duration,
+    String preptime,
+    String cookingtime,
+    String star,
     String imagePath,
   ) {
     var url = imagePath;
@@ -119,21 +146,42 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                       fontSize: 14,
                     ),
                   ),
+                  Text(
+                    "Cooking time: " + cookingtime,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange,
+                    ),
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        duration,
+                        "Preparation time: " + preptime,
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: Colors.orange,
                         ),
                       ),
-                      const Icon(
-                        Icons.star,
-                        color: Color.fromRGBO(255, 152, 0, 1),
-                      )
+                      Row(
+                        // Adding a Row widget to contain the icon and text
+                        children: [
+                          Text(
+                            star, // Your additional text here
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black, // Adjust as needed
+                            ),
+                          ),
+                          Icon(
+                            Icons.star,
+                            color: Color.fromRGBO(255, 152, 0, 1),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ],
