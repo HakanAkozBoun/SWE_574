@@ -1090,3 +1090,16 @@ class AllergyView(views.APIView):
 
         Allergy.objects.bulk_create(allergies)
         return Response({"message": "Allergies saved successfully"}, status=status.HTTP_201_CREATED)
+
+def search_recipes(request):
+    query = request.GET.get('query', '')
+    user_id = request.user.id
+
+    allergic_foods = Allergy.objects.filter(user_id=user_id).values_list('food_id', flat=True)
+    allergic_blogs = recipe.objects.filter(food__in=allergic_foods).values_list('blog', flat=True)
+
+    blogs = blog.objects \
+        .filter(title__icontains=query) \
+        .exclude(id__in=allergic_blogs)
+
+    return JsonResponse(blogs, safe=False)
