@@ -263,8 +263,8 @@ class _Recipe extends State<Recipe> {
   }
 
   Widget _getbody() {
-    // int say = int.parse(fetchedData["avg_rating"].round().toString());
-    int say = 4;
+    int say = int.parse(fetchedData["avg_rating"].round().toString());
+    // int say = 4;
 
     return Wrap(
       children: [
