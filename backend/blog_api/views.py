@@ -680,7 +680,8 @@ def eaten_toggle(request):
             user_eaten.delete()
             is_eaten = False
         else:
-            Eaten.objects.create(userId=user, blogId=blog_, eaten_serving=serving)
+            Eaten.objects.create(userId=user, blogId=blog_,
+                                 eaten_serving=serving)
             is_eaten = True
 
         bookmark_data = {
@@ -884,6 +885,8 @@ def NutritionDailyWithGoals(requestedDate, user):
     nutritionList = NutritionDaily(user, requestedDate)
     NutritionNameList = ["calorie", "fat", "sodium", "calcium", "protein", "iron",
                          "carbonhydrates", "sugars", "fiber", "vitamina", "vitaminb", "vitamind"]
+    nutritionUnitList = ["(kcal)", "(mg)",  "(mg)", "(mg)", "(mg)",
+                         "(mg)", "(mg)", "(mg)", "(mg)", "(mg)", "(mg)", "(mg)"]
     calorie = 0
     fat = 0
     sodium = 0
@@ -912,11 +915,13 @@ def NutritionDailyWithGoals(requestedDate, user):
     goals_list = []
 
     for g in goals:
+        index = NutritionNameList.index(g.goal_nutrition)
         if g.goal_nutrition in NutritionNameList:
+            rounded_intake = round(nutritionList[index], 2)
             goal_info = {
-                "nutritionName": g.goal_nutrition,
+                "nutritionName": g.goal_nutrition + " " + nutritionUnitList[index],
                 "goal": g.goal_amount,
-                "currentIntake": nutritionList[NutritionNameList.index(g.goal_nutrition)]
+                "currentIntake": rounded_intake
             }
         goals_list.append(goal_info)
 
@@ -934,10 +939,11 @@ def NutritionWeeklyWithGoal(user, goalName, goalAmount):
         eaten_date = last_week_date + timezone.timedelta(days=i)
         nutritionList = NutritionDaily(user, eaten_date)
         if goalName in NutritionNameList:
+            rounded_intake = round(nutritionList[NutritionNameList.index(goalName)], 2)
             goal_info = {
                 "date": eaten_date.isoformat(),
                 "goal": goalAmount,
-                "currentIntake": nutritionList[NutritionNameList.index(goalName)]
+                "currentIntake": rounded_intake
             }
 
             goals_list.append(goal_info)
