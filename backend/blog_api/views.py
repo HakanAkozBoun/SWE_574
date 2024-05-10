@@ -674,7 +674,7 @@ def eaten_toggle(request):
         serving = request.GET.get('serving')
 
         user_eaten = Eaten.objects.filter(
-            user=user, blog=blog_, serving=serving)
+            userId=user, blogId=blog_, eaten_serving=serving)
 
         if user_eaten.exists():
             user_eaten.delete()

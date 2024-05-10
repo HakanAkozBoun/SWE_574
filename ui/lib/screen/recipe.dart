@@ -152,9 +152,15 @@ class _Recipe extends State<Recipe> {
       print('Response body: ${response.body}');
       Map<String, dynamic> jsonResponse = json.decode(response.body);
 
-      if (jsonResponse['success'] && jsonResponse['is_eaten']) {
+      if (jsonResponse['success'] && jsonResponse['is_eaten'] == true) {
         setState(() {
           isEaten = true;
+          print(isEaten);
+        });
+      } else if (jsonResponse['is_eaten'] == false) {
+        setState(() {
+          isEaten = false;
+          print(isEaten);
         });
       }
     }).catchError((error) {
@@ -293,16 +299,25 @@ class _Recipe extends State<Recipe> {
                     child: GestureDetector(
                       onTap: () {
                         toggleEaten(
-                            userId.toString(), widget.id.toString(), "1");
+                            // userId.toString(), widget.id.toString(), "1");
+                            "23",
+                            widget.id.toString(),
+                            "1");
                       },
                       child: CircleAvatar(
                         backgroundColor: Color.fromRGBO(250, 250, 250, 0.6),
                         radius: 18,
                         child: isEaten
-                            ? SvgPicture.asset("icons/eat.svg",
-                                width: 25, height: 25)
-                            : SvgPicture.asset("icons/noteat.svg",
-                                width: 25, height: 25),
+                            ? SvgPicture.asset(
+                                "icons/eat.svg",
+                                width: 25,
+                                height: 25,
+                              )
+                            : SvgPicture.asset(
+                                "icons/noteat.svg",
+                                width: 25,
+                                height: 25,
+                              ),
                       ),
                     ),
                   ),
