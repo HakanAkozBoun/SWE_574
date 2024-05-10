@@ -683,11 +683,11 @@ def eaten_toggle(request):
             Eaten.objects.create(userId=user, blogId=blog_, eaten_serving=serving)
             is_eaten = True
 
-        bookmark_data = {
+        eaten_data = {
             "success": True,
             "is_eaten": is_eaten,
         }
-        return Response(bookmark_data)
+        return Response(eaten_data)
     except Exception as e:
         error_message = f"Error toggling eaten: {str(e)}"
         return Response({"success": False, "error": error_message})
