@@ -17,14 +17,7 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
   var userId;
 
   DateTime _selectedDate = DateTime.now();
-  var nutrient_items = [
-    'Protein',
-    'Carbohydrates',
-    'Fats',
-    'Vitamin A',
-    'Vitamin C',
-  ];
-  late String nutrientName;
+  String? nutrientName;
 
   List<Map<String, dynamic>> _nutritionData = [];
   bool _showTable = true;
@@ -32,10 +25,38 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
   @override
   void initState() {
     super.initState();
-    nutrientName = nutrient_items[0];
     // userId = user.getUserId();
     userId = "23";
     loadNutritionData(_selectedDate);
+    loadNutrientsNames();
+    // loadNutrientWeeklyData(nutrientName);
+  }
+
+  List<String> nutrient_items = [];
+  Future<void> loadNutrientsNames() async {
+    String url = BackendUrl.apiUrl + "Goals?user_id=$userId";
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+
+        // Extract 'goal_nutrition' values from the JSON response
+        List<String> nutrients =
+            data.map<String>((e) => e['goal_nutrition'] as String).toList();
+
+        for (var nutrientName in nutrients) {
+          // Ensure nutrientName is not null and not already in nutrient_items
+          if (!nutrient_items.contains(nutrientName)) {
+            nutrient_items.add(nutrientName);
+          }
+        }
+
+      } else {
+        print('Failed to fetch data: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Failed to fetch data: $e');
+    }
   }
 
   Future<void> loadNutritionData(DateTime selectedDate) async {
@@ -75,6 +96,42 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
     }
   }
 
+  List<ChartData> chartData = [];
+  List<ChartData> chartData2 = [];
+  Future<void> loadNutrientWeeklyData(String? nutrientName) async {
+    String url = BackendUrl.apiUrl +
+        "WeeklyNutritionWithGoal/?user=${userId}&selected_nutrition=${nutrientName}";
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+
+        List<ChartData> chartData = [];
+        List<ChartData> chartData2 = [];
+
+        for (var item in jsonResponse) {
+          String date = item["date"];
+          double goal = item["goal"].toDouble();
+          double currentIntake = item["currentIntake"].toDouble();
+
+          chartData.add(ChartData(date, goal));
+          chartData2.add(ChartData(date, currentIntake));
+        }
+        setState(() {
+          this.chartData = chartData;
+          this.chartData2 = chartData2;
+        });
+      } else {
+        // Handle non-200 status codes
+        print('Failed to load nutrient weekly data: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      // Handle exceptions
+      print('Failed to load nutrient weekly data: $e');
+    }
+  }
   // Future<void> loadNutritionData() async {
   //   String jsonString =
   //       await rootBundle.loadString('assets/nutrition_data.json');
@@ -179,7 +236,8 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: DropdownButton(
-                value: nutrientName,
+                value: nutrientName ??
+                    null, // Set value to nutrientName, if not null
                 icon: const Icon(Icons.keyboard_arrow_down),
                 items: nutrient_items.map((String items) {
                   return DropdownMenuItem(
@@ -188,17 +246,18 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
                   );
                 }).toList(),
                 onChanged: (String? newValue) {
-                  setState(
-                    () {
-                      nutrientName = newValue!;
-                    },
-                  );
+                  setState(() {
+                    nutrientName = newValue;
+                    loadNutrientWeeklyData(nutrientName);
+                  });
                 },
               ),
             ),
           ],
           SizedBox(height: 20),
-          _showTable ? _buildTable(_nutritionData) : _buildChart(),
+          _showTable
+              ? _buildTable(_nutritionData)
+              : _buildChart(chartData, chartData2),
         ],
       ),
     );
@@ -225,26 +284,51 @@ class ChartData {
   final double y;
 }
 
-Widget _buildChart() {
-  final List<ChartData> chartData = [
-    ChartData("08/05/2024", 100.0),
-    ChartData("09/05/2024", 100.0),
-    ChartData("10/05/2024", 100.0),
-    ChartData("11/05/2024", 100.0),
-    ChartData("12/05/2024", 100.0),
-    ChartData("13/05/2024", 100.0),
-    ChartData("14/05/2024", 100.0),
-  ];
+// Widget _buildChart() {
+//   List<ChartData> chartData = [];
+//   List<ChartData> chartData2 = [];
+//   final List<ChartData> chartData = [
+//     ChartData("08/05/2024", 100.0),
+//     ChartData("09/05/2024", 100.0),
+//     ChartData("10/05/2024", 100.0),
+//     ChartData("11/05/2024", 100.0),
+//     ChartData("12/05/2024", 100.0),
+//     ChartData("13/05/2024", 100.0),
+//     ChartData("14/05/2024", 100.0),
+//   ];
 
-  final List<ChartData> chartData2 = [
-    ChartData("08/05/2024", 23.0),
-    ChartData("09/05/2024", 56.0),
-    ChartData("10/05/2024", 121.0),
-    ChartData("11/05/2024", 54.0),
-    ChartData("12/05/2024", 189.0),
-    ChartData("13/05/2024", 51.0),
-    ChartData("14/05/2024", 121.0),
-  ];
+//   final List<ChartData> chartData2 = [
+//     ChartData("08/05/2024", 23.0),
+//     ChartData("09/05/2024", 56.0),
+//     ChartData("10/05/2024", 121.0),
+//     ChartData("11/05/2024", 54.0),
+//     ChartData("12/05/2024", 189.0),
+//     ChartData("13/05/2024", 51.0),
+//     ChartData("14/05/2024", 121.0),
+//   ];
+//   return Container(
+//     child: SfCartesianChart(
+//       primaryXAxis: CategoryAxis(),
+//       legend: Legend(isVisible: true),
+//       series: <CartesianSeries>[
+//         LineSeries<ChartData, String>(
+//           dataSource: chartData,
+//           xValueMapper: (ChartData data, _) => data.x,
+//           yValueMapper: (ChartData data, _) => data.y,
+//           name: 'Goal',
+//         ),
+//         LineSeries<ChartData, String>(
+//           dataSource: chartData2,
+//           xValueMapper: (ChartData data, _) => data.x,
+//           yValueMapper: (ChartData data, _) => data.y,
+//           name: 'Intake',
+//         ),
+//       ],
+//     ),
+//   );
+// }
+
+Widget _buildChart(List<ChartData> chartData, List<ChartData> chartData2) {
   return Container(
     child: SfCartesianChart(
       primaryXAxis: CategoryAxis(),
@@ -301,7 +385,6 @@ Widget _buildTable(List<Map<String, dynamic>> nutritionData) {
             ),
           ],
           rows: nutritionData.map((item) {
-            print(item);
             return DataRow(
               cells: [
                 DataCell(Text(item['nutritionName'])),
