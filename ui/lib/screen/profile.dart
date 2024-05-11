@@ -66,7 +66,7 @@ class _ProfileState extends State<Profile> {
     'Personal',
     'Following',
     'Bookmarked',
-    'Nutritional Profile',
+    'Tracking Goals',
     'My Recipes',
     'My Allergies',
     'My Goals',
@@ -82,7 +82,7 @@ class _ProfileState extends State<Profile> {
     Widget personal = PersonalPage(userId: finalUserId);
     Widget following = Following(userId: finalUserId);
     Widget bookmarked = Bookmarked(userId: finalUserId);
-    Widget nutritionalProfile = NutritionalProfile();
+    Widget tracking_diet_goals = TrackingDietGoals();
     Widget myRecipes = MyRecipes(userId: finalUserId);
     Widget myAllergies = AllergyPage(userId: finalUserId);
     Widget myGoals = GoalsPage(userId: finalUserId);
@@ -114,7 +114,7 @@ class _ProfileState extends State<Profile> {
         isFullPage = true;
         break;
       case 6:
-        toBeOpened = nutritionalProfile;
+        toBeOpened = tracking_diet_goals;
         isFullPage = true;
         break;
       case 7:
