@@ -25,8 +25,8 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
   @override
   void initState() {
     super.initState();
-    // userId = user.getUserId();
-    userId = "23";
+    userId = user.getUserId();
+    // userId = "23";
     loadNutritionData(_selectedDate);
     loadNutrientsNames();
     // loadNutrientWeeklyData(nutrientName);
