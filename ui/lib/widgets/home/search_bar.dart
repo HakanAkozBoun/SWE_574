@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:recipe/screen/recipe.dart' as RecipeScreen;
+import 'package:recipe/models/recipe.dart';
+import 'package:recipe/constants/backend_url.dart';
+
 
 class SearchBarWidget extends StatefulWidget {
   final Function(String) onSearchResult;
@@ -29,7 +32,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   }
 
   Future<void> searchRecipes(String query) async {
-    var url = Uri.parse('http://127.0.0.1:8000/api/search/?user_id=&query=$query');
+    var url = Uri.parse(BackendUrl.apiUrl + 'search/?user_id=&query=$query');
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -70,29 +73,30 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
                 controller.openView();
               },
               onSubmitted: (input) {
-                print('LOG');
-                print(input);
                 controller.openView();
               },
               leading: const Icon(Icons.search),          
             );
           }, suggestionsBuilder:
-                  (BuildContext innercontext, SearchController controller) {
+                  (BuildContext context, SearchController controller) {
             return this.data.map((item) {
               return ListTile(
                 title: Text(item['title']),
                 onTap: () {
-                  Navigator.of(context).push(
+                  String slug = item['slug'].toString();
+                  int id = item['id'];
+
+                  Widget selectedRecipe = RecipeScreen.Recipe(
+                    slug: slug,
+                    id: id,
+                  );
+                  
+                  Navigator.push(
+                    context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) => RecipeScreen.Recipe(
-                        slug: item['slug'],
-                        id: item['id'],
-                      ),
+                      builder: (BuildContext context) => selectedRecipe,
                     ),
                   );
-                  setState(() {
-                    controller.closeView(item['title']);
-                  });
                 },
               );
             });

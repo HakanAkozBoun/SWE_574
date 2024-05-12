@@ -15,6 +15,13 @@ class Home2 extends StatefulWidget {
 
 class _Home2State extends State<Home2> {
   String searchResults = '';
+
+  void handleSearchResult(String result) {
+    setState(() {
+      searchResults = result;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +32,7 @@ class _Home2State extends State<Home2> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Search Bar
-            const SearchBarWidget(),
+            SearchBarWidget(onSearchResult: handleSearchResult),
 
             // Category
             buildSectionTitle('Category'),
