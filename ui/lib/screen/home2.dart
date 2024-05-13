@@ -13,7 +13,7 @@ class Home2 extends StatefulWidget {
 }
 
 class _Home2State extends State<Home2> {
-  int selectedCategoryId = -1;
+  int selectedCategoryId = 0;
   
   void updateSelectedCategory(int categoryId) {
     setState(() {

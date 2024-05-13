@@ -20,7 +20,7 @@ Future<List<dynamic>> fetchData(data) async {
   final response =
       await http.get(Uri.parse(uri + 'PopularPostsApiView/?' + data));
   if (response.statusCode == 200) {
-    print(response.body);
+    // print(response.body);
     return json.decode(response.body);
   } else {
     throw Exception('Failed to load data from API');
@@ -80,6 +80,9 @@ class _Recipe extends State<Recipe> {
     }).catchError((error) {
       print("Error fetching data: $error");
     });
+
+    checkBookmarkStatus(userId.toString(), widget.id.toString());
+    checkEatenStatus(userId.toString(), widget.id.toString());
   }
 
   void yorumlariYukle() async {
@@ -129,7 +132,7 @@ class _Recipe extends State<Recipe> {
   }
 
   void toggleUserBookmark(String userId, String blogId) async {
-    String url = uri + "bookmark?user_id=$userId&blog_id=$blogId";
+    String url = uri + "bookmark/?user_id=$userId&blog_id=$blogId";
     await http.get(Uri.parse(url)).then((response) {
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
@@ -139,7 +142,7 @@ class _Recipe extends State<Recipe> {
         setState(() {
           isBookmarked = true;
         });
-      }else if(jsonResponse['is_bookmarked'] == false){
+      } else if (jsonResponse['is_bookmarked'] == false) {
         setState(() {
           isBookmarked = false;
         });
@@ -149,8 +152,22 @@ class _Recipe extends State<Recipe> {
     });
   }
 
+  void checkBookmarkStatus(String userId, String blogId) async {
+    String url = uri + "bookmark-exist/?user_id=$userId&blog_id=$blogId";
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      setState(() {
+        isBookmarked = jsonResponse['is_bookmarked'];
+      });
+    } else {
+      print("Failed to load bookmark status: ${response.statusCode}");
+    }
+  }
+
   void toggleEaten(String userId, String blogId, String serving) async {
-    String url = uri + "eaten?user_id=$userId&blog_id=$blogId&serving=$serving";
+    String url =
+        uri + "eaten/?user_id=$userId&blog_id=$blogId&serving=$serving";
     await http.get(Uri.parse(url)).then((response) {
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
@@ -165,6 +182,27 @@ class _Recipe extends State<Recipe> {
         setState(() {
           isEaten = false;
           print(isEaten);
+        });
+      }
+    }).catchError((error) {
+      print('Error: $error');
+    });
+  }
+
+  void checkEatenStatus(String userId, String blogId) async {
+    String url = uri + "eaten-exist/?user_id=$userId&blog_id=$blogId";
+    await http.get(Uri.parse(url)).then((response) {
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+      if (jsonResponse['is_eaten'] == true) {
+        setState(() {
+          isEaten = true;
+        });
+      } else if (jsonResponse['is_eaten'] == false) {
+        setState(() {
+          isEaten = false;
         });
       }
     }).catchError((error) {
@@ -303,7 +341,8 @@ class _Recipe extends State<Recipe> {
                     child: GestureDetector(
                       onTap: () {
                         // toggleEaten("23", widget.id.toString(), "1");
-                        toggleEaten(userId.toString(), widget.id.toString(), "1");
+                        toggleEaten(
+                            userId.toString(), widget.id.toString(), "1");
                       },
                       child: Column(
                         children: [

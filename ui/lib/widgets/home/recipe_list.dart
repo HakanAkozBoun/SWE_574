@@ -21,7 +21,6 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
   @override
   void initState() {
     super.initState();
-    print("Selected Category ID: ${widget.selectedCategoryId}");
     loadRecipes();
   }
 
@@ -39,7 +38,7 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
 
   void filterRecipesByCategory(int categoryId) {
     setState(() {
-      if (categoryId == -1) {
+      if (categoryId == 0) {
         filteredRecipes = List.from(recipes);
       } else {
         print("categoryIDDDDDDDD" + categoryId.toString());
