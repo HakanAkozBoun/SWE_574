@@ -15,6 +15,8 @@ class CategoriesWidget extends StatefulWidget {
 
 class _CategoriesWidgetState extends State<CategoriesWidget> {
   late List<Category> categories = [];
+  late List<Category> allCategories = [];
+
   @override
   void initState() {
     super.initState();
@@ -26,6 +28,15 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
       final fetchedCategories = await Category.fetchCategories();
       setState(() {
         categories = fetchedCategories;
+        allCategories = [
+              Category(
+                  id: 0,
+                  name: "All",
+                  image: "",
+                  base64: "",
+                  type: "All")
+            ] +
+            categories;
       });
     } catch (e) {
       print('Error loading categories: $e');
@@ -37,7 +48,7 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-        children: categories.map((category) {
+        children: allCategories.map((category) {
           return buildCategory(
             category.id,
             category.base64,
@@ -70,7 +81,7 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
               height: height,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Image.memory(decodedImage, fit: BoxFit.cover),
+                child: categoryId != 0 ? Image.memory(decodedImage, fit: BoxFit.cover) : Image.asset("../../images/all.jpg", fit: BoxFit.cover),
               ),
             ),
             const SizedBox(height: 10),

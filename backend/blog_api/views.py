@@ -662,6 +662,17 @@ def bookmark_toggle(request):
     except Exception as e:
         error_message = f"Error toggling bookmark: {str(e)}"
         return Response({"success": False, "error": error_message})
+    
+@api_view(['GET'])
+def bookmark_exist(request):
+    user_id = request.GET.get('user_id')
+    user = get_object_or_404(User, pk=user_id)
+    blog_id = request.GET.get('blog_id')
+    blog_ = get_object_or_404(blog, pk=blog_id)
+    user_bookmark = UserBookmark.objects.filter(user=user, blog=blog_)
+    if user_bookmark.exists():
+        return Response({"is_bookmarked": True})
+    return Response({"is_bookmarked": False})
 
 
 @api_view(['GET'])
@@ -692,6 +703,17 @@ def eaten_toggle(request):
     except Exception as e:
         error_message = f"Error toggling eaten: {str(e)}"
         return Response({"success": False, "error": error_message})
+    
+@api_view(['GET'])
+def eaten_exist(request):
+    user_id = request.GET.get('user_id')
+    user = get_object_or_404(User, pk=user_id)
+    blog_id = request.GET.get('blog_id')
+    blog_ = get_object_or_404(blog, pk=blog_id)
+    user_eaten = Eaten.objects.filter(userId=user, blogId=blog_)
+    if user_eaten.exists():
+        return Response({"is_eaten": True})
+    return Response({"is_eaten": False})
 
 
 @api_view(['GET'])

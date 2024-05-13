@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from .views import GetWeeklyNutritions, eaten_toggle, UpdateGoal, CreateGoal, GetGoals, GetNutritionDailyWithGoals, GetNutritionWeeklyWithGoal, UpdateUserInfo, UpdateUserProfile, add_rating, check_email, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserProfilesList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, check_username, search_recipes  # CreateUser
+from .views import eaten_exist,bookmark_exist, GetWeeklyNutritions, eaten_toggle, UpdateGoal, CreateGoal, GetGoals, GetNutritionDailyWithGoals, GetNutritionWeeklyWithGoal, UpdateUserInfo, UpdateUserProfile, add_rating, check_email, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserProfilesList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, check_username, search_recipes  # CreateUser
 
 from rest_framework import routers
 
@@ -41,6 +41,9 @@ urlpatterns = [
     path('bookmark/', bookmark_toggle, name='bookmark_toggle'),
     path('eaten/', eaten_toggle, name='bookmark_toggle'),
     path('recommend/', recommend_items, name='recommend_items'),
+
+    path('bookmark-exist/', bookmark_exist, name='bookmark_exist'),
+     path('eaten-exist/', eaten_exist, name='eaten_exist'),
 
     path('Following/', GetFollowingUserProfilesList, name='FollowingUserList'),
     path('MyBookmarks/', GetBookmarkedRecipes, name='BookmarkedRecipes'),

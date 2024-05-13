@@ -111,7 +111,6 @@ WSGI_APPLICATION = 'recipeBlog.wsgi.application'
 # }
 
 # DATABASES = {
-
 #    'default': {
 #       'ENGINE': 'django.db.backends.postgresql_psycopg2',
 #        'NAME': 'cookPad2',

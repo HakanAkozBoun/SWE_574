@@ -14,13 +14,15 @@ class Home2 extends StatefulWidget {
 }
 
 class _Home2State extends State<Home2> {
-  int selectedCategoryId = -1;
+  int selectedCategoryId = 0;
+
   String searchResults = '';
     void handleSearchResult(String result) {
     setState(() {
       searchResults = result;
     });
   }
+
   void updateSelectedCategory(int categoryId) {
     setState(() {
       selectedCategoryId = categoryId;
