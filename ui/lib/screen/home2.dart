@@ -4,6 +4,7 @@ import 'package:recipe/widgets/home/appbar2.dart';
 import 'package:recipe/widgets/home/categories.dart';
 import 'package:recipe/widgets/home/recipe_list.dart';
 import 'package:recipe/widgets/home/recommendation.dart';
+import 'package:recipe/widgets/home/search_bar.dart';
 
 class Home2 extends StatefulWidget {
   const Home2({Key? key}) : super(key: key);
@@ -14,7 +15,14 @@ class Home2 extends StatefulWidget {
 
 class _Home2State extends State<Home2> {
   int selectedCategoryId = 0;
-  
+
+  String searchResults = '';
+    void handleSearchResult(String result) {
+    setState(() {
+      searchResults = result;
+    });
+  }
+
   void updateSelectedCategory(int categoryId) {
     setState(() {
       selectedCategoryId = categoryId;
@@ -31,6 +39,7 @@ class _Home2State extends State<Home2> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Search Bar
+            SearchBarWidget(onSearchResult: handleSearchResult),
             // const SearchBarWidget(),
 
             buildSectionTitle('Category'),
