@@ -58,6 +58,32 @@ class _Recipe extends State<Recipe> {
   List<Yorum> yorumlar = [];
   String yeniYorum = '';
 
+  int selectedRating = 0;
+
+  void _selectRating(int rating) {
+    setState(() {
+      selectedRating = rating;
+    });
+  }
+
+  void _sendRating() async {
+    final response = await http.get(
+      Uri.parse(uri +
+          'add_rating/?user_id=' +
+          user.getUserId().toString() +
+          '&recipe_id=' +
+          fetchedData["id"].toString() +
+          '&value=' +
+          selectedRating.toString()),
+    );
+
+    if (response.statusCode == 200) {
+      print('Rating sent successfully');
+    } else {
+      print('Error sending rating: ${response.statusCode}');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -311,9 +337,6 @@ class _Recipe extends State<Recipe> {
   }
 
   Widget _getbody() {
-    int say = int.parse(fetchedData["avg_rating"].round().toString());
-    // int say = 4;
-
     return Wrap(
       children: [
         Container(
@@ -324,18 +347,47 @@ class _Recipe extends State<Recipe> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15),
-                    child: Row(
+                  // Padding(
+                  //   padding: const EdgeInsets.only(left: 15),
+                  //   child: Row(
+                  //     children: [
+                  //       for (int i = 0; i < say; i++)
+                  //         Icon(
+                  //           Icons.star,
+                  //           color: say >= i + 1 ? Colors.yellow : Colors.grey,
+                  //         ),
+                  //     ],
+                  //   ),
+                  // ),
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        for (int i = 0; i < say; i++)
-                          Icon(
-                            Icons.star,
-                            color: say >= i + 1 ? Colors.yellow : Colors.grey,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            for (int i = 1; i <= 5; i++)
+                              GestureDetector(
+                                onTap: () => _selectRating(i),
+                                child: Icon(
+                                  i <= selectedRating
+                                      ? Icons.star
+                                      : Icons.star_border,
+                                  size: 40,
+                                  color: Colors.yellow,
+                                ),
+                              ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: _sendRating,
+                          child: Text('Send Rate'),
+                        ),
                       ],
                     ),
                   ),
+
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 50),
                     child: GestureDetector(
@@ -385,6 +437,22 @@ class _Recipe extends State<Recipe> {
                   children: [
                     Text(
                       "Cooking Time : " + fetchedData["cookingtime"].toString(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: font,
+                        fontFamily: 'ro',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: Row(
+                  children: [
+                    Text(
+                      "Rating : " + fetchedData["avg_rating"].toString(),
                       style: TextStyle(
                         fontSize: 16,
                         color: font,
