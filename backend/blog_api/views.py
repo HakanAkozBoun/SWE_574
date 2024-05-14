@@ -305,8 +305,8 @@ def File(request):
 @api_view(['POST'])
 def CreateBlog(request):
     # EE user id None olarak sabitlendi
-    # _id = request.data.get('id')
-    _id = None
+    _id = request.data.get('id')
+    #_id = None
     if _id is None:
 
         _blog = blog.objects.create(category_id=request.data.get('category'), title=request.data.get('title'), slug=request.data.get('slug'), excerpt=request.data.get('excerpt'), content=request.data.get('content'), contentTwo=request.data.get('contentTwo'), avg_rating=request.data.get(
