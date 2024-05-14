@@ -121,17 +121,27 @@ WSGI_APPLICATION = 'recipeBlog.wsgi.application'
 #    }
 # }
 
+# DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'xymziiwn',
+#        'USER': 'xymziiwn',
+#        'PASSWORD': 'dZgLKBzSeuds_yro0WckQnE47nJY9DVU',
+#        'HOST': 'lucky.db.elephantsql.com',
+#        'PORT': '5432',
+#    }
+# }
 DATABASES = {
    'default': {
        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME': 'xymziiwn',
-       'USER': 'xymziiwn',
-       'PASSWORD': 'dZgLKBzSeuds_yro0WckQnE47nJY9DVU',
-       'HOST': 'lucky.db.elephantsql.com',
-       'PORT': '5432',
+       'NAME': 'defaultdb',
+       'USER': 'doadmin',
+       'PASSWORD': 'AVNS_cKBZ4kXGaErSPaesDcS',
+       'HOST': 'db-postgresql-nyc3-09706-do-user-16458033-0.c.db.ondigitalocean.com',
+       'PORT': '25060',
+       'sslmode':'require'
    }
 }
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
