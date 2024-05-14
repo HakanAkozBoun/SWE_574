@@ -509,7 +509,7 @@ class _AddItemPageState extends State<AddItemPage> {
                   amount: amount,
                   foodID: _foodList2
                       .where((element) => element["name"] == _foodList2VALUE)
-                      .first["unitid"],
+                      .first["id"],
                   unitID: _selectedItem3!.id,
                 );
                 setState(() {
@@ -618,7 +618,12 @@ class _AddItemPageState extends State<AddItemPage> {
                       "image": imageID,
                       // "image": "image/" +
                       //     image2.toString().split("/")[7].split("'")[0],
-                      // "ingredients": _inputController6.text,
+                      "ingredients": FoodItemLists.map((item) {
+                        return {
+                          'food': item.food,
+                          'amount': item.amount,
+                        };
+                      }).toList(),
                       "postlabel": "POPULAR",
                       "list": FoodItemLists.map((item) {
                         return {
@@ -655,7 +660,12 @@ class _AddItemPageState extends State<AddItemPage> {
                         //     ? "image/" +
                         //         image2.toString().split("/")[7].split("'")[0]
                         //     : widget.item["image"].split("media/")[1],
-                        // "ingredients": _inputController6.text,
+                        "ingredients": FoodItemLists.map((item) {
+                          return {
+                            'food': item.food,
+                            'amount': item.amount,
+                          };
+                        }).toList(),
                         "postlabel": "POPULAR",
                         "list": FoodItemLists.map((item) {
                           return {
@@ -686,7 +696,12 @@ class _AddItemPageState extends State<AddItemPage> {
                         "image": imageID,
                         // "image": "image/" +
                         //     image2.toString().split("/")[7].split("'")[0],
-                        // "ingredients": _inputController6.text,
+                        "ingredients": FoodItemLists.map((item) {
+                          return {
+                            'food': item.food,
+                            'amount': item.amount,
+                          };
+                        }).toList(),
                         "postlabel": "POPULAR",
                         "list": FoodItemLists.map((item) {
                           return {
@@ -699,7 +714,8 @@ class _AddItemPageState extends State<AddItemPage> {
                     ];
                   }
                 }
-
+                print("dataList");
+                print(dataList);
                 sendData(dataList);
               },
               child: Text('Save'),

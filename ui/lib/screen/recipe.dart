@@ -53,6 +53,7 @@ class _Recipe extends State<Recipe> {
 
   Map<String, dynamic> fetchedData = {};
   Map<String, dynamic> nutritionData = {};
+  List<dynamic> ingredientsData = [];
   // int avg_rating = 5;
 
   List<Yorum> yorumlar = [];
@@ -86,7 +87,6 @@ class _Recipe extends State<Recipe> {
 
   @override
   void initState() {
-    super.initState();
     userId = user.getUserId();
     yorumlariYukle();
     fetchData(widget.slug).then((data) {
@@ -95,6 +95,10 @@ class _Recipe extends State<Recipe> {
         var selectedItem =
             data.where((item) => item['id'] == widget.id).toList().first;
         fetchedData = selectedItem.cast<String, dynamic>();
+        String json2 = fetchedData["ingredients"].toString();
+        ingredientsData = json.decode(json2);
+        print("data");
+        print(ingredientsData[0]);
       });
     }).catchError((error) {
       print("Error fetching data: $error");
@@ -109,6 +113,7 @@ class _Recipe extends State<Recipe> {
 
     checkBookmarkStatus(userId.toString(), widget.id.toString());
     checkEatenStatus(userId.toString(), widget.id.toString());
+    super.initState();
   }
 
   void yorumlariYukle() async {
@@ -238,7 +243,7 @@ class _Recipe extends State<Recipe> {
 
   @override
   Widget build(BuildContext context) {
-    var url = fetchedData['base64'];
+    var url = fetchedData['base64'] ?? "";
     Uint8List decodedImage = base64Decode(url);
     return Scaffold(
       appBar: AppBar2(),
@@ -517,7 +522,7 @@ class _Recipe extends State<Recipe> {
                 child: Row(
                   children: [
                     Text(
-                      'Ingredients',
+                      'Instructions',
                       style: TextStyle(
                         fontSize: 20,
                         color: font,
@@ -578,6 +583,32 @@ class _Recipe extends State<Recipe> {
                   ),
                 ],
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: Row(
+                  children: [
+                    Text(
+                      'ingredients',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: font,
+                        fontFamily: 'ro',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: ingredientsData.length,
+                itemBuilder: (context, index) {
+                  final item = ingredientsData[index];
+                  return ListTile(
+                    title: Text('${item['food']}'),
+                  );
+                },
               ),
               SizedBox(height: 20),
               Padding(
