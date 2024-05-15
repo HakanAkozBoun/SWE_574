@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:recipe/consent/appbar.dart';
 import 'package:http/http.dart' as http;
+import 'package:recipe/helpers/userData.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -198,6 +199,7 @@ class _AddItemPageState extends State<AddItemPage> {
   Item? _selectedItem;
   FoodItem? _selectedItem2;
   UnitItem? _selectedItem3;
+  UserData user = UserData();
 
   List? foodList;
   TextEditingController _inputController1 = TextEditingController();
@@ -357,7 +359,7 @@ class _AddItemPageState extends State<AddItemPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Home2(),
+            builder: (context) => Home2(userId:user.getUserId()),
           ),
         );
       } else {
@@ -612,7 +614,7 @@ class _AddItemPageState extends State<AddItemPage> {
                       "preparationtime": _inputController7.text,
                       "cookingtime": _inputController8.text,
                       "avg_rating": 0,
-                      "userid": 1,
+                      "userid": user.getUserId(),
                       "serving": _inputController10.text,
                       // "bookmark": _inputController10.text,
                       "image": imageID,
@@ -652,7 +654,7 @@ class _AddItemPageState extends State<AddItemPage> {
                         "preparationtime": _inputController7.text,
                         "cookingtime": _inputController8.text,
                         "avg_rating": 0,
-                        "userid": 1,
+                        "userid": user.getUserId(),
                         "serving": _inputController10.text,
                         // "bookmark": _inputController10.text,
                         "image": imageID,
@@ -690,7 +692,7 @@ class _AddItemPageState extends State<AddItemPage> {
                         "preparationtime": _inputController7.text,
                         "cookingtime": _inputController8.text,
                         "avg_rating": 0,
-                        "userid": 1,
+                        "userid": user.getUserId(),
                         "serving": _inputController10.text,
                         // "bookmark": _inputController10.text,
                         "image": imageID,

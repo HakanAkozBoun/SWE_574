@@ -7,8 +7,8 @@ import 'package:recipe/widgets/home/recommendation.dart';
 import 'package:recipe/widgets/home/search_bar.dart';
 
 class Home2 extends StatefulWidget {
-  const Home2({Key? key}) : super(key: key);
-
+  final int? userId;
+  const Home2({this.userId, Key? key}) : super(key: key);
   @override
   _Home2State createState() => _Home2State();
 }
