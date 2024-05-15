@@ -41,12 +41,10 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
       if (categoryId == 0) {
         filteredRecipes = List.from(recipes);
       } else {
-        print("categoryIDDDDDDDD" + categoryId.toString());
         filteredRecipes = recipes
             .where((recipe) => recipe.category_id == categoryId)
             .toList();
       }
-      loadRecipes();
     });
   }
 
