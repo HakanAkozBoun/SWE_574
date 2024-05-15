@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:recipe/screen/home.dart';
 import 'package:recipe/constants/backend_url.dart';
 import 'package:recipe/screen/home2.dart';
+import 'package:recipe/helpers/userData.dart';
 
 // http://10.0.2.2:8000/api
 
@@ -194,6 +195,8 @@ class FoodItemList {
 }
 
 class _AddItemPageState extends State<AddItemPage> {
+  UserData user = UserData();
+  var userId;
   var image2, imageID;
   Item? _selectedItem;
   FoodItem? _selectedItem2;
@@ -211,6 +214,8 @@ class _AddItemPageState extends State<AddItemPage> {
   TextEditingController _inputController9 = TextEditingController();
   // TextEditingController _inputController10 = TextEditingController();
   TextEditingController _inputController10 = TextEditingController();
+  TextEditingController _inputController11 = TextEditingController();
+  TextEditingController _inputController12 = TextEditingController();
 
   final TextEditingController foodController = TextEditingController();
   final TextEditingController unitController = TextEditingController();
@@ -220,13 +225,14 @@ class _AddItemPageState extends State<AddItemPage> {
   List<String> elemanlar = [];
   String instruction = "";
   String yeniEleman = "";
+  String ingredients = "";
 
   void elemanEkle() {
     setState(() {
       elemanlar.add(yeniEleman);
       instruction +=
           "" + (elemanlar.length).toString() + "-) " + yeniEleman + "\n";
-      yeniEleman = "";
+      _inputController11.text = "";
     });
   }
 
@@ -277,8 +283,21 @@ class _AddItemPageState extends State<AddItemPage> {
       final imageUploadResponse =
           jsonDecode(responseData) as Map<String, dynamic>;
       imageID = imageUploadResponse["id"];
-      print('Resim başarıyla yüklendi.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.green,
+          content: Text('Successfully uploaded',
+              style: TextStyle(color: Colors.white)),
+        ),
+      );
     } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Image upload failed.',
+              style: TextStyle(color: Colors.white)),
+        ),
+      );
       print('Resim yükleme başarısız oldu. Hata kodu: ${response.statusCode}');
     }
   }
@@ -415,15 +434,15 @@ class _AddItemPageState extends State<AddItemPage> {
             ),
             TextFormField(
               controller: _inputController7,
-              decoration: InputDecoration(labelText: 'Preparation Time'),
+              decoration: InputDecoration(labelText: 'Preparation Time ~min'),
             ),
             TextFormField(
               controller: _inputController8,
-              decoration: InputDecoration(labelText: 'Cooking Time'),
+              decoration: InputDecoration(labelText: 'Cooking Time ~min'),
             ),
             TextFormField(
               controller: _inputController10,
-              decoration: InputDecoration(labelText: 'Serving'),
+              decoration: InputDecoration(labelText: 'Serving ~min'),
             ),
             TextFormField(
               controller: _inputController4,
@@ -433,6 +452,7 @@ class _AddItemPageState extends State<AddItemPage> {
             Column(
               children: [
                 TextField(
+                  controller: _inputController12,
                   onChanged: (text) {
                     setState(() {
                       _filter = text;
@@ -519,13 +539,28 @@ class _AddItemPageState extends State<AddItemPage> {
                 foodController.clear();
                 unitController.clear();
                 amountController.clear();
+
+                _selectedItem3 = null;
+                _inputController12.text = "";
+                _foodList = [];
+                _foodList2 = [];
               },
               child: Text('Add Item'),
             ),
             SizedBox(height: 20),
-            Text(
-              'Food Items',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  if (FoodItemLists.length >
+                      0) // Conditionally display the Text widget
+                    Text(
+                      'Food Items',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                ],
+              ),
             ),
             ListView.builder(
               physics: NeverScrollableScrollPhysics(),
@@ -540,9 +575,17 @@ class _AddItemPageState extends State<AddItemPage> {
                 );
               },
             ),
+            Row(children: <Widget>[
+              Expanded(child: Divider()),
+            ]),
+            Text(
+              'Instruction',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             Column(
               children: [
                 TextField(
+                  controller: _inputController11,
                   decoration: InputDecoration(labelText: 'New Instruction'),
                   onChanged: (deger) {
                     setState(() {
@@ -598,6 +641,20 @@ class _AddItemPageState extends State<AddItemPage> {
               onPressed: () {
                 List<Map<String, dynamic>> dataList = [];
 
+                userId = user.getUserId();
+
+                for (var i = 0; i < FoodItemLists.length; i++) {
+                  ingredients += "" +
+                      (i + 1).toString() +
+                      "-) " +
+                      FoodItemLists[i].amount.toString() +
+                      " " +
+                      FoodItemLists[i].unit.toString() +
+                      " " +
+                      FoodItemLists[i].food.toString() +
+                      "\n";
+                }
+
                 if (widget.edit == 2) {
                   dataList = [
                     {
@@ -611,19 +668,14 @@ class _AddItemPageState extends State<AddItemPage> {
                       "contentTwo": instruction,
                       "preparationtime": _inputController7.text,
                       "cookingtime": _inputController8.text,
-                      "avg_rating": 0,
-                      "userid": 1,
+                      "avg_rating": 5,
+                      "userid": userId,
                       "serving": _inputController10.text,
                       // "bookmark": _inputController10.text,
                       "image": imageID,
                       // "image": "image/" +
                       //     image2.toString().split("/")[7].split("'")[0],
-                      "ingredients": FoodItemLists.map((item) {
-                        return {
-                          'food': item.food,
-                          'amount': item.amount,
-                        };
-                      }).toList(),
+                      "ingredients": ingredients,
                       "postlabel": "POPULAR",
                       "list": FoodItemLists.map((item) {
                         return {
@@ -651,8 +703,8 @@ class _AddItemPageState extends State<AddItemPage> {
                         "contentTwo": instruction,
                         "preparationtime": _inputController7.text,
                         "cookingtime": _inputController8.text,
-                        "avg_rating": 0,
-                        "userid": 1,
+                        "avg_rating": 5,
+                        "userid": userId,
                         "serving": _inputController10.text,
                         // "bookmark": _inputController10.text,
                         "image": imageID,
@@ -660,12 +712,7 @@ class _AddItemPageState extends State<AddItemPage> {
                         //     ? "image/" +
                         //         image2.toString().split("/")[7].split("'")[0]
                         //     : widget.item["image"].split("media/")[1],
-                        "ingredients": FoodItemLists.map((item) {
-                          return {
-                            'food': item.food,
-                            'amount': item.amount,
-                          };
-                        }).toList(),
+                        "ingredients": ingredients,
                         "postlabel": "POPULAR",
                         "list": FoodItemLists.map((item) {
                           return {
@@ -689,19 +736,14 @@ class _AddItemPageState extends State<AddItemPage> {
                         "contentTwo": instruction,
                         "preparationtime": _inputController7.text,
                         "cookingtime": _inputController8.text,
-                        "avg_rating": 0,
-                        "userid": 1,
+                        "avg_rating": 5,
+                        "userid": userId,
                         "serving": _inputController10.text,
                         // "bookmark": _inputController10.text,
                         "image": imageID,
                         // "image": "image/" +
                         //     image2.toString().split("/")[7].split("'")[0],
-                        "ingredients": FoodItemLists.map((item) {
-                          return {
-                            'food': item.food,
-                            'amount': item.amount,
-                          };
-                        }).toList(),
+                        "ingredients": ingredients,
                         "postlabel": "POPULAR",
                         "list": FoodItemLists.map((item) {
                           return {
