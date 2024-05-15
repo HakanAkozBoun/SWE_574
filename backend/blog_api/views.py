@@ -204,6 +204,67 @@ def check_username(request):
 
     return JsonResponse({'exists': exists})
 
+@api_view(['GET'])
+def check_following(request):
+    logged_in_user_id = request.GET.get('logged_in_user_id', None)
+    other_user_id = request.GET.get('other_user_id', None)
+    logged_in_user = User.objects.get(id=logged_in_user_id)
+    other_user = User.objects.get(id=other_user_id)
+    exists = Follower.objects.filter(
+        follower_user=logged_in_user, following_user=other_user).exists()
+    if (exists):
+        return JsonResponse({'exists': True})
+    else:
+        return JsonResponse({'exists': False})
+
+
+@api_view(['GET'])
+def FollowUser(request):
+    logged_in_user_id = request.GET.get('logged_in_user_id', None)
+    other_user_id = request.GET.get('other_user_id', None)
+    try:
+        logged_in_user = User.objects.get(id=logged_in_user_id)
+        other_user = User.objects.get(id=other_user_id)
+        isSuccess = False
+        exists = Follower.objects.filter(
+            follower_user=logged_in_user, following_user=other_user).exists()
+
+        if exists == False:
+            Follower.objects.create(
+                follower_user=logged_in_user, following_user=other_user)
+            exists = Follower.objects.filter(
+                follower_user=logged_in_user, following_user=other_user).exists()
+
+        isSuccess = exists
+    except User.DoesNotExist:
+        isSuccess = False
+    return JsonResponse({'followed': isSuccess})
+
+
+@api_view(['GET'])
+def UnfollowUser(request):
+    logged_in_user_id = request.GET.get('logged_in_user_id', None)
+    other_user_id = request.GET.get('other_user_id', None)
+    isSuccess = False
+    try:
+        logged_in_user = User.objects.get(id=logged_in_user_id)
+        other_user = User.objects.get(id=other_user_id)
+
+        exists = Follower.objects.filter(
+            follower_user=logged_in_user, following_user=other_user).exists()
+
+        if exists:
+            Follower.objects.filter(
+                follower_user=logged_in_user, following_user=other_user).delete()
+            exists = Follower.objects.filter(
+                follower_user=logged_in_user, following_user=other_user).exists()
+
+        isSuccess = not exists
+
+    except User.DoesNotExist:
+        isSuccess = False
+
+    return JsonResponse({'unfollowed': isSuccess})
 
 @api_view(['PATCH'])
 def UpdateUserInfo(request):

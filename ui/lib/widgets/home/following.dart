@@ -88,8 +88,9 @@ class _FollowingState extends State<Following> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    OtherProfiles(user: user)),
+                                builder: (context) => OtherProfiles(
+                                    loggedInUserId: widget.userId,
+                                    clickedUserId: user.user.id)),
                           );
                         },
                       ),

@@ -210,6 +210,77 @@ class UserProfile {
       throw Exception('Failed to check email availability: $e');
     }
   }
+
+  static Future<bool> FollowingExists(
+      int loggedInUserId, int clickedUserId) async {
+    var queryParams = {
+      'logged_in_user_id': loggedInUserId.toString(),
+      'other_user_id': clickedUserId.toString(),
+    };
+
+    var uri = Uri.parse(BackendUrl.checkFollowing)
+        .replace(queryParameters: queryParams);
+
+    try {
+      var response = await http.get(uri);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        return data['exists'];
+      } else {
+        throw Exception(
+            'Failed to check following status. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to check following status: $e');
+    }
+  }
+
+  static Future<bool> FollowUser(int loggedInUserId, int clickedUserId) async {
+    var queryParams = {
+      'logged_in_user_id': loggedInUserId.toString(),
+      'other_user_id': clickedUserId.toString(),
+    };
+
+    var uri =
+        Uri.parse(BackendUrl.followUser).replace(queryParameters: queryParams);
+
+    try {
+      var response = await http.post(uri);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        return data['followed'];
+      } else {
+        throw Exception(
+            'Failed to follow user. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to follow user: $e');
+    }
+  }
+
+  static Future<bool> UnfollowUser(
+      int loggedInUserId, int clickedUserId) async {
+    var queryParams = {
+      'logged_in_user_id': loggedInUserId.toString(),
+      'other_user_id': clickedUserId.toString(),
+    };
+
+    var uri = Uri.parse(BackendUrl.unfollowUser)
+        .replace(queryParameters: queryParams);
+
+    try {
+      var response = await http.post(uri);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        return data['unfollowed'];
+      } else {
+        throw Exception(
+            'Failed to unfollow user. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to unfollow user: $e');
+    }
+  }
 }
 
 class User {
