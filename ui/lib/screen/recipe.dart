@@ -20,7 +20,6 @@ Future<List<dynamic>> fetchData(data) async {
   final response =
       await http.get(Uri.parse(uri + 'PopularPostsApiView/?' + data));
   if (response.statusCode == 200) {
-    // print(response.body);
     return json.decode(response.body);
   } else {
     throw Exception('Failed to load data from API');
@@ -53,7 +52,7 @@ class _Recipe extends State<Recipe> {
 
   Map<String, dynamic> fetchedData = {};
   Map<String, dynamic> nutritionData = {};
-  List<dynamic> ingredientsData = [];
+
   // int avg_rating = 5;
 
   List<Yorum> yorumlar = [];
@@ -79,6 +78,13 @@ class _Recipe extends State<Recipe> {
     );
 
     if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.green,
+          content: Text('Thank you for your rating',
+              style: TextStyle(color: Colors.white)),
+        ),
+      );
       print('Rating sent successfully');
     } else {
       print('Error sending rating: ${response.statusCode}');
@@ -90,15 +96,10 @@ class _Recipe extends State<Recipe> {
     userId = user.getUserId();
     yorumlariYukle();
     fetchData(widget.slug).then((data) {
-      // print(data);
       setState(() {
         var selectedItem =
             data.where((item) => item['id'] == widget.id).toList().first;
         fetchedData = selectedItem.cast<String, dynamic>();
-        String json2 = fetchedData["ingredients"].toString();
-        ingredientsData = json.decode(json2);
-        print("data");
-        print(ingredientsData[0]);
       });
     }).catchError((error) {
       print("Error fetching data: $error");
@@ -122,7 +123,6 @@ class _Recipe extends State<Recipe> {
     var response = await http
         .get(Uri.parse(uri + 'CommentList/?blog=' + widget.id.toString()));
     if (response.statusCode == 200) {
-      print(response.body);
       setState(() {
         yorumlar = (jsonDecode(response.body) as List)
             .map((yorumData) => Yorum(
@@ -144,14 +144,12 @@ class _Recipe extends State<Recipe> {
       "blog": widget.id,
       "text": yeniYorum.toString()
     };
-    // print(jsonEncode(dataList));
     var response = await http.post(Uri.parse(uri + 'CreateComment/'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(dataList));
     if (response.statusCode == 200) {
-      print("Gönderildi");
       setState(() {
         yorumlar.add(Yorum(
             text: yeniYorum.toString(), blog: widget.id, user: 'Hakan Aköz'));
@@ -207,12 +205,10 @@ class _Recipe extends State<Recipe> {
       if (jsonResponse['is_eaten'] == true) {
         setState(() {
           isEaten = true;
-          print(isEaten);
         });
       } else if (jsonResponse['is_eaten'] == false) {
         setState(() {
           isEaten = false;
-          print(isEaten);
         });
       }
     }).catchError((error) {
@@ -223,8 +219,6 @@ class _Recipe extends State<Recipe> {
   void checkEatenStatus(String userId, String blogId) async {
     String url = uri + "eaten-exist/?user_id=$userId&blog_id=$blogId";
     await http.get(Uri.parse(url)).then((response) {
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
       Map<String, dynamic> jsonResponse = json.decode(response.body);
 
       if (jsonResponse['is_eaten'] == true) {
@@ -352,18 +346,6 @@ class _Recipe extends State<Recipe> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Padding(
-                  //   padding: const EdgeInsets.only(left: 15),
-                  //   child: Row(
-                  //     children: [
-                  //       for (int i = 0; i < say; i++)
-                  //         Icon(
-                  //           Icons.star,
-                  //           color: say >= i + 1 ? Colors.yellow : Colors.grey,
-                  //         ),
-                  //     ],
-                  //   ),
-                  // ),
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -392,7 +374,6 @@ class _Recipe extends State<Recipe> {
                       ],
                     ),
                   ),
-
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 50),
                     child: GestureDetector(
@@ -441,11 +422,14 @@ class _Recipe extends State<Recipe> {
                 child: Row(
                   children: [
                     Text(
-                      "Cooking Time : " + fetchedData["cookingtime"].toString(),
+                      "Cooking Time : " +
+                          fetchedData["cookingtime"].toString() +
+                          " min",
                       style: TextStyle(
                         fontSize: 16,
                         color: font,
-                        fontFamily: 'ro',
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'ra',
                       ),
                     ),
                   ],
@@ -457,11 +441,14 @@ class _Recipe extends State<Recipe> {
                 child: Row(
                   children: [
                     Text(
-                      "Rating : " + fetchedData["avg_rating"].toString(),
+                      "Rating : " +
+                          fetchedData["avg_rating"].toString() +
+                          " star",
                       style: TextStyle(
                         fontSize: 16,
                         color: font,
-                        fontFamily: 'ro',
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'ra',
                       ),
                     ),
                   ],
@@ -473,11 +460,12 @@ class _Recipe extends State<Recipe> {
                 child: Row(
                   children: [
                     Text(
-                      "Serving : " + fetchedData["serving"].toString(),
+                      "Serving : " + fetchedData["serving"].toString() + " min",
                       style: TextStyle(
                         fontSize: 16,
                         color: font,
-                        fontFamily: 'ro',
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'ra',
                       ),
                     ),
                   ],
@@ -490,11 +478,13 @@ class _Recipe extends State<Recipe> {
                   children: [
                     Text(
                       "Preparation Time : " +
-                          fetchedData["preparationtime"].toString(),
+                          fetchedData["preparationtime"].toString() +
+                          " min",
                       style: TextStyle(
                         fontSize: 16,
                         color: font,
-                        fontFamily: 'ro',
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'ra',
                       ),
                     ),
                   ],
@@ -541,7 +531,8 @@ class _Recipe extends State<Recipe> {
                   style: TextStyle(
                     fontSize: 16,
                     color: font,
-                    fontFamily: 'ro',
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'ra',
                   ),
                 ),
               ),
@@ -589,7 +580,7 @@ class _Recipe extends State<Recipe> {
                 child: Row(
                   children: [
                     Text(
-                      'ingredients',
+                      'Ingredients',
                       style: TextStyle(
                         fontSize: 20,
                         color: font,
@@ -599,16 +590,18 @@ class _Recipe extends State<Recipe> {
                   ],
                 ),
               ),
-              ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: ingredientsData.length,
-                itemBuilder: (context, index) {
-                  final item = ingredientsData[index];
-                  return ListTile(
-                    title: Text('${item['food']}'),
-                  );
-                },
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                child: Text(
+                  fetchedData["ingredients"] ?? "",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: font,
+                    fontFamily: 'ra',
+                  ),
+                ),
               ),
               SizedBox(height: 20),
               Padding(
@@ -633,8 +626,8 @@ class _Recipe extends State<Recipe> {
                     style: TextStyle(
                       fontSize: 16,
                       color: font,
-                      fontFamily: 'ro',
-                      fontWeight: FontWeight.w500,
+                      fontFamily: 'ra',
+                      fontWeight: FontWeight.w400,
                     )),
               ),
               Padding(
