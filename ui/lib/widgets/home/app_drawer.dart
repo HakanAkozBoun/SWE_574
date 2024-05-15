@@ -76,7 +76,7 @@ class _AppDrawerState extends State<AppDrawer> {
             ListTile(
               title: const Text('Logout'),
               onTap: () {
-                // Handle logout logic here
+                user.setUserId(0);
               },
             ),
           ],

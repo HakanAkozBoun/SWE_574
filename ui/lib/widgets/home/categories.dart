@@ -81,7 +81,10 @@ class _CategoriesWidgetState extends State<CategoriesWidget> {
               height: height,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: categoryId != 0 ? Image.memory(decodedImage, fit: BoxFit.cover) : Image.asset("../../images/all.jpg", fit: BoxFit.cover),
+                child: categoryId != 0 ? Image.memory(decodedImage, fit: BoxFit.cover) : Image.asset(
+                        'images/all.jpg',
+                        fit: BoxFit.cover,
+                      ),
               ),
             ),
             const SizedBox(height: 10),

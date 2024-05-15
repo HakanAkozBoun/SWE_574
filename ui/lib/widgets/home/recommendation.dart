@@ -23,7 +23,7 @@ class _RecommendationWidgetState extends State<RecommendationWidget> {
 
   Future<void> loadRecommendations() async {
     try {
-      final fetchedRecommendations = await Recommendation.fetchRecommendation(userId);
+      final fetchedRecommendations = await Recommendation.fetchRecommendation(userId.toString());
       setState(() {
         recommendations = fetchedRecommendations;
       });
