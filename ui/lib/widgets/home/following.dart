@@ -62,9 +62,9 @@ class _FollowingState extends State<Following> {
                     UserProfile user = followingUsersList[index];
                     return Card(
                       child: ListTile(
-                        leading: CircleAvatar(
+                        /*leading: CircleAvatar(
                           backgroundImage: AssetImage(user.image),
-                        ),
+                        ),*/
                         title: RichText(
                           text: TextSpan(
                             children: [

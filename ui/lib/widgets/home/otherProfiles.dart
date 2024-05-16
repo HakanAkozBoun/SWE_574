@@ -16,12 +16,6 @@ class OtherProfiles extends StatefulWidget {
   State<OtherProfiles> createState() => _OtherProfilesState();
 }
 
-Future<bool> checkFollowing(int loggedInUserId, int finalClickedUserId) async {
-  bool exists =
-      await UserProfile.FollowingExists(loggedInUserId, finalClickedUserId);
-  return exists;
-}
-
 class _OtherProfilesState extends State<OtherProfiles> {
   late Future<UserProfile> ClickedUser;
   late int finalClickedUserId;
@@ -46,10 +40,7 @@ class _OtherProfilesState extends State<OtherProfiles> {
     'Graduated from: '
   ];
 
-  List<Icon> followIcons = [
-    Icon(Icons.work, color: maincolor),
-    Icon(Icons.restaurant, color: maincolor),
-  ];
+  List followTexts = ['Tap the heart to Unfollow', 'Tap the heart to follow'];
 
   @override
   Widget build(BuildContext context) {
@@ -58,9 +49,10 @@ class _OtherProfilesState extends State<OtherProfiles> {
         drawer: AppDrawer(),
         backgroundColor: background,
         body: SafeArea(
-            child: FutureBuilder<UserProfile>(
-          future: ClickedUser,
-          builder: (BuildContext context, AsyncSnapshot<UserProfile> snapshot) {
+            child: FutureBuilder<UserProfileData>(
+          future: fetchData(),
+          builder:
+              (BuildContext context, AsyncSnapshot<UserProfileData> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Scaffold(
                 backgroundColor: background,
@@ -76,60 +68,26 @@ class _OtherProfilesState extends State<OtherProfiles> {
                 ),
               );
             } else if (snapshot.hasData) {
-              UserProfile ClickedUser = snapshot.data!;
+              final userProfileData = snapshot.data!;
               return Column(
                 children: [
                   Text(
-                    ClickedUser.user.username,
+                    userProfileData.userProfile.user.username,
                     style:
                         TextStyle(fontSize: 18, color: font, fontFamily: 'ro'),
                   ),
-                  FutureBuilder<bool>(
-                      future: isFollowing,
-                      builder: (BuildContext context,
-                          AsyncSnapshot<bool> snapshotFollow) {
-                        if (snapshotFollow.connectionState ==
-                            ConnectionState.waiting) {
-                          return Scaffold(
-                            backgroundColor: background,
-                            body: Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          );
-                        } else if (snapshotFollow.hasError) {
-                          return Scaffold(
-                            backgroundColor: background,
-                            body: Center(
-                              child: Text('Error: ${snapshotFollow.error}'),
-                            ),
-                          );
-                        } else if (snapshotFollow.hasData) {
-                          bool isFollowing = snapshotFollow.data!;
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                icon: followIcons[isFollowing ? 1 : 0],
-                                onPressed: () {
-                                  FollowUpdateFlow(widget.loggedInUserId,
-                                      finalClickedUserId, isFollowing);
-
-                                  setState(() {
-                                    isFollowing = !isFollowing;
-                                  });
-                                },
-                              ),
-                            ],
-                          );
-                        } else {
-                          return Scaffold(
-                            backgroundColor: background,
-                            body: Center(
-                              child: Text("No follow data available"),
-                            ),
-                          );
-                        }
-                      }),
+                  Text(
+                    followTexts[userProfileData.isFollowing ? 0 : 1],
+                  ),
+                  IconButton(
+                    icon: Icon(userProfileData.isFollowing
+                        ? Icons.favorite
+                        : Icons.favorite_border),
+                    onPressed: () {
+                      FollowUpdateFlow(widget.loggedInUserId,
+                          finalClickedUserId, userProfileData.isFollowing);
+                    },
+                  ),
                   Divider(height: 40, thickness: 2),
                   SizedBox(height: 30),
                   Padding(
@@ -157,7 +115,8 @@ class _OtherProfilesState extends State<OtherProfiles> {
                           padding: const EdgeInsets.only(bottom: 8),
                           child: Text(
                             allTileNames[index] +
-                                getRelevantText(ClickedUser, index),
+                                getRelevantText(
+                                    userProfileData.userProfile, index),
                             style: TextStyle(fontSize: 17, color: font),
                           ),
                         ),
@@ -183,7 +142,8 @@ class _OtherProfilesState extends State<OtherProfiles> {
                             padding: const EdgeInsets.only(bottom: 8),
                             child: Text(
                               allTileNames[index] +
-                                  getRelevantText(ClickedUser, index),
+                                  getRelevantText(
+                                      userProfileData.userProfile, index),
                               style: TextStyle(fontSize: 17, color: font),
                             ),
                           ),
@@ -216,10 +176,22 @@ class _OtherProfilesState extends State<OtherProfiles> {
 
   void Unfollow(int loggedInUserId, int finalClickedUserId) async {
     UserProfile.UnfollowUser(loggedInUserId, finalClickedUserId);
+    bool updatedfollowing =
+        await UserProfile.FollowingExists(loggedInUserId, finalClickedUserId);
+    setState(() {
+      //ClickedUser = UserProfile.fetchCurrentUser(finalClickedUserId);
+      isFollowing = Future.value(updatedfollowing);
+    });
   }
 
   void Follow(int loggedInUserId, int finalClickedUserId) async {
     UserProfile.FollowUser(loggedInUserId, finalClickedUserId);
+    bool updatedfollowing =
+        await UserProfile.FollowingExists(loggedInUserId, finalClickedUserId);
+    setState(() {
+      //ClickedUser = UserProfile.fetchCurrentUser(finalClickedUserId);
+      isFollowing = Future.value(updatedfollowing);
+    });
   }
 
   String getRelevantText(UserProfile user, int index) {
@@ -234,4 +206,25 @@ class _OtherProfilesState extends State<OtherProfiles> {
         return '';
     }
   }
+
+  Future<bool> checkFollowing(
+      int loggedInUserId, int finalClickedUserId) async {
+    bool exists =
+        await UserProfile.FollowingExists(loggedInUserId, finalClickedUserId);
+    return exists;
+  }
+
+  Future<UserProfileData> fetchData() async {
+    final userProfile = await UserProfile.fetchCurrentUser(finalClickedUserId);
+    final followStatus =
+        await checkFollowing(widget.loggedInUserId, finalClickedUserId);
+    return UserProfileData(userProfile: userProfile, isFollowing: followStatus);
+  }
+}
+
+class UserProfileData {
+  final UserProfile userProfile;
+  final bool isFollowing;
+
+  UserProfileData({required this.userProfile, required this.isFollowing});
 }

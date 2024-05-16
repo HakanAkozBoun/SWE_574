@@ -245,7 +245,7 @@ class UserProfile {
         Uri.parse(BackendUrl.followUser).replace(queryParameters: queryParams);
 
     try {
-      var response = await http.post(uri);
+      var response = await http.get(uri);
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         return data['followed'];
@@ -269,7 +269,7 @@ class UserProfile {
         .replace(queryParameters: queryParams);
 
     try {
-      var response = await http.post(uri);
+      var response = await http.get(uri);
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         return data['unfollowed'];
