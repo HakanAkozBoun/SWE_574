@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from .views import eaten_exist,bookmark_exist, GetWeeklyNutritions, eaten_toggle, UpdateGoal, CreateGoal, GetGoals, GetNutritionDailyWithGoals, GetNutritionWeeklyWithGoal, UpdateUserInfo, UpdateUserProfile, add_rating, check_email, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserProfilesList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, check_username, search_recipes  # CreateUser
+from .views import FollowUser, UnfollowUser, check_following, eaten_exist, bookmark_exist, GetWeeklyNutritions, eaten_toggle, UpdateGoal, CreateGoal, GetGoals, GetNutritionDailyWithGoals, GetNutritionWeeklyWithGoal, UpdateUserInfo, UpdateUserProfile, add_rating, check_email, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserProfilesList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, check_username, search_recipes  # CreateUser
 
 from rest_framework import routers
 
@@ -43,7 +43,7 @@ urlpatterns = [
     path('recommend/', recommend_items, name='recommend_items'),
 
     path('bookmark-exist/', bookmark_exist, name='bookmark_exist'),
-     path('eaten-exist/', eaten_exist, name='eaten_exist'),
+    path('eaten-exist/', eaten_exist, name='eaten_exist'),
 
     path('Following/', GetFollowingUserProfilesList, name='FollowingUserList'),
     path('MyBookmarks/', GetBookmarkedRecipes, name='BookmarkedRecipes'),
@@ -62,7 +62,9 @@ urlpatterns = [
     path('CheckUsername/', check_username, name='CheckUsername'),
     path('CheckEmail/', check_email, name='CheckEmail'),
     path('UpdateUserInfo/', UpdateUserInfo, name='UpdateUserInfo'),
-
+    path('CheckFollowing/', check_following, name='CheckFollowing'),
+    path('FollowUser/', FollowUser, name='FollowUser'),
+    path('UnfollowUser/', UnfollowUser, name='UnfollowUser'),
     path('add_rating/', add_rating, name='add_rating'),
     path('userprofile/', UserProfileView.as_view(), name='UserProfileViewSet'),
     path('inputfood/', InputFoodView.as_view(), name='InputFoodViewSet'),

@@ -14,4 +14,8 @@ class BackendUrl {
   static const String goals = apiUrl + 'Goals/';
   static const String createGoal = apiUrl + 'CreateGoal/';
   static const String updateGoal = apiUrl + 'UpdateGoal/';
+  static const String checkFollowing = apiUrl + 'CheckFollowing/';
+  static const String followUser = apiUrl + 'FollowUser/';
+  static const String unfollowUser = apiUrl + 'UnfollowUser/';
+  
 }

@@ -79,6 +79,7 @@ class _ProfileState extends State<Profile> {
   void _showAllSubPages(
       BuildContext context, int index, UserProfile currentUser) {
     Widget toBeOpened = FAQs();
+    /*
     Widget personal = PersonalPage(userId: finalUserId);
     Widget following = Following(userId: finalUserId);
     Widget bookmarked = Bookmarked(userId: finalUserId);
@@ -90,6 +91,7 @@ class _ProfileState extends State<Profile> {
     Widget settings = Settings();
     Widget faqs = FAQs();
     Widget logout = Logout();
+    */
     bool isFullPage = false;
     switch (index) {
       case 0:
@@ -102,47 +104,47 @@ class _ProfileState extends State<Profile> {
         isFullPage = false;
         break;
       case 3:
-        toBeOpened = personal;
+        toBeOpened = PersonalPage(userId: finalUserId);
         isFullPage = true;
         break;
       case 4:
-        toBeOpened = following;
+        toBeOpened = Following(userId: finalUserId);
         isFullPage = true;
         break;
       case 5:
-        toBeOpened = bookmarked;
+        toBeOpened = Bookmarked(userId: finalUserId);
         isFullPage = true;
         break;
       case 6:
-        toBeOpened = tracking_diet_goals;
+        toBeOpened = TrackingDietGoals();
         isFullPage = true;
         break;
       case 7:
-        toBeOpened = myRecipes;
+        toBeOpened = MyRecipes(userId: finalUserId);
         isFullPage = true;
         break;
       case 8:
-        toBeOpened = myAllergies;
+        toBeOpened = AllergyPage(userId: finalUserId);
         isFullPage = true;
         break;
       case 9:
-        toBeOpened = myGoals;
+        toBeOpened = GoalsPage(userId: finalUserId);
         isFullPage = true;
         break;
       case 10:
-        toBeOpened = trackMyGoals;
+        toBeOpened = TrackingDietGoals();
         isFullPage = true;
         break;
       case 11:
-        toBeOpened = settings;
+        toBeOpened = Settings();
         isFullPage = true;
         break;
       case 12:
-        toBeOpened = faqs;
+        toBeOpened = FAQs();
         isFullPage = false;
         break;
       case 13:
-        toBeOpened = logout;
+        toBeOpened = Logout();
         isFullPage = false;
         break;
       default:
