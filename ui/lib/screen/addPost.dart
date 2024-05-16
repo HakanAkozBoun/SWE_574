@@ -377,7 +377,7 @@ class _AddItemPageState extends State<AddItemPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Home2(userId:user.getUserId()),
+            builder: (context) => Home2(userId: user.getUserId()),
           ),
         );
       } else {
@@ -443,7 +443,7 @@ class _AddItemPageState extends State<AddItemPage> {
             ),
             TextFormField(
               controller: _inputController10,
-              decoration: InputDecoration(labelText: 'Serving ~min'),
+              decoration: InputDecoration(labelText: 'Serving ~person'),
             ),
             TextFormField(
               controller: _inputController4,
