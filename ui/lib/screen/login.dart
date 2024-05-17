@@ -45,8 +45,19 @@ class _LoginState extends State<Login> {
 
     if (response.statusCode == 201) {
       print("Kayıt Başarılı");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Sign up successful! Redirecting to login...'),
+        ),
+      );
+      Navigator.pop(context);
     } else {
       print('Kayıt Başarısız. Hata kodu: ${response.statusCode}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Sign up failed. Error code: ${response.statusCode}'),
+        ),
+      );
     }
   }
 
@@ -83,6 +94,11 @@ class _LoginState extends State<Login> {
       });
     } else {
       print('Giriş Başarısız. Hata kodu: ${response.statusCode}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Login failed. Error code: ${response.statusCode}'),
+        ),
+      );
     }
   }
 
