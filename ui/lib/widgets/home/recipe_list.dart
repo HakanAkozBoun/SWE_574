@@ -144,7 +144,7 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                     ),
                   ),
                   Text(
-                    "Cooking time: " + cookingtime,
+                    "Cooking time (min): " + cookingtime,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -155,7 +155,7 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Preparation time: " + preptime,
+                        "Preparation time (min): " + preptime,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
