@@ -24,6 +24,14 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
     loadRecipes();
   }
 
+  @override
+  void didUpdateWidget(covariant RecipeListWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedCategoryId != widget.selectedCategoryId) {
+      filterRecipesByCategory(widget.selectedCategoryId);
+    }
+  }
+
   Future<void> loadRecipes() async {
     try {
       final fetchedRecipes = await Recipe.fetchRecipes();
@@ -57,8 +65,6 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
           children: filteredRecipes.map((recipe) {
             return GestureDetector(
               onTap: () {
-                // Handle tap event here
-                // For example, navigate to RecipeScreen
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (BuildContext context) => RecipeScreen.Recipe(
@@ -73,7 +79,7 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                 recipe.excerpt,
                 recipe.preparationtime,
                 recipe.cookingtime,
-                recipe.avg_rating.toString(),
+                recipe.avg_rating.toStringAsFixed(1),
                 recipe.base64,
               ),
             );
@@ -163,14 +169,13 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                         ),
                       ),
                       Row(
-                        // Adding a Row widget to contain the icon and text
                         children: [
                           Text(
-                            star, // Your additional text here
+                            star,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black, // Adjust as needed
+                              color: Colors.black,
                             ),
                           ),
                           Icon(

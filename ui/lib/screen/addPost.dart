@@ -10,6 +10,8 @@ import 'package:recipe/screen/home.dart';
 import 'package:recipe/constants/backend_url.dart';
 import 'package:recipe/screen/home2.dart';
 import 'package:recipe/helpers/userData.dart';
+import 'package:recipe/widgets/home/app_drawer.dart';
+import 'package:recipe/widgets/home/appbar2.dart';
 
 // http://10.0.2.2:8000/api
 
@@ -393,7 +395,8 @@ class _AddItemPageState extends State<AddItemPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appbar(),
+      appBar: AppBar2(),
+      drawer: AppDrawer(),
       body: Padding(
         padding: EdgeInsets.all(20.0),
         child: ListView(

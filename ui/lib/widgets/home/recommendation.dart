@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:recipe/helpers/userData.dart';
 import 'package:recipe/models/recipe.dart';
@@ -23,7 +26,8 @@ class _RecommendationWidgetState extends State<RecommendationWidget> {
 
   Future<void> loadRecommendations() async {
     try {
-      final fetchedRecommendations = await Recommendation.fetchRecommendation(userId.toString());
+      final fetchedRecommendations =
+          await Recommendation.fetchRecommendation(userId.toString());
       setState(() {
         recommendations = fetchedRecommendations;
       });
@@ -55,8 +59,10 @@ class _RecommendationWidgetState extends State<RecommendationWidget> {
                 child: buildRecommendation(
                     recommendation.title,
                     recommendation.description,
-                    "recipe.duration",
-                    recommendation.imagePath),
+                    recommendation.preparationtime,
+                    recommendation.cookingtime,
+                    recommendation.avg_rating.toStringAsFixed(1),
+                    recommendation.base64),
               );
             },
           ).toList(),
@@ -66,10 +72,16 @@ class _RecommendationWidgetState extends State<RecommendationWidget> {
   }
 
   final double width = 170.0;
-  final double height = 250.0;
+  final double height = 270.0;
 
-  Widget buildRecommendation(
-      String title, String description, String duration, String imagePath) {
+  Widget buildRecommendation(String title, String description, String preptime,
+      String cookingtime, String star, String imagePath) {
+    var url = imagePath;
+    Uint8List decodedImage = base64Decode(url);
+
+    int prepTimeInt = int.tryParse(preptime) ?? 0;
+    int cookingTimeInt = int.tryParse(cookingtime) ?? 0;
+    int totalTime = prepTimeInt + cookingTimeInt;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 7),
       child: Container(
@@ -94,10 +106,7 @@ class _RecommendationWidgetState extends State<RecommendationWidget> {
             children: [
               SizedBox(
                 height: 130,
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.contain,
-                ),
+                child: Image.memory(decodedImage),
               ),
               const SizedBox(height: 5),
               SizedBox(
@@ -133,23 +142,40 @@ class _RecommendationWidgetState extends State<RecommendationWidget> {
               ),
               const SizedBox(height: 10),
               SizedBox(
-                width: width - 20, // subtracting padding
+                  width: width - 20,
+                  height: 20,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Total time: $totalTime min",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange,
+                        ),
+                      ),
+                    ],
+                  )),
+              const SizedBox(height: 5),
+              SizedBox(
+                width: width - 20,
                 height: 20,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      duration,
-                      style: const TextStyle(
-                        fontSize: 16,
+                      star,
+                      style: TextStyle(
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Colors.orange,
+                        color: Colors.black,
                       ),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.star,
                       color: Color.fromRGBO(255, 152, 0, 1),
-                    )
+                    ),
                   ],
                 ),
               ),
