@@ -5,7 +5,7 @@ import 'package:recipe/constants/backend_url.dart';
 import 'package:recipe/helpers/userData.dart';
 
 class AllergyPage extends StatefulWidget {
-  final int? userId; // Make userId nullable
+  final int? userId;
 
   AllergyPage({this.userId, Key? key}) : super(key: key);
   @override
@@ -65,7 +65,7 @@ class _AllergyPageState extends State<AllergyPage> {
                   child: Text('OK'),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    Navigator.of(context).pop(); // This will pop the dialog and the current page
+                    Navigator.of(context).pop();
                   },
                 ),
               ],
