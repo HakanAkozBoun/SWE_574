@@ -22,9 +22,7 @@ class _AllergyPageState extends State<AllergyPage> {
   void initState() {
     super.initState();
     fetchFoods();
-      userId = widget.userId;
-    //UserData userData = UserData();
-    //userId = userData.getUserId();
+    userId = widget.userId;
   }
 
   Future<void> fetchFoods() async {
@@ -56,7 +54,24 @@ class _AllergyPageState extends State<AllergyPage> {
       );
 
       if (response.statusCode == 201) {
-        print('Allergies updated successfully');
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Success'),
+              content: Text('Allergies updated successfully'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(); // This will pop the dialog and the current page
+                  },
+                ),
+              ],
+            );
+          },
+        );
       } else {
         throw Exception('Failed to save allergies');
       }
