@@ -15,19 +15,21 @@ class AllergyPage extends StatefulWidget {
 class _AllergyPageState extends State<AllergyPage> {
   List<dynamic> _allFoods = [];
   List<dynamic> _selectedFoods = [];
+  List<dynamic> _userAllergies = [];
   String _searchQuery = '';
   var userId;
 
   @override
   void initState() {
     super.initState();
-    fetchFoods();
     userId = widget.userId;
+    fetchFoods();
+    fetchAllergies();
   }
 
   Future<void> fetchFoods() async {
     try {
-      final response = await http.get(Uri.parse(BackendUrl.apiUrl + 'FoodList/?filter='+_searchQuery));
+      final response = await http.get(Uri.parse(BackendUrl.apiUrl + 'FoodList/?filter=' + _searchQuery));
       if (response.statusCode == 200) {
         setState(() {
           _allFoods = json.decode(response.body);
@@ -40,7 +42,38 @@ class _AllergyPageState extends State<AllergyPage> {
     }
   }
 
+  Future<void> fetchAllergies() async {
+    if (userId == null) {
+      print("User ID is null");
+      return;
+    }
+    
+    try {
+      final response = await http.get(Uri.parse(BackendUrl.apiUrl + 'allergy/?user_id=$userId'));
+      print(response.body);
+      if (response.statusCode == 200) {
+        final responseBody = json.decode(response.body);
+        print("Fetched allergies: $responseBody");
+        setState(() {
+          _userAllergies = responseBody;
+          _selectedFoods = List<dynamic>.from(_userAllergies);
+        });
+      } else {
+        print("Response status: ${response.statusCode}");
+        print("Response body: ${response.body}");
+        throw Exception('Failed to load allergies');
+      }
+    } catch (e) {
+      print("Failed to  fetch allergies: $e");
+    }
+  }
+
   Future<void> saveAllergies() async {
+    if (userId == null) {
+      print("User ID is null");
+      return;
+    }
+
     try {
       final response = await http.post(
         Uri.parse(BackendUrl.apiUrl + 'allergy/'),
@@ -95,12 +128,28 @@ class _AllergyPageState extends State<AllergyPage> {
           ),
           Padding(
             padding: EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Current Allergies',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                // Verinin yapısını kontrol etmek için yazdır
+                ..._userAllergies.map((food) {
+                  print("Food item: $food");
+                  return Text(food['food']['name']); // Doğru JSON yapısına göre düzenleyin
+                }).toList(),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(8.0),
             child: TextField(
               onChanged: (value) {
                 setState(() {
                   _searchQuery = value.toLowerCase();
                 });
-
                 fetchFoods();
               },
               decoration: InputDecoration(
@@ -116,23 +165,23 @@ class _AllergyPageState extends State<AllergyPage> {
               itemBuilder: (context, index) {
                 final food = _allFoods[index];
 
-                  return ListTile(
-                    title: Text(food['name']),
-                    trailing: Checkbox(
-                      value: _selectedFoods.contains(food),
-                      onChanged: (bool? value) {
-                        setState(() {
-                          if (value!) {
-                            if (!_selectedFoods.contains(food)) {
-                              _selectedFoods.add(food);
-                            }
-                          } else {
-                            _selectedFoods.removeWhere((item) => item['id'] == food['id']);
+                return ListTile(
+                  title: Text(food['name']),
+                  trailing: Checkbox(
+                    value: _selectedFoods.contains(food),
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value!) {
+                          if (!_selectedFoods.contains(food)) {
+                            _selectedFoods.add(food);
                           }
-                        });
-                      },
-                    ),
-                  );
+                        } else {
+                          _selectedFoods.removeWhere((item) => item['id'] == food['id']);
+                        }
+                      });
+                    },
+                  ),
+                );
               },
             ),
           ),

@@ -1159,6 +1159,13 @@ class RegisterAPIView(APIView):
 
 class AllergyView(views.APIView):
     serializer_class = AllergySerializer
+    
+    def get(self, request, *args, **kwargs):
+        user_id = request.GET.get('user_id')
+        user = User.objects.get(id=user_id)
+        allergies = Allergy.objects.filter(user=user)
+        serializer = AllergySerializer(allergies, many=True)
+        return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         user_id = request.data.get('user_id')

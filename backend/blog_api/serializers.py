@@ -4,7 +4,7 @@ from .models import Goal, blog, category, UserProfile, InputFood
 from .models import blog, category, UserProfile
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
-from .models import blog, category, UserProfile, InputFood, Allergy, User
+from .models import blog, category, UserProfile, InputFood, Allergy, User, food
 
 
 class blogSerializer(serializers.ModelSerializer):
@@ -75,8 +75,14 @@ class UserSerializer(serializers.ModelSerializer):
         UserProfile.objects.create(user=user, **profile_data)
         return user
 
+class foodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = food
+        fields = '__all__'
 
 class AllergySerializer(serializers.ModelSerializer):
+    food = foodSerializer(read_only=True)
+        
     class Meta:
         model = Allergy
         fields = '__all__'
