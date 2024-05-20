@@ -13,6 +13,7 @@ import 'package:recipe/widgets/home/appbar2.dart';
 import 'package:recipe/constants/backend_url.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:recipe/widgets/home/otherProfiles.dart';
 
 const String uri = BackendUrl.apiUrl;
 
@@ -35,6 +36,15 @@ Future<dynamic> nutrition(blog) async {
   }
 }
 
+Future<dynamic> userlist() async {
+  final response = await http.get(Uri.parse(uri + 'UserList/'));
+  if (response.statusCode == 200) {
+    return json.decode(response.body);
+  } else {
+    throw Exception('Failed to load data from API');
+  }
+}
+
 class Recipe extends StatefulWidget {
   const Recipe({Key? key, String? this.slug, required var this.id})
       : super(key: key);
@@ -47,11 +57,13 @@ class Recipe extends StatefulWidget {
 class _Recipe extends State<Recipe> {
   UserData user = UserData();
   var userId;
+  var userName;
   bool isBookmarked = false;
   bool isEaten = false;
 
   Map<String, dynamic> fetchedData = {};
   Map<String, dynamic> nutritionData = {};
+  Map<String, dynamic> userData = {};
 
   // int avg_rating = 5;
 
@@ -94,12 +106,25 @@ class _Recipe extends State<Recipe> {
   @override
   void initState() {
     userId = user.getUserId();
+    // userName = user.getUserName();
     yorumlariYukle();
+
     fetchData(widget.slug).then((data) {
       setState(() {
         var selectedItem =
             data.where((item) => item['id'] == widget.id).toList().first;
         fetchedData = selectedItem.cast<String, dynamic>();
+        userlist().then((data) {
+          setState(() {
+            var selectedItem = data
+                .where((item) => item['id'] == fetchedData["userid"])
+                .toList()
+                .first;
+            userData = selectedItem.cast<String, dynamic>();
+          });
+        }).catchError((error) {
+          print("Error fetching data: $error");
+        });
       });
     }).catchError((error) {
       print("Error fetching data: $error");
@@ -343,6 +368,23 @@ class _Recipe extends State<Recipe> {
           color: Colors.white,
           child: Column(
             children: [
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => OtherProfiles(
+                            loggedInUserId: userId,
+                            clickedUserId: fetchedData["userid"]),
+                      ),
+                    );
+                  },
+                  child: Text("By Chef " + userData["username"].toString(),
+                      textAlign: TextAlign.end),
+                ),
+              ),
+              SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
