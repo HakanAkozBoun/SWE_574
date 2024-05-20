@@ -256,3 +256,214 @@ class UserRatingModelTest(TestCase):
     def test_invalid_value_negative(self):
         with self.assertRaises(IntegrityError):
             UserRating.objects.create(user=self.user, recipe=self.recipe, value=-1)
+
+class RecipeDeriveTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.blog = blog.objects.get(id=1)
+        cls.recipelist = []
+        recipe = {}
+        recipe.food = 1
+        recipe.unit = 1
+        recipe.blog = 1
+        recipe.metricamount = 1
+        recipe.metricunit = 1
+        recipe.amount = 1
+
+        cls.recipelist.append(recipe)
+        
+        cls.parameter = {}
+        cls.parameter.title = 'hakan'
+
+    def setUp(self):
+        if self.parameter.category is not None:
+            self.blog.category = self.parameter.category
+        if self.parameter.title is not None:
+            self.blog.title = self.parameter.title
+        if self.parameter.slug is not None:
+            self.blog.slug = self.parameter.slug
+        if self.parameter.excerpt is not None:
+            self.blog.excerpt = self.parameter.excerpt
+        if self.parameter.content is not None:
+            self.blog.content = self.parameter.content
+        if self.parameter.contentTwo is not None:
+            self.blog.contentTwo = self.parameter.contentTwo
+        if self.parameter.preparationtime is not None:
+            self.blog.preparationtime = self.parameter.preparationtime
+        if self.parameter.cookingtime is not None:
+            self.blog.cookingtime = self.parameter.cookingtime
+        if self.parameter.avg_rating is not None:
+            self.blog.avg_rating = self.parameter.avg_rating
+        if self.parameter.image is not None:
+            self.blog.image = self.parameter.image
+        if self.parameter.ingredients is not None:
+            self.blog.ingredients = self.parameter.ingredients
+        if self.parameter.postlabel is not None:
+            self.blog.postlabel = self.parameter.postlabel
+        if self.parameter.userid is not None:
+            self.blog.userid = self.parameter.userid
+        if self.parameter.serving is not None:
+            self.blog.serving = self.parameter.serving
+
+        self.blognew = blog.objects.create(
+            category = self.blog.category, 
+            title = self.blog.title,
+            slug = self.blog.slug,
+            excerpt = self.blog.excerpt,
+            content = self.blog.content,
+            contentTwo = self.blog.contentTwo,
+            preparationtime = self.blog.preparationtime,
+            cookingtime = self.blog.cookingtime,
+            avg_rating = self.blog.avg_rating,
+            image = self.blog.image,
+            ingredients = self.blog.ingredients,
+            postlabel = self.blog.postlabel,
+            userid = self.blog.userid,
+            serving = self.blog.serving)
+        
+        conversion = unitconversion.objects.all()
+        for item in self.recipelist:
+            metricamount = item.get('amount') # ya da item.amount
+            metricunit = item.get('unit')
+            _conversion = conversion.filter(imperial=item.get('unit'))
+            if _conversion:
+                metricamount /= _conversion.first().ivalue
+                metricunit = _conversion.first().metric
+            recipe.objects.create(food=item.get('food'), unit=item.get('unit'), amount=item.get('amount'), blog=self.blognew.id, metricamount=metricamount, metricunit=metricunit)
+ 
+    def test_blog_fields(self):
+        self.assertEqual(self.blognew.category, 1)
+        self.assertEqual(self.blognew.title, 1)
+        self.assertEqual(self.blognew.slug, 1)
+        self.assertEqual(self.blognew.excerpt, 1)
+        self.assertEqual(self.blognew.content, 1)
+        self.assertEqual(self.blognew.contentTwo, 1)
+        self.assertEqual(self.blognew.preparationtime, 1)
+        self.assertEqual(self.blognew.cookingtime, 1)
+        self.assertEqual(self.blognew.avg_rating, 1)
+        self.assertEqual(self.blognew.image, 1)
+        self.assertEqual(self.blognew.ingredients, 1)
+        self.assertEqual(self.blognew.postlabel, 1)
+        self.assertEqual(self.blognew.userid, 1)
+        self.assertEqual(self.blognew.serving, 1)
+class RecipeCreateTest(TestCase):
+    def setUp(self):
+     self.recipe = recipe.objects.create(food=1, unit=1, amount=1, blog=1, metricamount=1, metricunit=1)
+
+    def setUp(self):
+
+            self.blog.category = 1
+            self.blog.title = 'Manti'
+            self.blog.slug = 'manti'
+            self.blog.excerpt = 'manti'
+            self.blog.content = 'manti is an turkish culturel food'
+            self.blog.contentTwo = 'manti is an turkish culturel food'
+            self.blog.preparationtime = 15
+            self.blog.cookingtime = 20
+            self.blog.avg_rating = 5
+            self.blog.image = 1
+            self.blog.ingredients = '1-meat, 2- flour'
+            self.blog.postlabel = 1
+            self.blog.userid = self.parameter.userid
+            self.blog.serving = self.parameter.serving
+
+    self.blognew = blog.objects.create(
+            category = self.blog.category, 
+            title = self.blog.title,
+            slug = self.blog.slug,
+            excerpt = self.blog.excerpt,
+            content = self.blog.content,
+            contentTwo = self.blog.contentTwo,
+            preparationtime = self.blog.preparationtime,
+            cookingtime = self.blog.cookingtime,
+            avg_rating = self.blog.avg_rating,
+            image = self.blog.image,
+            ingredients = self.blog.ingredients,
+            postlabel = self.blog.postlabel,
+            userid = self.blog.userid,
+            serving = self.blog.serving)
+                
+    def test_recipe_int_fields(self):
+        self.assertEqual(self.recipe.food, 1)
+        self.assertEqual(self.recipe.unit, 1)
+        self.assertEqual(self.recipe.blog, 1)
+        self.assertEqual(self.recipe.metricamount, 1)
+        self.assertEqual(self.recipe.metricunit, 1)
+    
+    def test_recipe_float_fields(self):
+        self.assertEqual(self.recipe.amount, 1)
+
+class RecipeEditTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.recipe = recipe.objects.get(id=1)
+        cls.recipe.food = 1
+        cls.recipe.unit = 1
+        cls.recipe.blog = 1
+        cls.recipe.metricamount = 1
+        cls.recipe.metricunit = 1
+        cls.recipe.amount
+        cls.recipe.save()
+
+    def setUp(self):
+        self.recipeupdated = recipe.objects.get(id=1)
+ 
+    def test_recipe_int_fields(self):
+        self.assertEqual(self.recipeupdated.food, 1)
+        self.assertEqual(self.recipeupdated.unit, 1)
+        self.assertEqual(self.recipeupdated.blog, 1)
+        self.assertEqual(self.recipeupdated.metricamount, 1)
+        self.assertEqual(self.recipeupdated.metricunit, 1)
+    
+    def test_recipe_float_fields(self):
+        self.assertEqual(self.recipeupdated.amount, 1)
+
+class NutritionCalculateTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.blog = blog.objects.get(id=1)
+        cls.nutrition = nutrition.objects.all()
+        cls.recipe = recipe.objects.filter(blog=cls.blog.id)
+
+    def setUp(self):
+        self.calorie = 0
+        self.fat = 0
+        self.sodium = 0
+        self.calcium = 0
+        self.protein = 0
+        self.iron = 0
+        self.carbonhydrates = 0
+        self.sugars = 0
+        self.fiber = 0
+        self.vitamina = 0
+        self.vitaminb = 0
+        self.vitamind = 0
+        for i in self.recipe:
+            __nutrition = self.nutrition.filter(food=i.food).first()
+            if __nutrition:
+                self.calorie += __nutrition.calorie * i.metricamount
+                self.fat += __nutrition.fat * i.metricamount
+                self.sodium += __nutrition.sodium * i.metricamount
+                self.calcium += __nutrition.calcium * i.metricamount
+                self.protein += __nutrition.protein * i.metricamount
+                self.iron += __nutrition.iron * i.metricamount
+                self.carbonhydrates += __nutrition.carbonhydrates * i.metricamount
+                self.sugars += __nutrition.sugars * i.metricamount
+                self.fiber += __nutrition.fiber * i.metricamount
+                self.vitamina += __nutrition.vitamina * i.metricamount
+                self.vitaminb += __nutrition.vitaminb * i.metricamount
+                self.vitamind += __nutrition.vitamind * i.metricamount
+ 
+    def test_nutrition_int_fields(self):
+        self.assertEqual(self.calorie, 1)
+        self.assertEqual(self.fat, 1)
+        self.assertEqual(self.sodium, 1)
+        self.assertEqual(self.calcium, 1)
+        self.assertEqual(self.protein, 1)
+        self.assertEqual(self.iron, 1)
+        self.assertEqual(self.carbonhydrates, 1)
+        self.assertEqual(self.sugars, 1)
+        self.assertEqual(self.fiber, 1)
+        self.assertEqual(self.vitamina, 1)
+        self.assertEqual(self.vitaminb, 1)
+        self.assertEqual(self.vitamind, 1)     
