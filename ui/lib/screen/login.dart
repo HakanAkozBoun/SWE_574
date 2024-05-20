@@ -85,12 +85,14 @@ class _LoginState extends State<Login> {
       var jsonResponse = jsonDecode(response.body);
       UserData userData = UserData();
       int userId = int.parse(jsonResponse['id'].toString());
+      String userName = jsonResponse['name'].toString();
       userData.setUserId(userId);
+      userData.setUserName(userName);
 
       setState(() {
         isLoggedIn = true;
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: ((context) => Profile(userId: userId))));
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: ((context) => Profile(userId: userId))));
       });
     } else {
       print('Giriş Başarısız. Hata kodu: ${response.statusCode}');
