@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:recipe/screen/recipe.dart' as RecipeScreen;
 import 'package:recipe/models/recipe.dart';
 import 'package:recipe/constants/backend_url.dart';
+import 'package:recipe/helpers/userData.dart';
 
 
 class SearchBarWidget extends StatefulWidget {
@@ -27,7 +28,13 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   }
 
   Future<void> searchRecipes(String query) async {
-    var url = Uri.parse(BackendUrl.apiUrl + 'search/?user_id=&query=$query');
+    UserData userData = UserData();
+    int? userId = userData.getUserId();
+    var url = Uri.parse(BackendUrl.apiUrl + 'search/?query=$query');
+    if (userId != null) {
+      url = Uri.parse(BackendUrl.apiUrl + 'search/?query=$query&id=$userId');
+    }
+    
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
