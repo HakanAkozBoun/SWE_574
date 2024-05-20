@@ -137,7 +137,7 @@ class _LoginState extends State<Login> {
                 child: TextField(
                   controller: usernameController,
                   decoration: InputDecoration(
-                    icon: Icon(Icons.email),
+                    icon: Icon(Icons.person),
                     hintText: 'Username',
                     hintStyle: TextStyle(fontFamily: 'ro'),
                     border: OutlineInputBorder(
