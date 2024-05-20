@@ -16,20 +16,25 @@ class _AllergyPageState extends State<AllergyPage> {
   List<dynamic> _allFoods = [];
   List<dynamic> _selectedFoods = [];
   List<dynamic> _userAllergies = [];
-  String _searchQuery = '';
-  var userId;
+  late TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
-    userId = widget.userId;
+    _controller = TextEditingController();
     fetchFoods();
     fetchAllergies();
   }
 
-  Future<void> fetchFoods() async {
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> fetchFoods([String query = '']) async {
     try {
-      final response = await http.get(Uri.parse(BackendUrl.apiUrl + 'FoodList/?filter=' + _searchQuery));
+      final response = await http.get(Uri.parse(BackendUrl.apiUrl + 'FoodList/?filter=' + query));
       if (response.statusCode == 200) {
         setState(() {
           _allFoods = json.decode(response.body);
@@ -43,33 +48,29 @@ class _AllergyPageState extends State<AllergyPage> {
   }
 
   Future<void> fetchAllergies() async {
-    if (userId == null) {
+    if (widget.userId == null) {
       print("User ID is null");
       return;
     }
     
     try {
-      final response = await http.get(Uri.parse(BackendUrl.apiUrl + 'allergy/?user_id=$userId'));
-      print(response.body);
+      final response = await http.get(Uri.parse(BackendUrl.apiUrl + 'allergy/?user_id=${widget.userId}'));
       if (response.statusCode == 200) {
         final responseBody = json.decode(response.body);
-        print("Fetched allergies: $responseBody");
         setState(() {
           _userAllergies = responseBody;
           _selectedFoods = List<dynamic>.from(_userAllergies);
         });
       } else {
-        print("Response status: ${response.statusCode}");
-        print("Response body: ${response.body}");
         throw Exception('Failed to load allergies');
       }
     } catch (e) {
-      print("Failed to  fetch allergies: $e");
+      print("Failed to fetch allergies: $e");
     }
   }
 
   Future<void> saveAllergies() async {
-    if (userId == null) {
+    if (widget.userId == null) {
       print("User ID is null");
       return;
     }
@@ -81,7 +82,7 @@ class _AllergyPageState extends State<AllergyPage> {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode({
-          'user_id': userId,
+          'user_id': widget.userId,
           'food_ids': _selectedFoods.map((food) => food['id']).toList(),
         }),
       );
@@ -141,7 +142,6 @@ class _AllergyPageState extends State<AllergyPage> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 ..._userAllergies.map((food) {
-                  print("Food item: $food");
                   return Text(food['food']['name']);
                 }).toList(),
               ],
@@ -150,11 +150,9 @@ class _AllergyPageState extends State<AllergyPage> {
           Padding(
             padding: EdgeInsets.all(8.0),
             child: TextField(
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value.toLowerCase();
-                });
-                fetchFoods();
+              controller: _controller,
+              onChanged: (input) {
+                fetchFoods(input);
               },
               decoration: InputDecoration(
                 labelText: 'Search Food',
