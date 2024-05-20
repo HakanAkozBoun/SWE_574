@@ -6,7 +6,6 @@ import 'package:recipe/models/recipe.dart';
 import 'package:recipe/constants/backend_url.dart';
 import 'package:recipe/helpers/userData.dart';
 
-
 class SearchBarWidget extends StatefulWidget {
   final Function(String) onSearchResult;
   const SearchBarWidget({Key? key, required this.onSearchResult}) : super(key: key);
@@ -16,7 +15,7 @@ class SearchBarWidget extends StatefulWidget {
 class _SearchBarWidgetState extends State<SearchBarWidget> {
   late TextEditingController controller;
   List data = [];
-  @override 
+  @override
   void initState() {
     super.initState();
     controller = TextEditingController();
@@ -34,12 +33,14 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
     if (userId != null) {
       url = Uri.parse(BackendUrl.apiUrl + 'search/?query=$query&id=$userId');
     }
-    
+
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
       print(response.body);
-      this.data = json.decode(response.body);
+      setState(() {
+        this.data = json.decode(response.body);
+      });
       widget.onSearchResult(response.body);
     } else {
       widget.onSearchResult('Failed to load search results');
@@ -64,22 +65,22 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
           ],
         ),
         child: SearchAnchor(
-            builder: (BuildContext context, SearchController controller) {
+          builder: (BuildContext context, SearchController controller) {
             return SearchBar(
               controller: controller,
               padding: const MaterialStatePropertyAll<EdgeInsets>(
                   EdgeInsets.symmetric(horizontal: 16.0)),
-              onTap: () {
-                this.searchRecipes('');
-                controller.openView();
+              onChanged: (input) {
+                this.searchRecipes(input);
               },
               onSubmitted: (input) {
+                this.searchRecipes(input);
                 controller.openView();
               },
-              leading: const Icon(Icons.search),          
+              leading: const Icon(Icons.search),
             );
-          }, suggestionsBuilder:
-                  (BuildContext context, SearchController controller) {
+          },
+          suggestionsBuilder: (BuildContext context, SearchController controller) {
             return this.data.map((item) {
               return ListTile(
                 title: Text(item['title']),
@@ -100,8 +101,9 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
                   );
                 },
               );
-            });
-          })
+            }).toList();
+          }
+        ),
       ),
     );
   }
