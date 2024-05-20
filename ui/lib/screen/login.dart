@@ -24,6 +24,37 @@ class _LoginState extends State<Login> {
   TextEditingController passwordSignUpController = TextEditingController();
   bool isLoggedIn = false;
 
+  void showOverlayMessage(BuildContext context, String message) {
+    OverlayEntry overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: MediaQuery.of(context).size.height * 0.3,
+        left: MediaQuery.of(context).size.width * 0.1,
+        right: MediaQuery.of(context).size.width * 0.1,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.black87,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              message,
+              style: TextStyle(color: Colors.white, fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(overlayEntry);
+
+    Future.delayed(Duration(seconds: 2), () {
+      overlayEntry.remove();
+    });
+  }
+
   Future<void> signUp() async {
     String email = mailController.text;
     String username = usernameSignUpController.text;
@@ -45,19 +76,11 @@ class _LoginState extends State<Login> {
 
     if (response.statusCode == 201) {
       print("Kayıt Başarılı");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Sign up successful! Redirecting to login...'),
-        ),
-      );
+      showOverlayMessage(context, 'Sign up successful! Redirecting to login...');
       Navigator.pop(context);
     } else {
       print('Kayıt Başarısız. Hata kodu: ${response.statusCode}');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Sign up failed. Error code: ${response.statusCode}'),
-        ),
-      );
+      showOverlayMessage(context, 'Sign up failed. Try a different username/email! Error code: ${response.statusCode}');
     }
   }
 
@@ -96,11 +119,7 @@ class _LoginState extends State<Login> {
       });
     } else {
       print('Giriş Başarısız. Hata kodu: ${response.statusCode}');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Login failed. Error code: ${response.statusCode}'),
-        ),
-      );
+      showOverlayMessage(context, 'Login failed. Error code: ${response.statusCode}');
     }
   }
 
