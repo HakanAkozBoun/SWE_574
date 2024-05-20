@@ -77,6 +77,11 @@ class _AppDrawerState extends State<AppDrawer> {
               title: const Text('Logout'),
               onTap: () {
                 user.setUserId(0);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => Home2(),
+                  ),
+                );
               },
             ),
           ],

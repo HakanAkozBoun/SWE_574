@@ -60,6 +60,7 @@ class _Recipe extends State<Recipe> {
   var userName;
   bool isBookmarked = false;
   bool isEaten = false;
+  int serving = 1;
 
   Map<String, dynamic> fetchedData = {};
   Map<String, dynamic> nutritionData = {};
@@ -249,6 +250,7 @@ class _Recipe extends State<Recipe> {
       if (jsonResponse['is_eaten'] == true) {
         setState(() {
           isEaten = true;
+          serving = jsonResponse['serving'];
         });
       } else if (jsonResponse['is_eaten'] == false) {
         setState(() {
@@ -421,8 +423,8 @@ class _Recipe extends State<Recipe> {
                     child: GestureDetector(
                       onTap: () {
                         // toggleEaten("23", widget.id.toString(), "1");
-                        toggleEaten(
-                            userId.toString(), widget.id.toString(), "1");
+                        toggleEaten(userId.toString(), widget.id.toString(),
+                            serving.toString());
                       },
                       child: Column(
                         children: [
@@ -452,6 +454,29 @@ class _Recipe extends State<Recipe> {
                                   .black, // Adjust as needed for text color
                             ),
                           ),
+                          if (isEaten) ...[
+                            DropdownButton<int>(
+                              value: serving,
+                              onChanged: (int? newValue) {
+                                if (newValue != null) {
+                                  setState(() {
+                                    toggleEaten(
+                                        userId.toString(),
+                                        widget.id.toString(),
+                                        newValue.toString());
+                                    serving = newValue;
+                                  });
+                                }
+                              },
+                              items: [1, 2, 3, 4, 5]
+                                  .map<DropdownMenuItem<int>>((int value) {
+                                return DropdownMenuItem<int>(
+                                  value: value,
+                                  child: Text(value.toString()),
+                                );
+                              }).toList(),
+                            ),
+                          ]
                         ],
                       ),
                     ),
