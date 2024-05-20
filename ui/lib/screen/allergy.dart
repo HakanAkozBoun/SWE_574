@@ -170,11 +170,11 @@ class _AllergyPageState extends State<AllergyPage> {
                 return ListTile(
                   title: Text(food['name']),
                   trailing: Checkbox(
-                    value: _selectedFoods.contains(food),
+                    value: _selectedFoods.any((selectedFood) => selectedFood['id'] == food['id']),
                     onChanged: (bool? value) {
                       setState(() {
                         if (value!) {
-                          if (!_selectedFoods.contains(food)) {
+                          if (!_selectedFoods.any((selectedFood) => selectedFood['id'] == food['id'])) {
                             _selectedFoods.add(food);
                           }
                         } else {
