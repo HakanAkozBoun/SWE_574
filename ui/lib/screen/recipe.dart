@@ -632,7 +632,7 @@ class _Recipe extends State<Recipe> {
                                   entry.key != "blogid" && entry.key != "blog")
                               .map((entry) => ListTile(
                                     title: Text(
-                                        '${entry.key}: ${entry.value.round()} ${entry.key == "calorie" ? "kcal" : "g"}'),
+                                        '${entry.key}: ${entry.value.round()} ${entry.key == "calorie" ? "kcal" : entry.key == "vitamina" ? "UI" : "g"}'),
                                   ))
                               .toList(),
                         ),
@@ -767,7 +767,7 @@ class _Recipe extends State<Recipe> {
                           edit: 2, item: fetchedData, id: widget.id),
                     ));
                   },
-                  child: Text('Draft'),
+                  child: Text('Derive'),
                 ),
               ),
               SizedBox(height: 20),
