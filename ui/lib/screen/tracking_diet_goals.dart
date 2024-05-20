@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:recipe/consent/appbar.dart';
 import 'package:recipe/constants/backend_url.dart';
 import 'package:recipe/helpers/userData.dart';
+import 'package:recipe/widgets/home/app_drawer.dart';
+import 'package:recipe/widgets/home/appbar2.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -50,7 +52,6 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
             nutrient_items.add(nutrientName);
           }
         }
-
       } else {
         print('Failed to fetch data: ${response.reasonPhrase}');
       }
@@ -155,7 +156,8 @@ class _TrackingDietGoalsState extends State<TrackingDietGoals> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appbar(),
+      appBar: AppBar2(),
+      drawer: AppDrawer(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
