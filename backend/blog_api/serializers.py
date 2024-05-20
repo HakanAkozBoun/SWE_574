@@ -1,17 +1,36 @@
+from numpy import imag
 from rest_framework import serializers
 
 from .models import Goal, blog, category, UserProfile, InputFood
 from .models import blog, category, UserProfile
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
-from .models import blog, category, UserProfile, InputFood, Allergy, User, food
+from .models import blog, category, UserProfile, InputFood, Allergy, User, food, image
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    base64 = serializers.CharField(source='data')
+
+    class Meta:
+        model = image
+        fields = ['base64', 'name', 'type']
 
 
 class blogSerializer(serializers.ModelSerializer):
+    image_data = serializers.SerializerMethodField()
+
     class Meta:
         model = blog
         fields = '__all__'
 
+    def get_image_data(self, obj):
+        if obj.image:
+            try:
+                image_instance = image.objects.get(id=obj.image)
+                return ImageSerializer(image_instance).data
+            except image.DoesNotExist:
+                return None
+        return None
 
 class categorySerializer(serializers.ModelSerializer):
     class Meta:
