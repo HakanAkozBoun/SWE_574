@@ -119,11 +119,16 @@ class _AllergyPageState extends State<AllergyPage> {
       appBar: AppBar(title: Text('Allergy Tracker')),
       body: Column(
         children: [
-          Text(
-            userId.toString(),
-            style: TextStyle(
-              fontSize: 18,
-              fontFamily: 'ro',
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "Foods you have added as allergenic are filtered when searching for recipes in the search bar. You can safely consume the foods you see in the search results!",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
           Padding(
@@ -135,10 +140,9 @@ class _AllergyPageState extends State<AllergyPage> {
                   'Current Allergies',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                // Verinin yapısını kontrol etmek için yazdır
                 ..._userAllergies.map((food) {
                   print("Food item: $food");
-                  return Text(food['food']['name']); // Doğru JSON yapısına göre düzenleyin
+                  return Text(food['food']['name']);
                 }).toList(),
               ],
             ),
