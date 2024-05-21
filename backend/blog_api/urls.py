@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from .views import FollowUser, UnfollowUser, check_following, eaten_exist, bookmark_exist, GetWeeklyNutritions, eaten_toggle, UpdateGoal, CreateGoal, GetGoals, GetNutritionDailyWithGoals, GetNutritionWeeklyWithGoal, UpdateUserInfo, UpdateUserProfile, add_rating, check_email, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserProfilesList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, check_username, search_recipes  # CreateUser
+from .views import FollowUser, GetAverageGoals, UnfollowUser, check_following, eaten_exist, bookmark_exist, GetWeeklyNutritions, eaten_toggle, UpdateGoal, CreateGoal, GetGoals, GetNutritionDailyWithGoals, GetNutritionWeeklyWithGoal, UpdateUserInfo, UpdateUserProfile, add_rating, check_email, recommend_items, blogApiView, GetBlogList, categoryApiView, CategoryPostApiView, PopularPostsApiView, GetUserList, CreateCategory, GetCategoryList, Login, CreateBlog, GetBlog, UpdateUser, GetUser, File, GetUnitItemList, GetFoodList, GetRecipeList, GetUnitTypeList, GetFood, GetUnitType, GetSelfRecipes, GetFollowingUserProfilesList, GetBookmarkedRecipes, GetUnitItem, GetUnitConversionList, GetUnitList, GetNutrition, CreateComment, GetCommentList, bookmark_toggle, UserProfileView, InputFoodView, AllergyView, GetUnitList, RegisterAPIView, GetCurrentUserProfile, GetNutritionDaily, check_username, search_recipes  # CreateUser
 
 from rest_framework import routers
 
@@ -57,6 +57,7 @@ urlpatterns = [
          name='WeeklyNutritionWithGoal'),
     path('WeeklyNutritions/', GetWeeklyNutritions, name='WeeklyNutritions'),
     path('Goals/', GetGoals, name='Goals'),
+    path('AverageGoals/',GetAverageGoals,name='GetAverageGoals'),
     path('CreateGoal/', CreateGoal, name='CreateGoal'),
     path('UpdateGoal/', UpdateGoal, name='UpdateGoal'),
     path('CheckUsername/', check_username, name='CheckUsername'),
