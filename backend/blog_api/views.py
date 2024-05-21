@@ -117,8 +117,6 @@ def GetFollowingUserProfilesList(request):
 @api_view(['GET'])
 def GetBookmarkedRecipes(request):
 
-   # if not request.user.is_authenticated:
-    #    return JsonResponse({'error': 'Authentication required'}, status=401)
     user_id = request.query_params.get('id', '1')
     bookmarks = UserBookmark.objects.filter(
         user=user_id).select_related('blog')
@@ -126,8 +124,7 @@ def GetBookmarkedRecipes(request):
     bookmarked_recipes_list = [{
         'id': bookmark.blog.id,
         'title': bookmark.blog.title,
-        # recipelere desc ekleyebiliriz istersek
-        # 'description': bookmark.bookmarked_recipe.description,
+
     } for bookmark in bookmarks]
 
     return JsonResponse(bookmarked_recipes_list, safe=False)
@@ -136,27 +133,18 @@ def GetBookmarkedRecipes(request):
 @api_view(['GET'])
 def GetSelfRecipes(request):
 
-    # çalışması için user id olması lazım recipe modelinde
-    ''' if not request.user.is_authenticated:
-         return JsonResponse({'error': 'Authentication required'}, status=401)
-     '''
-    # EE id 1 değişmeli
-    # id= request.user.id
     user_id = request.query_params.get('id', '1')
 
     queryset = blog.objects.filter(userid=user_id)
-    serializer = blogSerializer(queryset, many=True)
-    return Response(serializer.data)
-    ''' recipes_list = [{
+    # serializer = blogSerializer(queryset, many=True)
+    # return Response(serializer.data)
+    my_recipes_list = [{
         'id': recipe.id,
-        'food': recipe.food,
-        'unit': recipe.unit,
-        'amount': recipe.amount,
-        'blog': recipe.blog,
-        'metricamount': recipe.metricamount,
-        'metricunit': recipe.metricunit
-    } for recipe in self_recipes]
-    '''
+        'title': recipe.title,
+
+    } for recipe in queryset]
+
+    return JsonResponse(my_recipes_list, safe=False)
 
 
 @api_view(['PUT'])
@@ -497,8 +485,6 @@ def GetGoals(request):
     serializer_class = UserProfileForFrontEndSerializer
     return Response(serializer_class(queryset).data)
 '''
-
-
 
 
 def CalculateGoals(age, gender):
@@ -992,10 +978,10 @@ def CreateGoal(request):
 def GetAverageGoals(request):
     user_id = request.query_params.get('id', '1')
     userProfile = UserProfile.objects.get(id=user_id)
-    if(userProfile.age is None or userProfile.gender is None):
+    if (userProfile.age is None or userProfile.gender is None):
         return JsonResponse({"message": "You must enter age and gender first."}, safe=False)
     goals = CalculateGoals(userProfile.age, userProfile.gender)
-    formattedGoals= {
+    formattedGoals = {
         "calorie": goals[0],
         "fat": goals[1],
         "sodium": goals[2],
@@ -1010,6 +996,7 @@ def GetAverageGoals(request):
         "vitamind": goals[11]
     }
     return JsonResponse(formattedGoals, safe=False)
+
 
 @api_view(['GET'])
 def GetGoals(request):

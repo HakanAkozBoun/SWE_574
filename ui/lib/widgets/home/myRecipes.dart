@@ -62,94 +62,6 @@ class _MyRecipes extends State<MyRecipes> {
             } else if (snapshot.hasData) {
               List<Recipe> myRecipesList = snapshot.data!;
               return cardList(context, myRecipesList);
-              /* Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 10),
-                        child: Column(
-                          children: myRecipesList.map((recipe) {
-                            return buildRecipeCard(recipe.title, recipe.excerpt,
-                                '15 min', '../../images/dinner1.jpg');
-                          }).toList(),
-                        ),
-                      ),*/
-
-              /*
-                      title: Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(
-                          allTileNames[index] +
-                              getRelevantText(currentUser, index),
-                          style: TextStyle(fontSize: 17, color: font),
-                        ),
-                      ),
-                      trailing: IconButton(
-                        icon: Icon(Icons.navigate_next),
-                        onPressed: () =>
-                            _showAllSubPages(context, index, currentUser),
-                      ),
-                    );
-                  },*/
-
-              /*
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 10),
-                    child: Column(
-                      children: myRecipesList.map((recipe) {
-                        return buildRecipeCard(recipe.title, recipe.excerpt,
-                            '15 min', '../../images/dinner1.jpg');
-                      }).toList(),
-                    ),
-                  ),
-                ),*/
-
-              /*  return Scaffold(
-                appBar: AppBar(
-                  title: Text('Followed Accounts'),
-                ),
-                body: ListView.builder(
-                  itemCount: followingUsersList.length,
-                  itemBuilder: (context, index) {
-                    UserProfile user = followingUsersList[index];
-                    return Card(
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: AssetImage(user.image),
-                        ),
-                        title: RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: '${user.user.username} ',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              TextSpan(
-                                text: ':     ${user.description} ',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    OtherProfiles(user: user)),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
-              );
-          */
             } else {
               return Scaffold(
                 backgroundColor: background,
@@ -162,30 +74,14 @@ class _MyRecipes extends State<MyRecipes> {
         )));
   }
 
-/*
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        child: Column(
-          children: myRecipes.map((recipe) {
-            return buildRecipeCard(recipe.title, recipe.excerpt, '15 min',
-                '../../images/dinner1.jpg');
-          }).toList(),
-        ),
-      ),
-    );
-  }
-*/
   Widget cardList(BuildContext context, List<Recipe> myRecipes) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         child: Column(
           children: myRecipes.map((recipe) {
-            return buildRecipeCard(recipe.title, recipe.excerpt, '15 min',
-                '../../images/dinner1.jpg');
+            return buildRecipeCard(recipe.title, recipe.excerpt,
+                recipe.preparationtime.toString() + ' min');
           }).toList(),
         ),
       ),
@@ -196,7 +92,6 @@ class _MyRecipes extends State<MyRecipes> {
     String title,
     String description,
     String duration,
-    String imagePath,
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -224,15 +119,6 @@ class _MyRecipes extends State<MyRecipes> {
                 onTap: () {
                   print('clicked');
                 },
-                child: Container(
-                  alignment: Alignment.center,
-                  child: Image.asset(
-                    imagePath,
-                    height: 100,
-                    width: 100,
-                    fit: BoxFit.cover,
-                  ),
-                ),
               ),
             ),
             SizedBox(width: 10),

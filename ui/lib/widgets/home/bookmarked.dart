@@ -1,9 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:recipe/consent/colors.dart';
 import 'package:recipe/models/userProfile.dart';
 import 'package:recipe/models/recipe.dart';
 import 'package:recipe/widgets/home/app_drawer.dart';
 import 'package:recipe/widgets/home/appbar2.dart';
+import 'dart:convert';
 
 class Bookmarked extends StatefulWidget {
   final int userId;
@@ -39,7 +42,7 @@ class _BookmarkedState extends State<Bookmarked> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar2(),
+        appBar: AppBar2(),
         drawer: AppDrawer(),
         backgroundColor: background,
         body: SafeArea(
@@ -82,8 +85,8 @@ class _BookmarkedState extends State<Bookmarked> {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         child: Column(
           children: bookmarkedRecipesList.map((recipe) {
-            return buildRecipeCard(recipe.title, recipe.excerpt, '15 min',
-                '../../images/dinner1.jpg');
+            return buildRecipeCard(recipe.title, recipe.excerpt,
+                recipe.preparationtime.toString() + ' min', recipe.base64);
           }).toList(),
         ),
       ),
@@ -94,7 +97,7 @@ class _BookmarkedState extends State<Bookmarked> {
     String title,
     String description,
     String duration,
-    String imagePath,
+    String image,
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -122,15 +125,6 @@ class _BookmarkedState extends State<Bookmarked> {
                 onTap: () {
                   print('clicked');
                 },
-                child: Container(
-                  alignment: Alignment.center,
-                  child: Image.asset(
-                    imagePath,
-                    height: 100,
-                    width: 100,
-                    fit: BoxFit.cover,
-                  ),
-                ),
               ),
             ),
             SizedBox(width: 10),
