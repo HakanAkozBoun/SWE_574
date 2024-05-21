@@ -72,6 +72,37 @@ class _Recipe extends State<Recipe> {
   String yeniYorum = '';
 
   int selectedRating = 0;
+  String getUnit(String key) {
+    switch (key) {
+      case "calorie":
+        return "kcal";
+      case "fat":
+        return "gram";
+      case "sodium":
+        return "mg";
+      case "calcium":
+        return "mg";
+      case "protein":
+        return "gram";
+      case "iron":
+        return "mg";
+      case "carbonhydrates":
+        return "gram";
+      case "fiber":
+        return "gram";
+      case "sugars":
+        return "gram";
+      case "vitamina":
+        return "IU";
+      case "vitaminb":
+        return "mg";
+      case "vitamind":
+        return "IU";
+
+      default:
+        return "g";
+    }
+  }
 
   void _selectRating(int rating) {
     setState(() {
@@ -632,7 +663,7 @@ class _Recipe extends State<Recipe> {
                                   entry.key != "blogid" && entry.key != "blog")
                               .map((entry) => ListTile(
                                     title: Text(
-                                        '${entry.key}: ${entry.value.round()} ${entry.key == "calorie" ? "kcal" : entry.key == "vitamina" ? "UI" : "g"}'),
+                                        '${entry.key}: ${entry.value.round()} ${getUnit(entry.key)}'),
                                   ))
                               .toList(),
                         ),
