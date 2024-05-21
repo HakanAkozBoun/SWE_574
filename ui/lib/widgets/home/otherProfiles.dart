@@ -123,34 +123,6 @@ class _OtherProfilesState extends State<OtherProfiles> {
                       );
                     },
                   ),
-                  Flexible(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: 3,
-                      itemBuilder: (BuildContext context, int index) {
-                        return ListTile(
-                          leading: Container(
-                            width: 37,
-                            height: 37,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: allIcons[index],
-                          ),
-                          title: Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Text(
-                              allTileNames[index] +
-                                  getRelevantText(
-                                      userProfileData.userProfile, index),
-                              style: TextStyle(fontSize: 17, color: font),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
                 ],
               );
             } else {

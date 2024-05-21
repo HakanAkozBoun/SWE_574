@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/consent/colors.dart';
 import 'package:recipe/models/goal.dart';
+import 'package:recipe/widgets/home/app_drawer.dart';
+import 'package:recipe/widgets/home/appbar2.dart';
 
 // ignore: must_be_immutable
 class GoalsPage extends StatefulWidget {
@@ -14,15 +16,54 @@ class GoalsPage extends StatefulWidget {
 
 class _GoalsPageState extends State<GoalsPage> {
   late Future<List<Goal>> userGoals;
+  late Future<List<Goal>> averageGoals;
   @override
   void initState() {
     super.initState();
     userGoals = Goal.fetchGoals(widget.userId);
+    averageGoals = Goal.fetchAverageGoals(widget.userId);
+    averageGoals.then((goals) {
+      if (goals.isNotEmpty) {
+        showAverageGoalsDialog(context, goals);
+      } else {
+        showAlertDialog(context,
+            "No average goals available for a person of your age and geder, your age and gender might be missing in your profile");
+      }
+    });
+  }
+
+  void showAverageGoalsDialog(BuildContext context, List<Goal> averageGoals) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Average Goals for a person of your age and gender"),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: averageGoals
+                  .map((goal) =>
+                      Text("${goal.goalNutrition}: ${goal.goalAmount}"))
+                  .toList(),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar2(),
+        drawer: AppDrawer(),
         backgroundColor: background,
         body: SafeArea(
             child: FutureBuilder<List<Goal>>(
@@ -188,17 +229,17 @@ class _GoalsPageState extends State<GoalsPage> {
         children: [
           CorrespondingTile("Calories (Kcal)", "calorie", null, false, context),
           CorrespondingTile("Fat (g)", "fat", null, false, context),
-          CorrespondingTile("Sodium (g)", "sodium", null, false, context),
-          CorrespondingTile("Calcium (g)", "calcium", null, false, context),
+          CorrespondingTile("Sodium (mg)", "sodium", null, false, context),
+          CorrespondingTile("Calcium (mg)", "calcium", null, false, context),
           CorrespondingTile("Protein (g)", "protein", null, false, context),
-          CorrespondingTile("Iron (g)", "iron", null, false, context),
+          CorrespondingTile("Iron (mg)", "iron", null, false, context),
           CorrespondingTile(
               "Carbonhydrates (g)", "carbonhydrates", null, false, context),
           CorrespondingTile("Sugars (g)", "sugars", null, false, context),
           CorrespondingTile("Fiber (g)", "fiber", null, false, context),
-          CorrespondingTile("Vitamin A (g)", "vitamina", null, false, context),
-          CorrespondingTile("Vitamin B (g)", "vitaminb", null, false, context),
-          CorrespondingTile("Vitamin D (g)", "vitamind", null, false, context),
+          CorrespondingTile("Vitamin A (IU)", "vitamina", null, false, context),
+          CorrespondingTile("Vitamin B (mg)", "vitaminb", null, false, context),
+          CorrespondingTile("Vitamin D (IU)", "vitamind", null, false, context),
         ],
       ),
     );
@@ -236,24 +277,24 @@ class _GoalsPageState extends State<GoalsPage> {
               calorieExists, context),
           CorrespondingTile("Fat (g)", "fat", fatAmount, fatExists, context),
           CorrespondingTile(
-              "Sodium (g)", "sodium", sodiumAmount, sodiumExists, context),
+              "Sodium (mg)", "sodium", sodiumAmount, sodiumExists, context),
           CorrespondingTile(
-              "Calcium (g)", "calcium", calciumAmount, calciumExists, context),
+              "Calcium (mg)", "calcium", calciumAmount, calciumExists, context),
           CorrespondingTile(
               "Protein (g)", "protein", proteinAmount, proteinExists, context),
           CorrespondingTile(
-              "Iron (g)", "iron", ironAmount, ironExists, context),
+              "Iron (mg)", "iron", ironAmount, ironExists, context),
           CorrespondingTile("Carbonhydrates (g)", "carbonhydrates",
               carbonhydratesAmount, carbonhydratesExists, context),
           CorrespondingTile(
               "Sugars (g)", "sugars", sugarsAmount, sugarsExists, context),
           CorrespondingTile(
               "Fiber (g)", "fiber", fiberAmount, fiberExists, context),
-          CorrespondingTile("Vitamin A (g)", "vitamina", vitaminaAmount,
+          CorrespondingTile("Vitamin A (IU)", "vitamina", vitaminaAmount,
               vitaminaExists, context),
-          CorrespondingTile("Vitamin B (g)", "vitaminb", vitaminbAmount,
+          CorrespondingTile("Vitamin B (mg)", "vitaminb", vitaminbAmount,
               vitaminbExists, context),
-          CorrespondingTile("Vitamin D (g)", "vitamind", vitamindAmount,
+          CorrespondingTile("Vitamin D (IU)", "vitamind", vitamindAmount,
               vitamindExists, context),
         ],
       ),

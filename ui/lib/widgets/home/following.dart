@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/consent/colors.dart';
 import 'package:recipe/models/userProfile.dart';
+import 'package:recipe/widgets/home/app_drawer.dart';
+import 'package:recipe/widgets/home/appbar2.dart';
 import 'otherProfiles.dart';
 //import 'testUser.dart';
 
@@ -30,6 +32,8 @@ class _FollowingState extends State<Following> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar2(),
+        drawer: AppDrawer(),
         backgroundColor: background,
         body: SafeArea(
             child: FutureBuilder<List<UserProfile>>(

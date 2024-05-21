@@ -50,13 +50,10 @@ class _ProfileState extends State<Profile> {
     Icon(Icons.person, color: maincolor),
     Icon(Icons.group, color: maincolor),
     Icon(Icons.thumb_up, color: maincolor),
-    Icon(Icons.fitness_center, color: maincolor),
     Icon(Icons.edit_document, color: maincolor),
     Icon(Icons.settings, color: maincolor),
     Icon(Icons.settings, color: maincolor),
     Icon(Icons.person, color: maincolor),
-    Icon(Icons.settings, color: maincolor),
-    Icon(Icons.chat, color: maincolor),
     Icon(Icons.login, color: maincolor),
   ];
   List allTileNames = [
@@ -66,13 +63,10 @@ class _ProfileState extends State<Profile> {
     'Personal',
     'Following',
     'Bookmarked',
-    'Tracking Goals',
     'My Recipes',
     'My Allergies',
     'My Goals',
     'Track My Goals',
-    'Settings',
-    'FAQs',
     'Logout'
   ];
 
@@ -116,34 +110,22 @@ class _ProfileState extends State<Profile> {
         isFullPage = true;
         break;
       case 6:
-        toBeOpened = TrackingDietGoals();
-        isFullPage = true;
-        break;
-      case 7:
         toBeOpened = MyRecipes(userId: finalUserId);
         isFullPage = true;
         break;
-      case 8:
+      case 7:
         toBeOpened = AllergyPage(userId: finalUserId);
         isFullPage = true;
         break;
-      case 9:
+      case 8:
         toBeOpened = GoalsPage(userId: finalUserId);
         isFullPage = true;
         break;
-      case 10:
+      case 9:
         toBeOpened = TrackingDietGoals();
         isFullPage = true;
         break;
-      case 11:
-        toBeOpened = Settings();
-        isFullPage = true;
-        break;
-      case 12:
-        toBeOpened = FAQs();
-        isFullPage = false;
-        break;
-      case 13:
+      case 10:
         toBeOpened = Logout();
         isFullPage = false;
         break;
@@ -293,7 +275,7 @@ class _ProfileState extends State<Profile> {
                   Flexible(
                     child: ListView.builder(
                       shrinkWrap: true,
-                      itemCount: 14,
+                      itemCount: 11,
                       itemBuilder: (BuildContext context, int index) {
                         return ListTile(
                           leading: Container(

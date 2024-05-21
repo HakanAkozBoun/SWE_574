@@ -204,6 +204,7 @@ def check_username(request):
 
     return JsonResponse({'exists': exists})
 
+
 @api_view(['GET'])
 def check_following(request):
     logged_in_user_id = request.GET.get('logged_in_user_id', None)
@@ -265,6 +266,7 @@ def UnfollowUser(request):
         isSuccess = False
 
     return JsonResponse({'unfollowed': isSuccess})
+
 
 @api_view(['PATCH'])
 def UpdateUserInfo(request):
@@ -367,7 +369,7 @@ def File(request):
 def CreateBlog(request):
     # EE user id None olarak sabitlendi
     _id = request.data.get('id')
-    #_id = None
+    # _id = None
     if _id is None:
 
         _blog = blog.objects.create(category_id=request.data.get('category'), title=request.data.get('title'), slug=request.data.get('slug'), excerpt=request.data.get('excerpt'), content=request.data.get('content'), contentTwo=request.data.get('contentTwo'), avg_rating=request.data.get(
@@ -497,32 +499,89 @@ def GetGoals(request):
 '''
 
 
-def CalculateGoals(userProfile):
-    calorie = CalculateGoalCalorie()
-    fat = CalculateGoalFat()
+
+
+def CalculateGoals(age, gender):
+    calorie = CalculateGoalCalorie(age, gender)
+    fat = CalculateGoalFat(age, gender)
     sodium = CalculateGoalSodium()
-    calcium = CalculateGoalCalcium(
-        age=userProfile.age, gender=userProfile.gender)  # miligrams
-    protein = CalculateGoalProtein()
-    iron = CalculateGoalIron()
+    calcium = CalculateGoalCalcium(age, gender)
+    protein = CalculateGoalProtein(age, gender)
+    iron = CalculateGoalIron(age, gender)
     carbonhydrates = CalculateGoalCarbonhydrates()
-    sugars = CalculateGoalSugars()
+    sugars = CalculateGoalSugars(gender)
     fiber = CalculateGoalFiber()
-    vitamina = CalculateGoalVitamina()
-    vitaminb = CalculateGoalVitaminb()
-    vitamind = CalculateGoalVitamind()
+    vitamina = CalculateGoalVitamina(age, gender)
+    vitaminb = CalculateGoalVitaminb(gender)
+    vitamind = CalculateGoalVitamind(age)
+    return calorie, fat, sodium, calcium, protein, iron, carbonhydrates, sugars, fiber, vitamina, vitaminb, vitamind
 
 
-def CalculateGoalCalorie():
-    return 0
+def CalculateGoalCalorie(age, gender):
+    # https://www.healthline.com/nutrition/how-many-calories-per-day#average-needs
+    necessaryCalorieIntake = 0
+    if (gender == "M" or "m"):
+        if (age <= 3):
+            necessaryCalorieIntake = 1300
+        elif (age > 3 and age <= 8):
+            necessaryCalorieIntake = 1600
+        elif (age > 8 and age <= 13):
+            necessaryCalorieIntake = 2100
+        elif (age > 13 and age <= 18):
+            necessaryCalorieIntake = 2600
+        elif (age > 18 and age <= 30):
+            necessaryCalorieIntake = 2700
+        elif (age > 30 and age <= 50):
+            necessaryCalorieIntake = 2600
+        elif (age > 50):
+            necessaryCalorieIntake = 2300
+    elif (gender == "F" or "f"):
+        if (age <= 3):
+            necessaryCalorieIntake = 1200
+        elif (age > 3 and age <= 8):
+            necessaryCalorieIntake = 1500
+        elif (age > 8 and age <= 13):
+            necessaryCalorieIntake = 1800
+        elif (age > 13 and age <= 18):
+            necessaryCalorieIntake = 2100
+        elif (age > 18 and age <= 30):
+            necessaryCalorieIntake = 2200
+        elif (age > 30 and age <= 50):
+            necessaryCalorieIntake = 1900
+        elif (age > 50):
+            necessaryCalorieIntake = 1900
+
+    return necessaryCalorieIntake
 
 
-def CalculateGoalFat():
-    return 0
+def CalculateGoalFat(age, gender):
+    # https://www.calculator.net/fat-intake-calculator.html
+    # https://www.verywellhealth.com/how-many-grams-of-fat-per-day-8421874#:~:text=For%20most%20people%2C%20it%20is,and%20omega-6%20polyunsaturated%20fats.
+    necessaryFatIntake = 0
+    if (age <= 3):
+        necessaryFatIntake = 30
+    elif (age > 3 and age <= 8):
+        if (gender == "M" or "m"):
+            necessaryFatIntake = 46
+        elif (gender == "F" or "f"):
+            necessaryFatIntake = 40
+    elif (age > 8 and age <= 13):
+        if (gender == "M" or "m"):
+            necessaryFatIntake = 60
+        elif (gender == "F" or "f"):
+            necessaryFatIntake = 53
+    elif (age > 13):
+        if (gender == "M" or "m"):
+            necessaryFatIntake = 69
+        elif (gender == "F" or "f"):
+            necessaryFatIntake = 60
+    return necessaryFatIntake
 
 
 def CalculateGoalSodium():
-    return 0
+    # https://www.heart.org/en/healthy-living/healthy-eating/eat-smart/sodium/sodium-and-salt
+    necessarySodiumIntake = 500
+    return necessarySodiumIntake
 
 
 def CalculateGoalCalcium(age, gender):
@@ -582,36 +641,115 @@ def CalculateGoalCalcium(age, gender):
     return necessaryCalciumIntake
 
 
-def CalculateGoalProtein():
-    return 0
+def CalculateGoalProtein(age, gender):
+    # https://www.calculator.net/protein-calculator.html
+    necessaryProteinIntake = 0
+    if (age <= 3):
+        necessaryProteinIntake = 13
+    elif (age > 3 and age <= 8):
+        necessaryProteinIntake = 19
+    elif (age > 8 and age <= 13):
+        necessaryProteinIntake = 34
+    elif (age > 13 and age <= 18):
+        if (gender == "M" or "m"):
+            necessaryProteinIntake = 52
+        elif (gender == "F" or "f"):
+            necessaryProteinIntake = 46
+    elif (age > 19):
+        if (gender == "M" or "m"):
+            necessaryProteinIntake = 56
+        elif (gender == "F" or "f"):
+            necessaryProteinIntake = 46
+    return necessaryProteinIntake
 
 
-def CalculateGoalIron():
-    return 0
+def CalculateGoalIron(age, gender):
+    # https://ods.od.nih.gov/factsheets/Iron-Consumer/
+    necessaryIronIntake = 0
+    if (age <= 3):
+        necessaryIronIntake = 7
+    elif (age > 3 and age <= 8):
+        necessaryIronIntake = 10
+    elif (age > 8 and age <= 13):
+        necessaryIronIntake = 8
+    elif (age > 13 and age <= 18):
+        if (gender == "M" or "m"):
+            necessaryIronIntake = 11
+        else:
+            necessaryIronIntake = 15
+    elif (age > 18 and age <= 50):
+        if (gender == "M" or "m"):
+            necessaryIronIntake = 8
+        else:
+            necessaryIronIntake = 18
+    elif (age > 50):
+        necessaryIronIntake = 8
+    return necessaryIronIntake
 
 
 def CalculateGoalCarbonhydrates():
-    return 0
+    # https://www.medicalnewstoday.com/articles/318617#amount
+    # (325+225) / 2 = 275
+    necessaryCarbonhydrateIntake = 275
+    return necessaryCarbonhydrateIntake
 
 
-def CalculateGoalSugars():
-    return 0
+def CalculateGoalSugars(gender):
+    # https://www.heart.org/en/healthy-living/healthy-eating/eat-smart/sugar/how-much-sugar-is-too-much#:~:text=Men%20should%20consume%20no%20more,day%27s%20allotment%20in%20one%20slurp.
+    necessarySugarIntake = 0
+    if (gender == "M" or "m"):
+        necessarySugarIntake = 36
+    elif (gender == "F" or "f"):
+        necessarySugarIntake = 25
+    return necessarySugarIntake
 
 
 def CalculateGoalFiber():
-    return 0
+    # https://www.ucsfhealth.org/education/increasing-fiber-intake#:~:text=Although%20there%20is%20no%20dietary,day%20—%20coming%20from%20soluble%20fiber.
+    necessaryFiberIntake = 28
+    return necessaryFiberIntake
 
 
-def CalculateGoalVitamina():
-    return 0
+def CalculateGoalVitamina(age, gender):
+    # https://ods.od.nih.gov/factsheets/VitaminA-HealthProfessional/
+    # IU
+    necessaryVitaminaIntake = 0
+    if (age <= 3):
+        necessaryVitaminaIntake = 300
+    elif (age > 3 and age <= 8):
+        necessaryVitaminaIntake = 400
+    elif (age > 8 and age <= 13):
+        necessaryVitaminaIntake = 600
+    elif (age > 13):
+        if (gender == "M" or "m"):
+            necessaryVitaminaIntake = 900
+        elif (gender == "F" or "f"):
+            necessaryVitaminaIntake = 700
+    necessaryVitaminaIntake = (necessaryVitaminaIntake/3)*10
+    # mcg RAE to IU
+    return necessaryVitaminaIntake
 
 
-def CalculateGoalVitaminb():
-    return 0
+def CalculateGoalVitaminb(gender):
+    # https://www.medicalnewstoday.com/articles/324856#dosage
+    # b1
+    necessaryVitaminbIntake = 0
+    if (gender == "M" or "m"):
+        necessaryVitaminbIntake = 1.2
+    elif (gender == "F" or "f"):
+        necessaryVitaminbIntake = 1.1
+    return necessaryVitaminbIntake
 
 
-def CalculateGoalVitamind():
-    return 0
+def CalculateGoalVitamind(age):
+    # https://ods.od.nih.gov/factsheets/VitaminD-HealthProfessional/
+    necessaryVitamindIntake = 0
+    if (age < 70):
+        necessaryVitamindIntake = 600
+    else:
+        necessaryVitamindIntake = 800
+
+    return necessaryVitamindIntake
 
 
 @api_view(['GET'])
@@ -723,7 +861,8 @@ def bookmark_toggle(request):
     except Exception as e:
         error_message = f"Error toggling bookmark: {str(e)}"
         return Response({"success": False, "error": error_message})
-    
+
+
 @api_view(['GET'])
 def bookmark_exist(request):
     user_id = request.GET.get('user_id')
@@ -747,7 +886,8 @@ def eaten_toggle(request):
         current_date = timezone.datetime.today().date()
 
         # Check if an Eaten entry exists for the user, blog, and current date
-        user_eaten = Eaten.objects.filter(userId=user, blogId=blog_, eatenDate=current_date)
+        user_eaten = Eaten.objects.filter(
+            userId=user, blogId=blog_, eatenDate=current_date)
 
         if user_eaten.exists():
             eaten_entry = user_eaten.first()
@@ -759,7 +899,8 @@ def eaten_toggle(request):
                 eaten_entry.save()
                 is_eaten = True
         else:
-            Eaten.objects.create(userId=user, blogId=blog_, eaten_serving=serving, eatenDate=current_date)
+            Eaten.objects.create(userId=user, blogId=blog_,
+                                 eaten_serving=serving, eatenDate=current_date)
             is_eaten = True
 
         eaten_data = {
@@ -770,7 +911,8 @@ def eaten_toggle(request):
     except Exception as e:
         error_message = f"Error toggling eaten: {str(e)}"
         return Response({"success": False, "error": error_message})
-    
+
+
 @api_view(['GET'])
 def eaten_exist(request):
     user_id = request.GET.get('user_id')
@@ -845,6 +987,29 @@ def CreateGoal(request):
     goal.save()
     return JsonResponse(True, safe=False)
 
+
+@api_view(['GET'])
+def GetAverageGoals(request):
+    user_id = request.query_params.get('id', '1')
+    userProfile = UserProfile.objects.get(id=user_id)
+    if(userProfile.age is None or userProfile.gender is None):
+        return JsonResponse({"message": "You must enter age and gender first."}, safe=False)
+    goals = CalculateGoals(userProfile.age, userProfile.gender)
+    formattedGoals= {
+        "calorie": goals[0],
+        "fat": goals[1],
+        "sodium": goals[2],
+        "calcium": goals[3],
+        "protein": goals[4],
+        "iron": goals[5],
+        "carbonhydrates": goals[6],
+        "sugars": goals[7],
+        "fiber": goals[8],
+        "vitamina": goals[9],
+        "vitaminb": goals[10],
+        "vitamind": goals[11]
+    }
+    return JsonResponse(formattedGoals, safe=False)
 
 @api_view(['GET'])
 def GetGoals(request):
@@ -974,8 +1139,8 @@ def NutritionDailyWithGoals(requestedDate, user):
     nutritionList = NutritionDaily(user, requestedDate)
     NutritionNameList = ["calorie", "fat", "sodium", "calcium", "protein", "iron",
                          "carbonhydrates", "sugars", "fiber", "vitamina", "vitaminb", "vitamind"]
-    nutritionUnitList = ["(kcal)", "(g)",  "(g)", "(g)", "(g)",
-                         "(g)", "(g)", "(g)", "(g)", "(g)", "(g)", "(g)"]
+    nutritionUnitList = ["(kcal)", "(g)",  "(mg)", "(mg)", "(g)",
+                         "(mg)", "(g)", "(g)", "(g)", "(IU)", "(mg)", "(IU)"]
     calorie = 0
     fat = 0
     sodium = 0
@@ -1165,7 +1330,7 @@ class RegisterAPIView(APIView):
 
 class AllergyView(views.APIView):
     serializer_class = AllergySerializer
-    
+
     def get(self, request, *args, **kwargs):
         user_id = request.GET.get('user_id')
         user = User.objects.get(id=user_id)
@@ -1187,6 +1352,7 @@ class AllergyView(views.APIView):
         Allergy.objects.bulk_create(allergies)
         return Response({"message": "Allergies saved successfully"}, status=status.HTTP_201_CREATED)
 
+
 @api_view(['GET'])
 def search_recipes(request):
     query = request.GET.get('query', '')
@@ -1194,15 +1360,16 @@ def search_recipes(request):
     print(user_id, "USER ID")
     print(query)
 
-    
     if user_id is None:
         blogs = blog.objects.filter(title__icontains=query)
     else:
-        allergic_foods = Allergy.objects.filter(user_id=user_id).values_list('food_id', flat=True)
-        allergic_blogs = recipe.objects.filter(food__in=allergic_foods).values_list('blog', flat=True)
+        allergic_foods = Allergy.objects.filter(
+            user_id=user_id).values_list('food_id', flat=True)
+        allergic_blogs = recipe.objects.filter(
+            food__in=allergic_foods).values_list('blog', flat=True)
         blogs = blog.objects \
             .filter(title__icontains=query) \
             .exclude(id__in=allergic_blogs)
-            
+
     serializer = SearchSerializer(blogs, many=True)
     return JsonResponse(serializer.data, safe=False)

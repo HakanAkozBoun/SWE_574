@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:recipe/consent/colors.dart';
 import 'package:recipe/models/userProfile.dart';
+import 'package:recipe/widgets/home/app_drawer.dart';
+import 'package:recipe/widgets/home/appbar2.dart';
 
 // ignore: must_be_immutable
 class PersonalPage extends StatefulWidget {
@@ -24,6 +26,8 @@ class _PersonalPageState extends State<PersonalPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar2(),
+        drawer: AppDrawer(),
         backgroundColor: background,
         body: SafeArea(
             child: FutureBuilder<UserProfile>(
@@ -79,7 +83,7 @@ class _PersonalPageState extends State<PersonalPage> {
           weightTile(givenUser.weight, 4),
           heightTile(givenUser.height, 5),
           experienceTile(givenUser.experience, 6),
-          genderTile(givenUser.gender == 'M' ? true : false, 7)
+          genderTile(givenUser.gender, 7)
         ],
       ),
     );
@@ -267,7 +271,7 @@ class _PersonalPageState extends State<PersonalPage> {
     );
   }
 
-  ListTile genderTile(bool gender, int index) {
+  ListTile genderTile(String gender, int index) {
     return ListTile(
       leading: Icon(Icons.wc),
       title: Row(
@@ -287,7 +291,8 @@ class _PersonalPageState extends State<PersonalPage> {
       trailing: IconButton(
           icon: Icon(Icons.edit),
           onPressed: () {
-            _showSubPage(context, gender.toString(), 'Gender: ', index);
+            _showSubPageForGender(
+                context, gender.toString(), 'Gender: ', index);
           }),
     );
   }
@@ -421,7 +426,15 @@ class _PersonalPageState extends State<PersonalPage> {
   }
 
   bool ValidateGender(String gender) {
-    return true;
+    List<String> genders = ['M', 'm', 'F', 'f'];
+    String errorMessage = "Gender can be either M or F.";
+
+    if (genders.contains(gender))
+      return true;
+    else {
+      showAlertDialog(context, errorMessage);
+      return false;
+    }
   }
 
   void ArrangeUpdate(String text, int index) {
@@ -553,6 +566,58 @@ class _PersonalPageState extends State<PersonalPage> {
     setState(() {
       currentUser = Future.value(updatedProfile);
     });
+  }
+
+  void _showSubPageForGender(
+      BuildContext context, givenText, labelName, index) {
+    TextEditingController textEditingController =
+        TextEditingController(text: givenText);
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return Container(
+          height: MediaQuery.of(context).size.height *
+              0.5, // ekranın tamamını kaplamasın diye
+          child: Column(
+            children: [
+              SizedBox(height: 50),
+              Center(
+                child: TextField(
+                  controller: textEditingController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: labelName,
+                  ),
+                  autofocus: true,
+                ),
+              ),
+              SizedBox(height: 70),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(width: 50),
+                  IconButton(
+                    iconSize: 100,
+                    icon: Icon(Icons.close, color: Colors.red),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  SizedBox(width: 50),
+                  IconButton(
+                    iconSize: 100,
+                    icon: Icon(Icons.check, color: Colors.green),
+                    onPressed: () {
+                      UpdateFlow(textEditingController.text, index);
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _showSubPage(BuildContext context, givenText, labelName, index) {
