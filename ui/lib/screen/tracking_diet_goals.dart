@@ -331,25 +331,48 @@ class ChartData {
 // }
 
 Widget _buildChart(List<ChartData> chartData, List<ChartData> chartData2) {
-  return Container(
-    child: SfCartesianChart(
-      primaryXAxis: CategoryAxis(),
-      legend: Legend(isVisible: true),
-      series: <CartesianSeries>[
-        LineSeries<ChartData, String>(
-          dataSource: chartData,
-          xValueMapper: (ChartData data, _) => data.x,
-          yValueMapper: (ChartData data, _) => data.y,
-          name: 'Goal',
+  if (chartData.isEmpty && chartData2.isEmpty) {
+    return Center(
+      child: Text(
+        'Select a nutrient (if available)',
+        style: TextStyle(fontSize: 16, color: Colors.grey),
+      ),
+    );
+  }
+
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      bool isDesktop = constraints.maxWidth >
+          600; // Adjust this value based on your requirement
+
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Container(
+          width: isDesktop
+              ? constraints.maxWidth
+              : chartData.length *
+                  100.0, // Adjust the width for mobile if needed
+          child: SfCartesianChart(
+            primaryXAxis: CategoryAxis(),
+            legend: Legend(isVisible: true),
+            series: <CartesianSeries>[
+              LineSeries<ChartData, String>(
+                dataSource: chartData,
+                xValueMapper: (ChartData data, _) => data.x,
+                yValueMapper: (ChartData data, _) => data.y,
+                name: 'Goal',
+              ),
+              LineSeries<ChartData, String>(
+                dataSource: chartData2,
+                xValueMapper: (ChartData data, _) => data.x,
+                yValueMapper: (ChartData data, _) => data.y,
+                name: 'Intake',
+              ),
+            ],
+          ),
         ),
-        LineSeries<ChartData, String>(
-          dataSource: chartData2,
-          xValueMapper: (ChartData data, _) => data.x,
-          yValueMapper: (ChartData data, _) => data.y,
-          name: 'Intake',
-        ),
-      ],
-    ),
+      );
+    },
   );
 }
 
@@ -396,7 +419,9 @@ Widget _buildTable(List<Map<String, dynamic>> nutritionData) {
                   Text(
                     item['remaining'].toString(),
                     style: TextStyle(
-                      color: item['currentIntake'] > item['goal'] ? Colors.green : Colors.red,
+                      color: item['currentIntake'] > item['goal']
+                          ? Colors.green
+                          : Colors.red,
                     ),
                   ),
                 ),
