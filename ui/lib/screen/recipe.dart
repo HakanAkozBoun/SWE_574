@@ -780,14 +780,20 @@ class _Recipe extends State<Recipe> {
               ),
               SizedBox(height: 20),
               Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) => AddItemPage(
-                          edit: 1, item: fetchedData, id: widget.id),
-                    ));
-                  },
-                  child: Text('Edit'),
+                child: Visibility(
+                  visible: userId == fetchedData["userid"],
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (BuildContext context) => AddItemPage(
+                          edit: 1,
+                          item: fetchedData,
+                          id: widget.id,
+                        ),
+                      ));
+                    },
+                    child: Text('Edit'),
+                  ),
                 ),
               ),
               Center(
