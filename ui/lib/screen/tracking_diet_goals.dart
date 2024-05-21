@@ -392,7 +392,14 @@ Widget _buildTable(List<Map<String, dynamic>> nutritionData) {
                 DataCell(Text(item['nutritionName'])),
                 DataCell(Text(item['goal'].toString())),
                 DataCell(Text(item['currentIntake'].toString())),
-                DataCell(Text(item['remaining'].toString())),
+                DataCell(
+                  Text(
+                    item['remaining'].toString(),
+                    style: TextStyle(
+                      color: item['currentIntake'] > item['goal'] ? Colors.green : Colors.red,
+                    ),
+                  ),
+                ),
               ],
             );
           }).toList(),
